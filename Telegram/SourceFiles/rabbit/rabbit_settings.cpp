@@ -267,6 +267,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 170,
 		.limitHandler = IntLimit(64, 256, 170), }},
+	{ "openai_key", {
+		.type = SettingType::QStringSetting,
+		.defaultValue = "",	}},
 };
 
 using OldOptionKey = QString;

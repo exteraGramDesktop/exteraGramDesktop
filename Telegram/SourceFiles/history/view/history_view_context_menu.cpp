@@ -606,6 +606,20 @@ bool AddReplyToMessageAction(
 	return true;
 }
 
+bool AddGenerateAction(
+	not_null<Ui::PopupMenu*> menu,
+	const ContextMenuRequest &request,
+	not_null<ListWidget*> list) {
+	
+	const auto context = list->elementContext();
+	const auto item = request.item;
+
+	menu->addAction(rktr("rtg_generate"), [=] {
+		
+	}, &st::menuIconChatDiscuss)
+
+}
+
 bool AddViewRepliesAction(
 		not_null<Ui::PopupMenu*> menu,
 		const ContextMenuRequest &request,

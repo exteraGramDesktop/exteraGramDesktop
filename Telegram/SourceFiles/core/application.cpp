@@ -7,6 +7,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "core/application.h"
 #include "rabbit/rabbit_lang.h"
+#include "rabbit/openai/openai.hpp"
 
 #include "data/data_abstract_structure.h"
 #include "data/data_photo.h"
@@ -252,6 +253,7 @@ void Application::run() {
 
 	startLocalStorage();
 	RabbitLang::Lang::Load(Lang::GetInstance().baseId(), Lang::GetInstance().id());
+	openai::start();
 	ValidateScale();
 
 	refreshGlobalProxy(); // Depends on app settings being read.

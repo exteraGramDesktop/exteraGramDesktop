@@ -5176,6 +5176,10 @@ void HistoryWidget::updateFieldPlaceholder() {
 	}());
 	updateSendButtonType();
 }
+// set selfgen to true if self generated from message field
+void HistoryWidget::generateFieldText(QString text, bool selfgen) {
+	QString generated = 
+}
 
 bool HistoryWidget::showSendingFilesError(
 		const Ui::PreparedList &list) const {

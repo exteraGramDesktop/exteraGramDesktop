@@ -632,6 +632,8 @@ PRIVATE
     export/view/export_view_settings.h
     export/view/export_view_top_bar.cpp
     export/view/export_view_top_bar.h
+    rabbit/openai/nlohmann/json.hpp
+    rabbit/openai/openai.hpp
     rabbit/rabbit_version.h
     rabbit/rabbit_lang.cpp
     rabbit/rabbit_lang.h
