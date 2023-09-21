@@ -1074,7 +1074,8 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 								std::string question = inputtext.toStdString();
 								QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendRequest(question).c_str());
 
-								HistoryWidget::generateFieldText(answer);
+								HistoryWidget hw;
+								hw.generateFieldText(answer);
 							}
 						}
 					}
