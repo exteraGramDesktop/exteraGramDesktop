@@ -148,7 +148,7 @@ public:
 
 	bool updateReplaceMediaButton();
 	void updateFieldPlaceholder();
-	void generateFieldText(QString text, bool selfgen);
+	void generateFieldText(QString text);
 	bool updateStickersByEmoji();
 
 	bool confirmSendingFiles(const QStringList &files);

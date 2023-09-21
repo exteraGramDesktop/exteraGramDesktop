@@ -7,6 +7,8 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "history/history_widget.h"
 #include "rabbit/rabbit_settings.h"
+#include "rabbit/openai/openai.h"
+#include <string>
 
 #include "api/api_editing.h"
 #include "api/api_bot.h"
@@ -5176,9 +5178,9 @@ void HistoryWidget::updateFieldPlaceholder() {
 	}());
 	updateSendButtonType();
 }
-// set selfgen to true if self generated from message field
-void HistoryWidget::generateFieldText(QString text, bool selfgen) {
-	QString generated = 
+
+void HistoryWidget::generateFieldText(QString inputtext) {
+	_field->setText(inputtext);
 }
 
 bool HistoryWidget::showSendingFilesError(

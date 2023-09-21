@@ -6,6 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_context_menu.h"
+#include "rabbit/rabbit_lang.h"
+#include "rabbit/rabbit_settings.h"
+#include "rabbit/openai/openai.h"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"
@@ -21,6 +24,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_item_text.h"
+#include "history/history_widget.h"
 #include "history/view/history_view_schedule_box.h"
 #include "history/view/media/history_view_media.h"
 #include "history/view/media/history_view_web_page.h"
@@ -606,20 +610,6 @@ bool AddReplyToMessageAction(
 	return true;
 }
 
-bool AddGenerateAction(
-	not_null<Ui::PopupMenu*> menu,
-	const ContextMenuRequest &request,
-	not_null<ListWidget*> list) {
-	
-	const auto context = list->elementContext();
-	const auto item = request.item;
-
-	menu->addAction(rktr("rtg_generate"), [=] {
-		
-	}, &st::menuIconChatDiscuss)
-
-}
-
 bool AddViewRepliesAction(
 		not_null<Ui::PopupMenu*> menu,
 		const ContextMenuRequest &request,
@@ -1067,6 +1057,28 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 						}
 					}
 				}, &st::menuIconCopy);
+
+				result->addAction(ktr("rtg_call_button"), [=] {
+					QString inputtext;
+					if (const auto item = owner->message(itemId)) {
+						if (!list->showCopyRestriction(item)) {
+							if (asGroup) {
+								if (const auto group = owner->groups().find(item)) {
+									inputtext = HistoryGroupText(group).expanded;
+									
+									return;
+								}
+							}
+							inputtext = HistoryItemText(item).expanded;
+							if (RabbitSettings::JsonSettings::GetString("openai_key") == "") {
+								std::string question = inputtext.toStdString();
+								QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendRequest(question).c_str());
+
+								HistoryWidget::generateFieldText(answer);
+							}
+						}
+					}
+				}, &st::menuIconChatDiscuss);
 			}
 
 			const auto translate = mediaHasTextForCopy

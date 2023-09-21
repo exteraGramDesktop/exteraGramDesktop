@@ -632,8 +632,17 @@ PRIVATE
     export/view/export_view_settings.h
     export/view/export_view_top_bar.cpp
     export/view/export_view_top_bar.h
+    rabbit/openai/curl/curl.h
+    rabbit/openai/curl/curlver.h
+    rabbit/openai/curl/easy.h
+    rabbit/openai/curl/header.h
+    rabbit/openai/curl/multi.h
+    rabbit/openai/curl/options.h
+    rabbit/openai/curl/system.h
+    rabbit/openai/curl/urlapi.h
+    rabbit/openai/curl/websockets.h
     rabbit/openai/nlohmann/json.hpp
-    rabbit/openai/openai.hpp
+    rabbit/openai/openai.h
     rabbit/rabbit_version.h
     rabbit/rabbit_lang.cpp
     rabbit/rabbit_lang.h
