@@ -5179,7 +5179,7 @@ void HistoryWidget::updateFieldPlaceholder() {
 	updateSendButtonType();
 }
 
-void HistoryWidget::generateFieldText(QString inputtext) {
+void HistoryWidget::updateFieldText(QString text) {
 	_field->setText(inputtext);
 }
 
