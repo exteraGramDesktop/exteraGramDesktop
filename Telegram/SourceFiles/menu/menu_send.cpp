@@ -91,6 +91,7 @@ FillMenuResult FillSendMenu(
 			whenOnline,
 			&icons.menuWhenOnline);
 	}
+	// TODO: add "Generate"
 	return FillMenuResult::Success;
 }
 
