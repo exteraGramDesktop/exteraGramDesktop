@@ -68,8 +68,7 @@ void PortalAutostart(bool enabled, Fn<void(bool)> done) {
 				Gio::DBus::BusType::SESSION);
 		} catch (const std::exception &e) {
 			if (done) {
-				LOG(("Portal Autostart Error: %1").arg(
-					QString::fromStdString(e.what())));
+				LOG(("Portal Autostart Error: %1").arg(e.what()));
 			}
 			return Glib::RefPtr<Gio::DBus::Connection>();
 		}
@@ -144,8 +143,7 @@ void PortalAutostart(bool enabled, Fn<void(bool)> done) {
 					}
 				} catch (const std::exception &e) {
 					if (done) {
-						LOG(("Portal Autostart Error: %1").arg(
-							QString::fromStdString(e.what())));
+						LOG(("Portal Autostart Error: %1").arg(e.what()));
 						done(false);
 					}
 				}
@@ -174,8 +172,7 @@ void PortalAutostart(bool enabled, Fn<void(bool)> done) {
 					connection->call_finish(result);
 				} catch (const std::exception &e) {
 					if (done) {
-						LOG(("Portal Autostart Error: %1").arg(
-							QString::fromStdString(e.what())));
+						LOG(("Portal Autostart Error: %1").arg(e.what()));
 						done(false);
 					}
 
@@ -286,7 +283,7 @@ bool GenerateDesktopFile(
 		target->save_to_file(targetFile.toStdString());
 	} catch (const std::exception &e) {
 		if (!silent) {
-			LOG(("App Error: %1").arg(QString::fromStdString(e.what())));
+			LOG(("App Error: %1").arg(e.what()));
 		}
 		return false;
 	}
@@ -378,7 +375,7 @@ bool GenerateServiceFile(bool silent = false) {
 		target->save_to_file(targetFile.toStdString());
 	} catch (const std::exception &e) {
 		if (!silent) {
-			LOG(("App Error: %1").arg(QString::fromStdString(e.what())));
+			LOG(("App Error: %1").arg(e.what()));
 		}
 		return false;
 	}
@@ -465,18 +462,13 @@ QString SingleInstanceLocalServerName(const QString &hash) {
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
 std::optional<bool> IsDarkMode() {
-	try {
-		const auto result = base::Platform::XDP::ReadSetting(
-			"org.freedesktop.appearance",
-			"color-scheme");
+	const auto result = base::Platform::XDP::ReadSetting<uint>(
+		"org.freedesktop.appearance",
+		"color-scheme");
 
-		if (result.has_value()) {
-			return result->get_dynamic<uint>() == 1;
-		}
-	} catch (...) {
-	}
-
-	return std::nullopt;
+	return result.has_value()
+		? std::make_optional(*result == 1)
+		: std::nullopt;
 }
 #endif // Qt < 6.5.0
 

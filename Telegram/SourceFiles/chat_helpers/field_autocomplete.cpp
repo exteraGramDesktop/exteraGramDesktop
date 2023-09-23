@@ -1245,6 +1245,8 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 			const auto commandString = QString("/%1%2").arg(
 				command,
 				insertUsername ? ('@' + PrimaryUsername(user)) : QString());
+				// TODO: comma after mention
+				// @.*username
 
 			_botCommandChosen.fire({ commandString, method });
 			return true;
