@@ -258,7 +258,7 @@ void AddDocumentActions(
 		}, &st::menuIconCancel);
 		return;
 	}
-	const auto controller = list->controller();
+	const auto controller = list->controller(); // maybe fix
 	const auto contextId = item ? item->fullId() : FullMsgId();
 	const auto session = &document->session();
 	if (item && document->isGifv()) {
@@ -710,6 +710,38 @@ bool AddPinMessageAction(
 	return true;
 }
 
+bool AddGenerateMessageAction(
+		not_null<Ui::PopupMenu*> menu,
+		const ContextMenuRequest &request,
+		not_null<ListWidget*> list) {
+	menu->addAction(ktr("rtg_call_button"), [=] {
+		const auto item = request.item;
+		const auto owner = &item->history()->owner();
+		const auto itemId = item ? item->fullId() : FullMsgId();
+		const auto asGroup = (request.pointState != PointState::GroupPart);
+		QString inputtext;
+		if (const auto item = owner->message(itemId)) {
+			if (!list->showCopyRestriction(item)) {
+				if (asGroup) {
+					if (const auto group = owner->groups().find(item)) {
+						inputtext = HistoryGroupText(group).expanded;
+
+						return;
+					}
+				}
+				inputtext = HistoryItemText(item).expanded;
+				if (RabbitSettings::JsonSettings::GetString("openai_key") == "") {
+					std::string question = inputtext.toStdString();
+					QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendRequest(question).c_str());
+
+					HistoryWidget hw(list, list->controller());
+					hw.updateFieldText(answer);
+				}
+			}
+		}
+	}, &st::menuIconChatDiscuss);
+}
+
 bool AddGoToMessageAction(
 		not_null<Ui::PopupMenu*> menu,
 		const ContextMenuRequest &request,
@@ -932,6 +964,7 @@ void AddTopMessageActions(
 	AddViewRepliesAction(menu, request, list);
 	AddEditMessageAction(menu, request, list);
 	AddPinMessageAction(menu, request, list);
+	AddGenerateMessageAction(menu, request, list);
 }
 
 void AddMessageActions(
@@ -1058,7 +1091,7 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 					}
 				}, &st::menuIconCopy);
 
-				result->addAction(ktr("rtg_call_button"), [=] {
+				/* result->addAction(ktr("rtg_call_button"), [=] {
 					QString inputtext;
 					if (const auto item = owner->message(itemId)) {
 						if (!list->showCopyRestriction(item)) {
@@ -1078,7 +1111,7 @@ base::unique_qptr<Ui::PopupMenu> FillContextMenu(
 							}
 						}
 					}
-				}, &st::menuIconChatDiscuss);
+				}, &st::menuIconChatDiscuss); */
 			}
 
 			const auto translate = mediaHasTextForCopy

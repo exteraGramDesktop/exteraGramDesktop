@@ -5180,7 +5180,7 @@ void HistoryWidget::updateFieldPlaceholder() {
 }
 
 void HistoryWidget::updateFieldText(QString text) {
-	_field->setText(inputtext);
+	_field->setText(text);
 }
 
 bool HistoryWidget::showSendingFilesError(
