@@ -24,7 +24,7 @@
  *
  ***************************************************************************/
 
-#include "curl.h"
+#include "curl.hpp"
 
 #ifdef  __cplusplus
 extern "C" {

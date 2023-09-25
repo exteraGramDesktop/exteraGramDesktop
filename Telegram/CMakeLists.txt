@@ -633,24 +633,6 @@ PRIVATE
     export/view/export_view_settings.h
     export/view/export_view_top_bar.cpp
     export/view/export_view_top_bar.h
-    rabbit/openai/curl/curl.h
-    rabbit/openai/curl/curlver.h
-    rabbit/openai/curl/easy.h
-    rabbit/openai/curl/header.h
-    rabbit/openai/curl/multi.h
-    rabbit/openai/curl/options.h
-    rabbit/openai/curl/system.h
-    rabbit/openai/curl/urlapi.h
-    rabbit/openai/curl/websockets.h
-    rabbit/openai/nlohmann/json.hpp
-    rabbit/openai/openai.h
-    rabbit/rabbit_version.h
-    rabbit/rabbit_lang.cpp
-    rabbit/rabbit_lang.h
-    rabbit/rabbit_settings.cpp
-    rabbit/rabbit_settings.h
-    rabbit/rabbit_settings_menu.cpp
-    rabbit/rabbit_settings_menu.h
     history/admin_log/history_admin_log_filter.cpp
     history/admin_log/history_admin_log_filter.h
     history/admin_log/history_admin_log_inner.cpp
@@ -1238,6 +1220,24 @@ PRIVATE
     profile/profile_block_widget.h
     profile/profile_cover_drop_area.cpp
     profile/profile_cover_drop_area.h
+    rabbit/openai/curl/curl.hpp
+    rabbit/openai/curl/curlver.hpp
+    rabbit/openai/curl/easy.hpp
+    rabbit/openai/curl/header.hpp
+    rabbit/openai/curl/multi.hpp
+    rabbit/openai/curl/options.hpp
+    rabbit/openai/curl/system.hpp
+    rabbit/openai/curl/urlapi.hpp
+    rabbit/openai/curl/websockets.hpp
+    rabbit/openai/nlohmann/json.hpp
+    rabbit/openai/openai.hpp
+    rabbit/rabbit_version.h
+    rabbit/rabbit_lang.cpp
+    rabbit/rabbit_lang.h
+    rabbit/rabbit_settings.cpp
+    rabbit/rabbit_settings.h
+    rabbit/rabbit_settings_menu.cpp
+    rabbit/rabbit_settings_menu.h
     settings/cloud_password/settings_cloud_password_common.cpp
     settings/cloud_password/settings_cloud_password_common.h
     settings/cloud_password/settings_cloud_password_email.cpp

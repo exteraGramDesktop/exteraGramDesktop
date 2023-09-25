@@ -50,8 +50,8 @@
 #define CURL_IGNORE_DEPRECATION(statements)     statements
 #endif
 
-#include "rabbit/openai/curl/curlver.h"         /* libcurl version defines   */
-#include "rabbit/openai/curl/system.h"          /* determine things run-time */
+#include "rabbit/openai/curl/curlver.hpp"         /* libcurl version defines   */
+#include "rabbit/openai/curl/system.hpp"          /* determine things run-time */
 
 /*
  * Define CURL_WIN32 when build target is Win32 API
@@ -3214,12 +3214,12 @@ CURL_EXTERN CURLcode curl_easy_pause(CURL *handle, int bitmask);
 
 /* unfortunately, the easy.h and multi.h include files need options and info
   stuff before they can be included! */
-#include "rabbit/openai/curl/easy.h" /* nothing in curl is fun without the easy stuff */
-#include "rabbit/openai/curl/multi.h"
-#include "rabbit/openai/curl/urlapi.h"
-#include "rabbit/openai/curl/options.h"
-#include "rabbit/openai/curl/header.h"
-#include "rabbit/openai/curl/websockets.h"
+#include "rabbit/openai/curl/easy.hpp" /* nothing in curl is fun without the easy stuff */
+#include "rabbit/openai/curl/multi.hpp"
+#include "rabbit/openai/curl/urlapi.hpp"
+#include "rabbit/openai/curl/options.hpp"
+#include "rabbit/openai/curl/header.hpp"
+#include "rabbit/openai/curl/websockets.hpp"
 
 /* the typechecker doesn't work in C++ (yet) */
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && \

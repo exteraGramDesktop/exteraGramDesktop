@@ -1,6 +1,6 @@
 
 #include <mutex>
-#include "rabbit/openai/curl/curl.h"
+#include "rabbit/openai/curl/curl.hpp"
 #include "rabbit/openai/nlohmann/json.hpp"
 #include "rabbit/rabbit_settings.h"
 
@@ -10,8 +10,8 @@ std::string apiKey = RabbitSettings::JsonSettings::GetString("openai_key").toStd
 
 static int aiStyle = 0;
 
-int maxTokens = 1024, n = 1, bestOf = 1;
-float temperature = 0.7f, presencePenalty = 0.0f;
+int maxGPTTokens = 1024, nGPT = 1, bestOfGPT = 1;
+float temperatureGPT = 0.7f, presencePenaltyGPT = 0.0f;
 bool echo = false, waiting = false;
 
 const char* modelOptions[] = { "text-davinci-003", "text-curie-001", "text-babbage-001", "text-ada-001", "code-davinci-002", "code-cushman-001" }; // code-davinci-002 & code-cushman-001 models seem to have issues
@@ -42,7 +42,7 @@ size_t WriteCallback(char* ptr, size_t size, size_t nmemb, void* userdata)
     return num_bytes;
 }
 
-std::string SendRequest(std::string inputText)
+std::string SendGPTRequest(std::string inputText)
 {
     std::lock_guard<std::mutex> lock(sendMutex);
     std::string response;
@@ -80,11 +80,11 @@ std::string SendRequest(std::string inputText)
     json requestData =
     {
         { "prompt", inputText },
-        { "max_tokens", maxTokens },
-        { "temperature", temperature },
-        { "n", n },
-        { "presence_penalty", presencePenalty },
-        { "best_of", bestOf },
+        { "max_tokens", maxGPTTokens },
+        { "temperature", temperatureGPT },
+        { "n", nGPT },
+        { "presence_penalty", presencePenaltyGPT },
+        { "best_of", bestOfGPT },
         { "echo", echo }
     };
     std::string requestDataString = requestData.dump();

@@ -48,7 +48,7 @@
  * break existing (wrongly written) libcurl applications, we leave it as-is
  * but with this warning attached.
  */
-#include "curl.h"
+#include "curl.hpp"
 
 #ifdef  __cplusplus
 extern "C" {

@@ -8,7 +8,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "history/view/history_view_context_menu.h"
 #include "rabbit/rabbit_lang.h"
 #include "rabbit/rabbit_settings.h"
-#include "rabbit/openai/openai.h"
+#include "rabbit/openai/openai.hpp"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"
@@ -710,36 +710,35 @@ bool AddPinMessageAction(
 	return true;
 }
 
-bool AddGenerateMessageAction(
+void AddGenerateMessageAction(
 		not_null<Ui::PopupMenu*> menu,
 		const ContextMenuRequest &request,
 		not_null<ListWidget*> list) {
-	menu->addAction(ktr("rtg_call_button"), [=] {
-		const auto item = request.item;
-		const auto owner = &item->history()->owner();
-		const auto itemId = item ? item->fullId() : FullMsgId();
-		const auto asGroup = (request.pointState != PointState::GroupPart);
-		QString inputtext;
-		if (const auto item = owner->message(itemId)) {
-			if (!list->showCopyRestriction(item)) {
-				if (asGroup) {
-					if (const auto group = owner->groups().find(item)) {
-						inputtext = HistoryGroupText(group).expanded;
-
-						return;
+	if (RabbitSettings::JsonSettings::GetString("openai_key") != "") {
+		menu->addAction(ktr("rtg_call_button"), [=] {
+			const auto item = request.item;
+			const auto owner = &item->history()->owner();
+			const auto itemId = item ? item->fullId() : FullMsgId();
+			const auto asGroup = (request.pointState != PointState::GroupPart);
+			QString inputtext;
+			if (const auto item = owner->message(itemId)) {
+				if (!list->showCopyRestriction(item)) {
+					if (asGroup) {
+						if (const auto group = owner->groups().find(item))
+						{
+							inputtext = HistoryGroupText(group).expanded;
+						}
 					}
-				}
-				inputtext = HistoryItemText(item).expanded;
-				if (RabbitSettings::JsonSettings::GetString("openai_key") == "") {
-					std::string question = inputtext.toStdString();
-					QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendRequest(question).c_str());
+					inputtext = HistoryItemText(item).expanded;
 
+					std::string question = inputtext.toStdString();
+					QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendGPTRequest(question).c_str());
 					HistoryWidget hw(list, list->controller());
 					hw.updateFieldText(answer);
 				}
 			}
-		}
-	}, &st::menuIconChatDiscuss);
+		}, &st::menuIconChatDiscuss);
+	}
 }
 
 bool AddGoToMessageAction(
