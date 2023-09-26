@@ -776,10 +776,9 @@ QString ApiWrap::exportDirectMessageLink(
 
 QString ApiWrap::exportDirectStoryLink(not_null<Data::Story*> story) {
 	const auto storyId = story->fullId();
-	const auto user = story->peer()->asUser();
-	Assert(user != nullptr);
+	const auto peer = story->peer();
 	const auto fallback = [&] {
-		const auto base = user->username();
+		const auto base = peer->userName();
 		const auto story = QString::number(storyId.story);
 		const auto query = base + "/s/" + story;
 		return session().createInternalLinkFull(query);
@@ -789,7 +788,7 @@ QString ApiWrap::exportDirectStoryLink(not_null<Data::Story*> story) {
 		? i->second
 		: fallback();
 	request(MTPstories_ExportStoryLink(
-		story->peer()->asUser()->inputUser,
+		peer->input,
 		MTP_int(story->id())
 	)).done([=](const MTPExportedStoryLink &result) {
 		const auto link = qs(result.data().vlink());
@@ -2533,14 +2532,9 @@ void ApiWrap::refreshFileReference(
 	}, [&](Data::FileOriginPremiumPreviews data) {
 		request(MTPhelp_GetPremiumPromo());
 	}, [&](Data::FileOriginStory data) {
-		const auto user = _session->data().peer(data.peerId)->asUser();
-		if (user) {
-			request(MTPstories_GetStoriesByID(
-				user->inputUser,
-				MTP_vector<MTPint>(1, MTP_int(data.storyId))));
-		} else {
-			fail();
-		}
+		request(MTPstories_GetStoriesByID(
+			_session->data().peer(data.peerId)->input,
+			MTP_vector<MTPint>(1, MTP_int(data.storyId))));
 	}, [&](v::null_t) {
 		fail();
 	});
