@@ -1220,17 +1220,6 @@ PRIVATE
     profile/profile_block_widget.h
     profile/profile_cover_drop_area.cpp
     profile/profile_cover_drop_area.h
-    rabbit/openai/curl/curl.hpp
-    rabbit/openai/curl/curlver.hpp
-    rabbit/openai/curl/easy.hpp
-    rabbit/openai/curl/header.hpp
-    rabbit/openai/curl/multi.hpp
-    rabbit/openai/curl/options.hpp
-    rabbit/openai/curl/system.hpp
-    rabbit/openai/curl/urlapi.hpp
-    rabbit/openai/curl/websockets.hpp
-    rabbit/openai/nlohmann/json.hpp
-    rabbit/openai/openai.hpp
     rabbit/rabbit_version.h
     rabbit/rabbit_lang.cpp
     rabbit/rabbit_lang.h

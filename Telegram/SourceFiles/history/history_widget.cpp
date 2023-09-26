@@ -5178,10 +5178,6 @@ void HistoryWidget::updateFieldPlaceholder() {
 	updateSendButtonType();
 }
 
-void HistoryWidget::updateFieldText(QString text) {
-	_field->setText(text);
-}
-
 bool HistoryWidget::showSendingFilesError(
 		const Ui::PreparedList &list) const {
 	return showSendingFilesError(list, std::nullopt);

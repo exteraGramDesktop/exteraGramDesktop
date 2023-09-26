@@ -24,7 +24,6 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_item_text.h"
-#include "history/history_widget.h"
 #include "history/view/history_view_schedule_box.h"
 #include "history/view/media/history_view_media.h"
 #include "history/view/media/history_view_web_page.h"
@@ -710,37 +709,6 @@ bool AddPinMessageAction(
 	return true;
 }
 
-void AddGenerateMessageAction(
-		not_null<Ui::PopupMenu*> menu,
-		const ContextMenuRequest &request,
-		not_null<ListWidget*> list) {
-	if (RabbitSettings::JsonSettings::GetString("openai_key") != "") {
-		menu->addAction(ktr("rtg_call_button"), [=] {
-			const auto item = request.item;
-			const auto owner = &item->history()->owner();
-			const auto itemId = item ? item->fullId() : FullMsgId();
-			const auto asGroup = (request.pointState != PointState::GroupPart);
-			QString inputtext;
-			if (const auto item = owner->message(itemId)) {
-				if (!list->showCopyRestriction(item)) {
-					if (asGroup) {
-						if (const auto group = owner->groups().find(item))
-						{
-							inputtext = HistoryGroupText(group).expanded;
-						}
-					}
-					inputtext = HistoryItemText(item).expanded;
-
-					std::string question = inputtext.toStdString();
-					QString answer = QString::fromUtf8(question.c_str()) + "\n\n--------\n\n" + QString::fromUtf8(SendGPTRequest(question).c_str());
-					HistoryWidget hw(list, list->controller());
-					hw.updateFieldText(answer);
-				}
-			}
-		}, &st::menuIconChatDiscuss);
-	}
-}
-
 bool AddGoToMessageAction(
 		not_null<Ui::PopupMenu*> menu,
 		const ContextMenuRequest &request,
@@ -965,7 +933,6 @@ void AddTopMessageActions(
 	AddViewRepliesAction(menu, request, list);
 	AddEditMessageAction(menu, request, list);
 	AddPinMessageAction(menu, request, list);
-	AddGenerateMessageAction(menu, request, list);
 }
 
 void AddMessageActions(
