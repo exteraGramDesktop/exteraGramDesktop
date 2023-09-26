@@ -886,7 +886,7 @@ void MainMenu::setupMenu() {
 				controller->showSection(
 					Info::Stories::Make(controller->session().user()));
 			});
-		}
+		}	
 
 		SetupMenuBots(_menu, controller);
 		
