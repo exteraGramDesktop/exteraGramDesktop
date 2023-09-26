@@ -7,78 +7,13 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "platform/linux/file_utilities_linux.h"
 
-#include "base/platform/linux/base_linux_app_launch_context.h"
 #include "platform/linux/linux_xdp_open_with_dialog.h"
-
-#include <QtGui/QDesktopServices>
-
-#include <gio/gio.hpp>
-
-using namespace gi::repository;
 
 namespace Platform {
 namespace File {
 
-void UnsafeOpenUrl(const QString &url) {
-	{
-		const auto result = Gio::AppInfo::launch_default_for_uri(
-			url.toStdString(),
-			base::Platform::AppLaunchContext());
-
-		if (!result) {
-			LOG(("App Error: %1").arg(
-				QString::fromStdString(result.error().what())));
-		} else if (*result) {
-			return;
-		}
-	}
-
-	QDesktopServices::openUrl(url);
-}
-
-void UnsafeOpenEmailLink(const QString &email) {
-	UnsafeOpenUrl(u"mailto:"_q + email);
-}
-
 bool UnsafeShowOpenWith(const QString &filepath) {
-	if (internal::ShowXDPOpenWithDialog(filepath)) {
-		return true;
-	}
-
-	return false;
-}
-
-void UnsafeLaunch(const QString &filepath) {
-	if ([&] {
-		const auto filename = GLib::filename_to_uri(filepath.toStdString());
-		if (!filename) {
-			LOG(("App Error: %1").arg(
-				QString::fromStdString(filename.error().what())));
-
-			return false;
-		}
-
-		const auto result = Gio::AppInfo::launch_default_for_uri(
-			*filename,
-			base::Platform::AppLaunchContext());
-
-		if (!result) {
-			LOG(("App Error: %1").arg(
-				QString::fromStdString(result.error().what())));
-
-			return false;
-		}
-
-		return *result;
-	}()) {
-		return;
-	}
-
-	if (UnsafeShowOpenWith(filepath)) {
-		return;
-	}
-
-	QDesktopServices::openUrl(QUrl::fromLocalFile(filepath));
+	return internal::ShowXDPOpenWithDialog(filepath);
 }
 
 } // namespace File
@@ -95,11 +30,6 @@ bool Get(
 		QString startFile) {
 	if (parent) {
 		parent = parent->window();
-	}
-	// Workaround for sandboxed paths
-	static const auto docRegExp = QRegularExpression("^/run/user/\\d+/doc");
-	if (cDialogLastPath().contains(docRegExp)) {
-		InitLastPath();
 	}
 	return ::FileDialog::internal::GetDefault(
 		parent,

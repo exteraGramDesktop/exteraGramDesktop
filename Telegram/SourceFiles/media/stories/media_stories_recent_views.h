@@ -13,9 +13,12 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 namespace Data {
 struct StoryView;
+struct ReactionId;
 } // namespace Data
 
 namespace Ui {
+class AbstractButton;
+class IconButton;
 class RpWidget;
 class GroupCallUserpics;
 class PopupMenu;
@@ -30,11 +33,18 @@ namespace Media::Stories {
 
 class Controller;
 
+enum class RecentViewsType {
+	Other,
+	Self,
+	Channel,
+	Changelog,
+};
+
 struct RecentViewsData {
 	std::vector<not_null<PeerData*>> list;
 	int reactions = 0;
 	int total = 0;
-	bool valid = false;
+	RecentViewsType type = RecentViewsType::Other;
 
 	friend inline auto operator<=>(
 		const RecentViewsData &,
@@ -44,12 +54,19 @@ struct RecentViewsData {
 		const RecentViewsData &) = default;
 };
 
+[[nodiscard]] RecentViewsType RecentViewsTypeFor(not_null<PeerData*> peer);
+
 class RecentViews final {
 public:
 	explicit RecentViews(not_null<Controller*> controller);
 	~RecentViews();
 
-	void show(RecentViewsData data);
+	void show(
+		RecentViewsData data,
+		rpl::producer<Data::ReactionId> likedValue = nullptr);
+
+	[[nodiscard]] Ui::RpWidget *likeButton() const;
+	[[nodiscard]] Ui::RpWidget *likeIconWidget() const;
 
 private:
 	struct MenuEntry {
@@ -69,6 +86,9 @@ private:
 	void updatePartsGeometry();
 	void showMenu();
 
+	void setupViewsReactions();
+	void updateViewsReactionsGeometry();
+
 	void addMenuRow(Data::StoryView entry, const QDateTime &now);
 	void addMenuRowPlaceholder(not_null<Main::Session*> session);
 	void rebuildMenuTail();
@@ -82,6 +102,12 @@ private:
 	Ui::Text::String _text;
 	RecentViewsData _data;
 	rpl::lifetime _userpicsLifetime;
+
+	rpl::variable<QString> _viewsCounter;
+	rpl::variable<QString> _likesCounter;
+	std::unique_ptr<Ui::RpWidget> _viewsWrap;
+	std::unique_ptr<Ui::AbstractButton> _likeWrap;
+	std::unique_ptr<Ui::IconButton> _likeIcon;
 
 	base::unique_qptr<Ui::PopupMenu> _menu;
 	rpl::lifetime _menuShortLifetime;

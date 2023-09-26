@@ -82,19 +82,33 @@ for singlePrefix in pathPrefixes:
     pathPrefix = pathPrefix + os.path.join(rootDir, singlePrefix) + pathSep
 
 environment = {
-    'MAKE_THREADS_CNT': '-j8',
-    'MACOSX_DEPLOYMENT_TARGET': '10.12',
-    'UNGUARDED': '-Werror=unguarded-availability-new',
-    'MIN_VER': '-mmacosx-version-min=10.12',
     'USED_PREFIX': usedPrefix,
     'ROOT_DIR': rootDir,
     'LIBS_DIR': libsDir,
     'THIRDPARTY_DIR': thirdPartyDir,
-    'SPECIAL_TARGET': 'win' if win32 else 'win64' if win64 else 'mac',
-    'X8664': 'x86' if win32 else 'x64',
-    'WIN32X64': 'Win32' if win32 else 'x64',
     'PATH_PREFIX': pathPrefix,
 }
+if (win32):
+    environment.update({
+        'SPECIAL_TARGET': 'win',
+        'X8664': 'x86',
+        'WIN32X64': 'Win32',
+    })
+elif (win64):
+    environment.update({
+        'SPECIAL_TARGET': 'win64',
+        'X8664': 'x64',
+        'WIN32X64': 'x64',
+    })
+elif (mac):
+    environment.update({
+        'SPECIAL_TARGET': 'mac',
+        'MAKE_THREADS_CNT': '-j8',
+        'MACOSX_DEPLOYMENT_TARGET': '10.13',
+        'UNGUARDED': '-Werror=unguarded-availability-new',
+        'MIN_VER': '-mmacosx-version-min=10.13',
+    })
+
 ignoreInCacheForThirdParty = [
     'USED_PREFIX',
     'LIBS_DIR',
@@ -404,7 +418,7 @@ if customRunCommand:
 stage('patches', """
     git clone https://github.com/desktop-app/patches.git
     cd patches
-    git checkout 24d8dc2bde
+    git checkout 81a81ffb5a
 """)
 
 stage('msys64', """
@@ -461,9 +475,9 @@ win:
     cd gyp
     git checkout 9d09418933
 mac:
-    python3 -m pip install ^
-        --ignore-installed ^
-        --target=$THIRDPARTY_DIR/gyp ^
+    python3 -m pip install \\
+        --ignore-installed \\
+        --target=$THIRDPARTY_DIR/gyp \\
         git+https://chromium.googlesource.com/external/gyp@master
 """, 'ThirdParty')
 
@@ -624,6 +638,7 @@ mac:
 stage('rnnoise', """
     git clone https://github.com/desktop-app/rnnoise.git
     cd rnnoise
+    git checkout fe37e57d09
     mkdir out
     cd out
 win:
@@ -822,7 +837,7 @@ stage('libvpx', """
     git clone https://github.com/webmproject/libvpx.git
 depends:patches/libvpx/*.patch
     cd libvpx
-    git checkout v1.11.0
+    git checkout e1c124f89
 win:
     for /r %%i in (..\\patches\\libvpx\\*) do git apply %%i
 
@@ -1143,8 +1158,7 @@ depends:patches/breakpad.diff
     cd src/third_party/lss
     git checkout e1e7b0ad8e
     cd ../../build
-    PYTHONPATH=$THIRDPARTY_DIR/gyp
-    python3 gyp_breakpad
+    PYTHONPATH=$THIRDPARTY_DIR/gyp python3 gyp_breakpad
     cd ../processor
     xcodebuild -project processor.xcodeproj -target minidump_stackwalk -configuration Release build
 """)
@@ -1363,22 +1377,22 @@ mac:
 """)
 
 if buildQt6:
-    stage('qt_6_3_2', """
+    stage('qt_6_2_5', """
 mac:
-    git clone -b v6.3.2 https://code.qt.io/qt/qt5.git qt_6_3_2
-    cd qt_6_3_2
+    git clone -b v6.2.5-lts-lgpl https://code.qt.io/qt/qt5.git qt_6_2_5
+    cd qt_6_2_5
     perl init-repository --module-subset=qtbase,qtimageformats,qtsvg
-depends:patches/qtbase_6.3.2/*.patch
+depends:patches/qtbase_6.2.5/*.patch
     cd qtbase
-
-    find ../../patches/qtbase_6.3.2 -type f -print0 | sort -z | xargs -0 git apply
+    find ../../patches/qtbase_6.2.5 -type f -print0 | sort -z | xargs -0 git apply
     cd ..
+    sed -i.bak 's/tqtc-//' {qtimageformats,qtsvg}/dependencies.yaml
 
     CONFIGURATIONS=-debug
 release:
     CONFIGURATIONS=-debug-and-release
 mac:
-    ./configure -prefix "$USED_PREFIX/Qt-6.3.2" \
+    ./configure -prefix "$USED_PREFIX/Qt-6.2.5" \
         $CONFIGURATIONS \
         -force-debug-info \
         -opensource \
@@ -1403,7 +1417,7 @@ mac:
 stage('tg_owt', """
     git clone https://github.com/desktop-app/tg_owt.git
     cd tg_owt
-    git checkout dcb5069ff7
+    git checkout 592b14d13b
     git submodule init
     git submodule update
 win:

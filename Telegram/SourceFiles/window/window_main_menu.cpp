@@ -857,7 +857,7 @@ void MainMenu::setupMenu() {
 			});
 		}
 
-		if (RabbitSettings::JsonSettings::GetBool("side_menu_my_stories")) {
+		if (RabbitSettings::JsonSettings::GetBool("side_menu_my_stories") {
 			const auto wrap = _menu->add(
 				object_ptr<Ui::SlideWrap<Ui::SettingsButton>>(
 					_menu,
@@ -866,16 +866,19 @@ void MainMenu::setupMenu() {
 						tr::lng_menu_my_stories(),
 						st::mainMenuButton,
 						IconDescriptor{ &st::menuIconStoriesSavedSection })));
+			const auto selfId = controller->session().userPeerId();
 			const auto stories = &controller->session().data().stories();
-			if (stories->archiveCount() > 0) {
+			if (stories->archiveCount(selfId) > 0) {
 				wrap->toggle(true, anim::type::instant);
 			} else {
 				wrap->toggle(false, anim::type::instant);
-				if (!stories->archiveCountKnown()) {
-					stories->archiveLoadMore();
+				if (!stories->archiveCountKnown(selfId)) {
+					stories->archiveLoadMore(selfId);
 					wrap->toggleOn(stories->archiveChanged(
+					) | rpl::filter(
+						rpl::mappers::_1 == selfId
 					) | rpl::map([=] {
-						return stories->archiveCount() > 0;
+						return stories->archiveCount(selfId) > 0;
 					}) | rpl::filter(rpl::mappers::_1) | rpl::take(1));
 				}
 			}
@@ -883,7 +886,7 @@ void MainMenu::setupMenu() {
 				controller->showSection(
 					Info::Stories::Make(controller->session().user()));
 			});
-		}
+		}	
 
 		SetupMenuBots(_menu, controller);
 		

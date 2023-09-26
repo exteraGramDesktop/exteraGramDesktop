@@ -20,6 +20,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "core/launcher.h"
 #include "core/local_url_handlers.h"
 #include "core/update_checker.h"
+#include "core/deadlock_detector.h"
 #include "base/timer.h"
 #include "base/concurrent_timer.h"
 #include "base/invoke_queued.h"
@@ -27,7 +28,6 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "base/qthelp_regex.h"
 #include "ui/ui_utility.h"
 #include "ui/effects/animations.h"
-#include "ui/platform/ui_platform_utility.h"
 
 #include <QtCore/QLockFile>
 #include <QtGui/QSessionManager>
@@ -198,6 +198,13 @@ void Sandbox::launchApplication() {
 		}
 		setupScreenScale();
 
+#ifndef _DEBUG
+		if (Logs::DebugEnabled()) {
+			using DeadlockDetector::PingThread;
+			_deadlockDetector = std::make_unique<PingThread>(this);
+		}
+#endif // !_DEBUG
+
 		_application = std::make_unique<Application>();
 
 		// Ideally this should go to constructor.
@@ -267,6 +274,10 @@ bool Sandbox::event(QEvent *e) {
 		return false;
 	} else if (e->type() == QEvent::Close) {
 		Quit();
+	} else if (e->type() == DeadlockDetector::PingPongEvent::Type()) {
+		postEvent(
+			static_cast<DeadlockDetector::PingPongEvent*>(e)->sender(),
+			new DeadlockDetector::PingPongEvent(this));
 	}
 	return QApplication::event(e);
 }
@@ -581,18 +592,9 @@ void Sandbox::registerEnterFromEventLoop() {
 }
 
 bool Sandbox::notifyOrInvoke(QObject *receiver, QEvent *e) {
-	const auto type = e->type();
-	if (type == base::InvokeQueuedEvent::Type()) {
+	if (e->type() == base::InvokeQueuedEvent::Type()) {
 		static_cast<base::InvokeQueuedEvent*>(e)->invoke();
 		return true;
-	} else if (receiver == this) {
-		if (type == QEvent::ApplicationDeactivate) {
-			if (Ui::Platform::SkipApplicationDeactivateEvent()) {
-				return true;
-			}
-		} else if (type == QEvent::ApplicationActivate) {
-			Ui::Platform::GotApplicationActivateEvent();
-		}
 	}
 	return QApplication::notify(receiver, e);
 }
