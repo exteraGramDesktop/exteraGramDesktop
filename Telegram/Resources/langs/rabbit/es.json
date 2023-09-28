@@ -264,5 +264,6 @@
 	},
 	"rtg_phone_hidden": "Oculto",
 	"rtg_side_menu_elements": "Elementos del menú lateral",
+	"rtg_settings_comma_after_mention": "Agregar coma después de la mención",
 	"dummy_last_string": ""
 }

@@ -8,7 +8,6 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "history/view/history_view_context_menu.h"
 #include "rabbit/rabbit_lang.h"
 #include "rabbit/rabbit_settings.h"
-#include "rabbit/openai/openai.hpp"
 
 #include "api/api_attached_stickers.h"
 #include "api/api_editing.h"

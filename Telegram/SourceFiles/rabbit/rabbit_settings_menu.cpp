@@ -219,6 +219,8 @@ namespace Settings {
 		    ::RabbitSettings::JsonSettings::GetInt("sticker_height"),
 		    updateStickerHeight);
 	    updateStickerHeightLabel(::RabbitSettings::JsonSettings::GetInt("sticker_height"));
+		
+		SettingsMenuJsonSwitch(rtg_settings_comma_after_mention, comma_after_mention);
     }
 
     void Rabbit::SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {

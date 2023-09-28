@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "chat_helpers/field_autocomplete.h"
+#include "rabbit/rabbit_settings.h"
 
 #include "data/data_document.h"
 #include "data/data_document_media.h"
@@ -1221,7 +1222,12 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 	} else if (!_mrows->empty()) {
 		if (index < _mrows->size()) {
 			const auto user = _mrows->at(index).user;
-			_mentionChosen.fire({ user, PrimaryUsername(user), method });
+			_mentionChosen.fire({ 
+				user, 
+				RabbitSettings::JsonSettings::GetBool("comma_after_mention")
+					? PrimaryUsername(user) + ","
+					: PrimaryUsername(user), 
+				method });
 			return true;
 		}
 	} else if (!_hrows->empty()) {
