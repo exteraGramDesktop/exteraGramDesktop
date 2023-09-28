@@ -264,5 +264,6 @@
 	"rtg_phone_hidden": "Ukryte",
 	"rtg_side_menu_elements": "Elementy bocznego menu",
 	"rtg_settings_comma_after_mention": "Dodaj przecinek po wspomnieniu",
+	"rtg_settings_auto_hide_notifications": "Automatycznie ukrywaj powiadomienia",
 	"dummy_last_string": ""
 }

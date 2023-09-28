@@ -264,5 +264,6 @@
 	"rtg_phone_hidden": "مخفي",
 	"rtg_side_menu_elements": "عناصر القائمة الجانبية",
 	"rtg_settings_comma_after_mention": "أضف فاصلة بعد الإشارة",
+	"rtg_settings_auto_hide_notifications": "إخفاء الإشعارات تلقائيًا",
 	"dummy_last_string": ""
 }

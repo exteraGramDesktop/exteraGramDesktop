@@ -238,6 +238,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "show_ids", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	{ "auto_hide_notifications", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	//   Appearance
 	{ "userpic_roundness", {
 		.type = SettingType::IntSetting,

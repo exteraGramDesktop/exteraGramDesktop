@@ -278,5 +278,6 @@
 	"rtg_phone_hidden": "Hidden",
 	"rtg_side_menu_elements": "Sidebar Elements",
 	"rtg_settings_comma_after_mention": "Add comma after mention",
+	"rtg_settings_auto_hide_notifications": "Hide notifications automatically",
 	"dummy_last_string": ""
 }

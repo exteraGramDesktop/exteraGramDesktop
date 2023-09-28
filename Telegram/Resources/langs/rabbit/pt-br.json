@@ -264,5 +264,6 @@
 	"rtg_phone_hidden": "Oculto",
 	"rtg_side_menu_elements": "Elementos do menu lateral",
 	"rtg_settings_comma_after_mention": "Adicionar vírgula após a menção",
+	"rtg_settings_auto_hide_notifications": "Ocultar notificações automaticamente",
 	"dummy_last_string": ""
 }

@@ -265,5 +265,6 @@
 	"rtg_phone_hidden": "隐藏",
 	"rtg_side_menu_elements": "侧边菜单元素",
 	"rtg_settings_comma_after_mention": "在提及后添加逗号",
+	"rtg_settings_auto_hide_notifications": "自动隐藏通知",
 	"dummy_last_string": ""
 }

@@ -264,5 +264,6 @@
 	"rtg_phone_hidden": "Gizli",
 	"rtg_side_menu_elements": "Yan Menü Öğeleri",
 	"rtg_settings_comma_after_mention": "Bahseden sonra virgül ekleyin",
+	"rtg_settings_auto_hide_notifications": "Bildirimleri otomatik olarak gizle",
 	"dummy_last_string": ""
 }

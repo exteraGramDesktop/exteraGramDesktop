@@ -62,6 +62,7 @@ enum class ChangeType {
 	Corner,
 	DemoIsShown,
 	DemoIsHidden,
+	AutoHideEnabled,
 };
 
 } // namespace Window::Notifications

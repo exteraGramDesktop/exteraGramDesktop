@@ -65,6 +65,7 @@ namespace Settings {
 
     	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
     	SettingsMenuJsonSwitch(rtg_settings_chat_id, show_ids);
+		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
     }
 
 	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {

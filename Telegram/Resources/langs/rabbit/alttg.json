@@ -264,5 +264,6 @@
 	"rtg_phone_hidden": "Номер скрыт",
 	"rtg_side_menu_elements": "Элементы бокового меню",
 	"rtg_settings_comma_after_mention": "Добавлять запятую после упоминания",
+	"rtg_settings_auto_hide_notifications": "Скрывать уведомления автоматически",
 	"dummy_last_string": ""
 }

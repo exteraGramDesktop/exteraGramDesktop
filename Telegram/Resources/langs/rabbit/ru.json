@@ -279,5 +279,6 @@
 	"rtg_phone_hidden": "Скрыто",
 	"rtg_side_menu_elements": "Элементы бокового меню",
 	"rtg_settings_comma_after_mention": "Запятая после упоминания",
+	"rtg_settings_auto_hide_notifications": "Скрывать уведомления автоматически",
 	"dummy_last_string": ""
 }
