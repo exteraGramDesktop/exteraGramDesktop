@@ -731,8 +731,11 @@ void Notification::prepareActionsCache() {
 	_buttonsCache = Ui::PixmapFromImage(std::move(actionsCacheImg));
 }
 
-bool Notification::checkLastInput(bool hasReplyingNotifications) {
+bool Notification::checkLastInput(
+		bool hasReplyingNotifications,
+		std::optional<crl::time> lastInputTime) {
 	if (!_waitingForInput) return true;
+
 	if (RabbitSettings::JsonSettings::GetBool("auto_hide_notifications")) {
 		if ((crl::now() - _started > kAutoHideInterval) && !hasReplyingNotifications) {
 			startHiding();
@@ -740,6 +743,11 @@ bool Notification::checkLastInput(bool hasReplyingNotifications) {
 			return true;
 		}
 	}
+
+	using namespace Platform::Notifications;
+	const auto waitForUserInput = WaitForInputForCustom()
+		&& lastInputTime.has_value()
+		&& (*lastInputTime <= _started);
 
 	if (!waitForUserInput) {
 		_waitingForInput = false;
