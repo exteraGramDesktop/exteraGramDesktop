@@ -9,6 +9,8 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 
 #include "platform/platform_file_utilities.h"
 
+#include "platform/linux/linux_xdp_open_with_dialog.h"
+
 namespace Platform {
 namespace File {
 
@@ -28,6 +30,10 @@ inline bool UnsafeShowOpenWithDropdown(const QString &filepath) {
 	return false;
 }
 
+inline bool UnsafeShowOpenWith(const QString &filepath) {
+	return internal::ShowXDPOpenWithDialog(filepath);
+}
+
 inline void UnsafeLaunch(const QString &filepath) {
 	return ::File::internal::UnsafeLaunchDefault(filepath);
 }
@@ -41,6 +47,24 @@ namespace FileDialog {
 
 inline void InitLastPath() {
 	::FileDialog::internal::InitLastPathDefault();
+}
+
+inline bool Get(
+		QPointer<QWidget> parent,
+		QStringList &files,
+		QByteArray &remoteContent,
+		const QString &caption,
+		const QString &filter,
+		::FileDialog::internal::Type type,
+		QString startFile) {
+	return ::FileDialog::internal::GetDefault(
+		parent,
+		files,
+		remoteContent,
+		caption,
+		filter,
+		type,
+		startFile);
 }
 
 } // namespace FileDialog

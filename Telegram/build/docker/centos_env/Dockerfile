@@ -54,7 +54,7 @@ FROM builder AS patches
 RUN git init patches \
 	&& cd patches \
 	&& git remote add origin {{ GIT }}/desktop-app/patches.git \
-	&& git fetch --depth=1 origin 6442ae042bb6d43391747f7413c7a88a6a37c7ef \
+	&& git fetch --depth=1 origin 413a12468bfdd02b9f1372c5c139753b0c5a432e \
 	&& git reset --hard FETCH_HEAD \
 	&& rm -rf .git
 
@@ -767,6 +767,7 @@ RUN git clone -b {{ QT_TAG }} --depth=1 https://code.qt.io/qt/qt5.git qt_{{ QT }
 		-qt-harfbuzz \
 		-qt-pcre \
 		-no-icu \
+		INPUT_forkfd_pidfd=no \
 		-no-feature-xcb-sm \
 		-static \
 		-dbus-runtime \
