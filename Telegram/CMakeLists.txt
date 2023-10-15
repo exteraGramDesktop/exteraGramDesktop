@@ -28,6 +28,7 @@ include(cmake/lib_ffmpeg.cmake)
 include(cmake/lib_stripe.cmake)
 include(cmake/lib_tgvoip.cmake)
 include(cmake/lib_tgcalls.cmake)
+include(cmake/lib_prisma.cmake)
 include(cmake/td_export.cmake)
 include(cmake/td_mtproto.cmake)
 include(cmake/td_lang.cmake)
@@ -1546,6 +1547,7 @@ elseif (APPLE)
     PRE_LINK
         COMMAND mkdir -p $<TARGET_FILE_DIR:Telegram>/../Resources
         COMMAND cp ${CMAKE_BINARY_DIR}/lib_ui.rcc $<TARGET_FILE_DIR:Telegram>/../Resources
+        COMMAND cp ${CMAKE_BINARY_DIR}/lib_spellcheck.rcc $<TARGET_FILE_DIR:Telegram>/../Resources
     )
     if (NOT build_macstore)
         add_custom_command(TARGET Telegram
