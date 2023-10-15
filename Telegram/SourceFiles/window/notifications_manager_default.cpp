@@ -839,7 +839,7 @@ void Notification::paintTitle(Painter &p) {
 		.spoiler = Ui::Text::DefaultSpoilerCache(),
 		.pausedEmoji = On(PowerSaving::kEmojiChat),
 		.pausedSpoiler = On(PowerSaving::kChatSpoiler),
-		.elisionLines = 1,
+		.elisionOneLine = true,
 	});
 }
 
@@ -853,7 +853,7 @@ void Notification::paintText(Painter &p) {
 		.spoiler = Ui::Text::DefaultSpoilerCache(),
 		.pausedEmoji = On(PowerSaving::kEmojiChat),
 		.pausedSpoiler = On(PowerSaving::kChatSpoiler),
-		.elisionLines = _textRect.height() / st::dialogsTextFont->height,
+		.elisionHeight = _textRect.height(),
 	});
 }
 
@@ -933,7 +933,7 @@ void Notification::updateNotifyDisplay() {
 				2 * st::dialogsTextFont->height);
 			const auto text = !_reaction.empty()
 				? (!_author.isEmpty()
-					? Ui::Text::PlainLink(_author).append(' ')
+					? Ui::Text::Colorized(_author).append(' ')
 					: TextWithEntities()
 				).append(Manager::ComposeReactionNotification(
 					_item,
@@ -946,7 +946,7 @@ void Notification::updateNotifyDisplay() {
 					.spoilerLoginCode = options.spoilerLoginCode,
 				}).text
 				: ((!_author.isEmpty()
-						? Ui::Text::PlainLink(_author)
+						? Ui::Text::Colorized(_author)
 						: TextWithEntities()
 					).append(_forwardedCount > 1
 						? ('\n' + tr::lng_forward_messages(
@@ -955,7 +955,7 @@ void Notification::updateNotifyDisplay() {
 							_forwardedCount))
 						: QString()));
 			const auto options = TextParseOptions{
-				(TextParsePlainLinks
+				(TextParseColorized
 					| TextParseMarkdown
 					| (_forwardedCount > 1 ? TextParseMultiline : 0)),
 				0,

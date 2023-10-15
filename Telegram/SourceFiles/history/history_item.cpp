@@ -67,6 +67,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "data/data_web_page.h"
 #include "chat_helpers/stickers_gift_box_pack.h"
 #include "payments/payments_checkout_process.h" // CheckoutProcess::Start.
+#include "spellcheck/spellcheck_highlight_syntax.h"
 #include "styles/style_dialogs.h"
 
 namespace {
@@ -2871,12 +2872,29 @@ void HistoryItem::setText(const TextWithEntities &textWithEntities) {
 		: std::move(textWithEntities));
 }
 
-void HistoryItem::setTextValue(TextWithEntities text) {
+void HistoryItem::setTextValue(TextWithEntities text, bool force) {
+	if (const auto processId = Spellchecker::TryHighlightSyntax(text)) {
+		_flags |= MessageFlag::InHighlightProcess;
+		history()->owner().registerHighlightProcess(processId, this);
+	}
 	const auto had = !_text.empty();
 	_text = std::move(text);
 	RemoveComponents(HistoryMessageTranslation::Bit());
-	if (had) {
+	if (had || force) {
 		history()->owner().requestItemTextRefresh(this);
+	}
+}
+
+bool HistoryItem::inHighlightProcess() const {
+	return _flags & MessageFlag::InHighlightProcess;
+}
+
+void HistoryItem::highlightProcessDone() {
+	Expects(inHighlightProcess());
+
+	_flags &= ~MessageFlag::InHighlightProcess;
+	if (!_text.empty()) {
+		setTextValue(base::take(_text), true);
 	}
 }
 
@@ -2932,9 +2950,7 @@ ItemPreview HistoryItem::toPreview(ToPreviewOptions options) const {
 		// Because larger version is shown exactly to the left of the small.
 		//auto media = _media ? _media->toPreview(options) : ItemPreview();
 		return {
-			.text = Ui::Text::Wrapped(
-				notificationText(),
-				EntityType::PlainLink),
+			.text = Ui::Text::Colorized(notificationText()),
 			//.images = std::move(media.images),
 			//.loadingContext = std::move(media.loadingContext),
 		};
@@ -3011,7 +3027,7 @@ TextWithEntities HistoryItem::inReplyText() const {
 		result = Ui::Text::Mid(result, name.size());
 		TextUtilities::Trim(result);
 	}
-	return Ui::Text::Wrapped(result, EntityType::PlainLink);
+	return Ui::Text::Colorized(result);
 }
 
 const std::vector<ClickHandlerPtr> &HistoryItem::customTextLinks() const {
