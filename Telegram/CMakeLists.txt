@@ -152,6 +152,8 @@ PRIVATE
     api/api_sensitive_content.h
     api/api_single_message_search.cpp
     api/api_single_message_search.h
+    api/api_statistics.cpp
+    api/api_statistics.h
     api/api_text_entities.cpp
     api/api_text_entities.h
     api/api_toggling_media.cpp
@@ -451,6 +453,7 @@ PRIVATE
     data/data_audio_msg_id.h
     data/data_auto_download.cpp
     data/data_auto_download.h
+    data/data_boosts.h
     data/data_bot_app.cpp
     data/data_bot_app.h
     data/data_chat.cpp
@@ -553,6 +556,7 @@ PRIVATE
     data/data_sparse_ids.h
     data/data_sponsored_messages.cpp
     data/data_sponsored_messages.h
+    data/data_statistics.h
     data/data_stories.cpp
     data/data_stories.h
     data/data_stories_ids.cpp
@@ -826,6 +830,10 @@ PRIVATE
     info/info_top_bar.h
     info/info_wrap_widget.cpp
     info/info_wrap_widget.h
+    info/boosts/info_boosts_inner_widget.cpp
+    info/boosts/info_boosts_inner_widget.h
+    info/boosts/info_boosts_widget.cpp
+    info/boosts/info_boosts_widget.h
     info/common_groups/info_common_groups_inner_widget.cpp
     info/common_groups/info_common_groups_inner_widget.h
     info/common_groups/info_common_groups_widget.cpp
@@ -881,6 +889,15 @@ PRIVATE
     info/profile/info_profile_widget.h
     info/settings/info_settings_widget.cpp
     info/settings/info_settings_widget.h
+    info/statistics/info_statistics_common.h
+    info/statistics/info_statistics_inner_widget.cpp
+    info/statistics/info_statistics_inner_widget.h
+    info/statistics/info_statistics_list_controllers.cpp
+    info/statistics/info_statistics_list_controllers.h
+    info/statistics/info_statistics_recent_message.cpp
+    info/statistics/info_statistics_recent_message.h
+    info/statistics/info_statistics_widget.cpp
+    info/statistics/info_statistics_widget.h
     info/stories/info_stories_inner_widget.cpp
     info/stories/info_stories_inner_widget.h
     info/stories/info_stories_provider.cpp

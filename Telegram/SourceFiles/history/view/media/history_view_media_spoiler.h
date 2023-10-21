@@ -10,6 +10,10 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "ui/chat/message_bubble.h"
 #include "ui/effects/animations.h"
 
+namespace Ui {
+class SpoilerAnimation;
+} // namespace Ui
+
 namespace HistoryView {
 
 struct MediaSpoiler {
