@@ -35,6 +35,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include <QtWidgets/QApplication>
 #include <QtGui/QWindow>
 #include <QtGui/QScreen>
+#include <QtCore/QOperatingSystemVersion>
 
 #include <Shobjidl.h>
 #include <shellapi.h>

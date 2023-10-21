@@ -109,7 +109,7 @@ def prepareSources():
   tmppath = rootpath + '/out/Release/tmp.tar'
   print('Preparing source tarball...')
   revision = 'v' + version
-  targetRoot = 'tdesktop-' + version + '-full';
+  targetRoot = 'rtgddesktop-' + version + '-full';
   if not invoke('git archive --prefix=' + targetRoot + '/ -o ' + finalpath + ' ' + revision):
     os.remove(finalpath)
     sys.exit(1)
@@ -163,7 +163,7 @@ if access_token == '':
   sys.exit(1)
 
 print('Version: ' + version_full)
-local_folder = expanduser("~") + '/Projects/backup/tdesktop/' + version_major + '/' + version_full
+local_folder = expanduser("~") + '/Projects/backup/rtgddesktop/' + version_major + '/' + version_full
 
 if stable == 1:
   if os.path.isdir(local_folder + '.beta'):
@@ -181,34 +181,34 @@ local_folder = local_folder + '/'
 files = []
 files.append({
   'local': 'sources',
-  'remote': 'tdesktop-' + version + '-full.tar.gz',
+  'remote': 'rtgdesktop-' + version + '-full.tar.gz',
   'mime': 'application/x-gzip',
   'label': 'Source code (tar.gz, full)',
 })
 files.append({
-  'local': 'tsetup.' + version_full + '.exe',
-  'remote': 'tsetup.' + version_full + '.exe',
+  'local': 'rtgdsetup.' + version_full + '.exe',
+  'remote': 'rtgdsetup.' + version_full + '.exe',
   'backup_folder': 'tsetup',
   'mime': 'application/octet-stream',
   'label': 'Windows 32 bit: Installer',
 })
 files.append({
-  'local': 'tportable.' + version_full + '.zip',
-  'remote': 'tportable.' + version_full + '.zip',
+  'local': 'rtgdportable.' + version_full + '.zip',
+  'remote': 'rtgdportable.' + version_full + '.zip',
   'backup_folder': 'tsetup',
   'mime': 'application/zip',
   'label': 'Windows 32 bit: Portable',
 })
 files.append({
-  'local': 'tsetup-x64.' + version_full + '.exe',
-  'remote': 'tsetup-x64.' + version_full + '.exe',
+  'local': 'rtgdsetup-x64.' + version_full + '.exe',
+  'remote': 'rtgdsetup-x64.' + version_full + '.exe',
   'backup_folder': 'tx64',
   'mime': 'application/octet-stream',
   'label': 'Windows 64 bit: Installer',
 })
 files.append({
-  'local': 'tportable-x64.' + version_full + '.zip',
-  'remote': 'tportable-x64.' + version_full + '.zip',
+  'local': 'rtgdportable-x64.' + version_full + '.zip',
+  'remote': 'rtgdportable-x64.' + version_full + '.zip',
   'backup_folder': 'tx64',
   'mime': 'application/zip',
   'label': 'Windows 64 bit: Portable',
@@ -228,7 +228,7 @@ files.append({
   'label': 'Linux 64 bit: Binary',
 })
 
-r = requests.get(url + 'repos/telegramdesktop/tdesktop/releases/tags/v' + version)
+r = requests.get(url + 'repos/rabbitGramDesktop/rabbitGramDesktop/releases/tags/v' + version)
 if r.status_code == 404:
   print('Release not found, creating.')
   if commit == '':
@@ -260,7 +260,7 @@ if r.status_code == 404:
   print('Changelog: ')
   print(changelog)
 
-  r = requests.post(url + 'repos/telegramdesktop/tdesktop/releases', headers={'Authorization': 'token ' + access_token}, data=json.dumps({
+  r = requests.post(url + 'repos/rabbitGramDesktop/rabbitGramDesktop/releases', headers={'Authorization': 'token ' + access_token}, data=json.dumps({
     'tag_name': 'v' + version,
     'target_commitish': commit,
     'name': 'v ' + version,
@@ -277,7 +277,7 @@ else:
   invoke("git push launchpad {}:beta".format(tagname))
 invoke("git push --tags launchpad")
 
-r = requests.get(url + 'repos/telegramdesktop/tdesktop/releases/tags/v' + version)
+r = requests.get(url + 'repos/rabbitGramDesktop/rabbitGramDesktop/releases/tags/v' + version)
 checkResponseCode(r, 200)
 
 release_data = r.json()
@@ -286,7 +286,7 @@ release_data = r.json()
 release_id = release_data['id']
 print('Release ID: ' + str(release_id))
 
-r = requests.get(url + 'repos/telegramdesktop/tdesktop/releases/' + str(release_id) + '/assets')
+r = requests.get(url + 'repos/rabbitGramDesktop/rabbitGramDesktop/releases/' + str(release_id) + '/assets')
 checkResponseCode(r, 200)
 
 assets = release_data['assets']

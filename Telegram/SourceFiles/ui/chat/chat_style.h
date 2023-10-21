@@ -76,6 +76,8 @@ struct MessageStyle {
 	style::icon historyPollChoiceRight = { Qt::Uninitialized };
 	style::icon historyTranscribeIcon = { Qt::Uninitialized };
 	style::icon historyTranscribeHide = { Qt::Uninitialized };
+	std::unique_ptr<Text::QuotePaintCache> blockquoteCache;
+	std::unique_ptr<Text::QuotePaintCache> preCache;
 
 };
 

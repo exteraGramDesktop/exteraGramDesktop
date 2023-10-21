@@ -15,6 +15,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "styles/style_calls.h"
 
 #include <QtCore/QDateTime>
+#include <QtCore/QLocale>
 
 namespace Calls::Group::Ui {
 

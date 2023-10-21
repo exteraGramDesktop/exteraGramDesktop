@@ -8,6 +8,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "countries/countries_instance.h"
 
 #include "base/qt/qt_common_adapters.h"
+#include "base/qt/qt_string_view.h"
 
 namespace Countries {
 namespace {
