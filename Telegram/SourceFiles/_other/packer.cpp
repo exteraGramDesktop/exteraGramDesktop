@@ -1,9 +1,9 @@
 /*
-This file is part of rabbitGram Desktop,
-the unofficial app based on Telegram Desktop.
+This file is part of Telegram Desktop,
+the official desktop application for the Telegram messaging service.
 
 For license and copyright information please follow this link:
-https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
+https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 */
 #include "packer.h"
 
@@ -12,27 +12,16 @@ quint64 AlphaVersion = 0;
 bool OnlyAlphaKey = false;
 
 const char *PublicKey = "\
------BEGIN RSA PUBLIC KEY-----\n\
-MIGJAoGBAMA4ViQrjkPZ9xj0lrer3r23JvxOnrtE8nI69XLGSr+sRERz9YnUptnU\n\
-BZpkIfKaRcl6XzNJiN28cVwO1Ui5JSa814UAiDHzWUqCaXUiUEQ6NmNTneiGx2sQ\n\
-+9PKKlb8mmr3BB9A45ZNwLT6G9AK3+qkZLHojeSA+m84/a6GP4svAgMBAAE=\n\
------END RSA PUBLIC KEY-----\
-";
-
-const char *PublicBetaKey = "\
------BEGIN RSA PUBLIC KEY-----\n\
-MIGJAoGBALWu9GGs0HED7KG7BM73CFZ6o0xufKBRQsdnq3lwA8nFQEvmdu+g/I1j\n\
-0LQ+0IQO7GW4jAgzF/4+soPDb6uHQeNFrlVx1JS9DZGhhjZ5rf65yg11nTCIHZCG\n\
-w/CVnbwQOw0g5GBwwFV3r0uTTvy44xx8XXxk+Qknu4eBCsmrAFNnAgMBAAE=\n\
------END RSA PUBLIC KEY-----\
+-----BEGIN PUBLIC KEY-----\n\
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCrKNjQNI4dmBvjIORxa67K+rhP\n\
+nLlwMbuSips7h/HPwyreI3IfjJ3HkTmLIyLnKBXWgwBJyY2dXvWnKqjI9JLYA8MX\n\
+KH90ye7e4pkhPlt5CwvsIuw8ruRJIc1wCYGlSlkKZqBkUbHAExFBV8cSiiq3c2dh\n\
+fXuawBGjlj90TY451wIDAQAB\n\
+-----END PUBLIC KEY-----\
 ";
 
 extern const char *PrivateKey;
-extern const char *PrivateBetaKey;
 #include "../../../../DesktopPrivate/packer_private.h" // RSA PRIVATE KEYS for update signing
-#include "../../../../DesktopPrivate/alpha_private.h" // private key for alpha version file generation
-
-QString countAlphaVersionSignature(quint64 version);
 
 // sha1 hash
 typedef unsigned char uchar;
@@ -175,24 +164,7 @@ int main(int argc, char *argv[])
 			version = QString(argv[i + 1]).toInt();
 		} else if (string("-beta") == argv[i]) {
 			BetaChannel = true;
-		} else if (string("-alphakey") == argv[i]) {
-			OnlyAlphaKey = true;
-		} else if (string("-alpha") == argv[i] && i + 1 < argc) {
-			AlphaVersion = QString(argv[i + 1]).toULongLong();
-			if (AlphaVersion > version * 1000ULL && AlphaVersion < (version + 1) * 1000ULL) {
-				BetaChannel = false;
-				AlphaSignature = countAlphaVersionSignature(AlphaVersion);
-				if (AlphaSignature.isEmpty()) {
-					return -1;
-				}
-			} else {
-				cout << "Bad -alpha param value passed, should be for the same version: " << version << ", alpha: " << AlphaVersion << "\n";
-				return -1;
-			}
-		}
-	}
-	if (OnlyAlphaKey) {
-		return writeAlphaKey();
+		} 
 	}
 
 	if (files.isEmpty() || remove.isEmpty() || version <= 1016 || version > 999999999) {
@@ -442,12 +414,7 @@ int main(int argc, char *argv[])
 
 	cout << "Signing..\n";
 	RSA *prKey = [] {
-		const auto bio = makeBIO(
-			const_cast<char*>(
-				(BetaChannel || AlphaVersion)
-					? PrivateBetaKey
-					: PrivateKey),
-			-1);
+		const auto bio = makeBIO(PrivateKey, -1);
 		return PEM_read_bio_RSAPrivateKey(bio.get(), 0, 0, 0);
 	}();
 	if (!prKey) {
@@ -473,12 +440,7 @@ int main(int argc, char *argv[])
 
 	cout << "Checking signature..\n";
 	RSA *pbKey = [] {
-		const auto bio = makeBIO(
-			const_cast<char*>(
-				(BetaChannel || AlphaVersion)
-					? PublicBetaKey
-					: PublicKey),
-			-1);
+		const auto bio = makeBIO(PublicKey, -1);
 		return PEM_read_bio_RSAPublicKey(bio.get(), 0, 0, 0);
 	}();
 	if (!pbKey) {
@@ -513,54 +475,4 @@ int main(int argc, char *argv[])
 	cout << "Update file '" << outName.toUtf8().constData() << "' written successfully!\n";
 
 	return writeAlphaKey();
-}
-
-QString countAlphaVersionSignature(quint64 version) { // duplicated in autoupdater.cpp
-	QByteArray cAlphaPrivateKey(AlphaPrivateKey);
-	if (cAlphaPrivateKey.isEmpty()) {
-		cout << "Error: Trying to count alpha version signature without alpha private key!\n";
-		return QString();
-	}
-
-	QByteArray signedData = (QLatin1String("TelegramBeta_") + QString::number(version, 16).toLower()).toUtf8();
-
-	static const int32 shaSize = 20, keySize = 128;
-
-	uchar sha1Buffer[shaSize];
-	hashSha1(signedData.constData(), signedData.size(), sha1Buffer); // count sha1
-
-	uint32 siglen = 0;
-
-	RSA *prKey = [&] {
-		const auto bio = makeBIO(
-			const_cast<char*>(cAlphaPrivateKey.constData()),
-			-1);
-		return PEM_read_bio_RSAPrivateKey(bio.get(), 0, 0, 0);
-	}();
-	if (!prKey) {
-		cout << "Error: Could not read alpha private key!\n";
-		return QString();
-	}
-	if (RSA_size(prKey) != keySize) {
-		cout << "Error: Bad alpha private key size: " << RSA_size(prKey) << "\n";
-		RSA_free(prKey);
-		return QString();
-	}
-	QByteArray signature;
-	signature.resize(keySize);
-	if (RSA_sign(NID_sha1, (const uchar*)(sha1Buffer), shaSize, (uchar*)(signature.data()), &siglen, prKey) != 1) { // count signature
-		cout << "Error: Counting alpha version signature failed!\n";
-		RSA_free(prKey);
-		return QString();
-	}
-	RSA_free(prKey);
-
-	if (siglen != keySize) {
-		cout << "Error: Bad alpha version signature length: " << siglen << "\n";
-		return QString();
-	}
-
-	signature = signature.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-	signature = signature.replace('-', '8').replace('_', 'B');
-	return QString::fromUtf8(signature.mid(19, 32));
 }
