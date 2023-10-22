@@ -3,7 +3,7 @@
 #define MyAppPublisher "xmdnx"
 #define MyAppVersion "4.10.4"
 #define MyAppURL "https://t.me/rabbitGramDesktop"
-#define ReleasePath "C:\Users\xmdnx\source\repos\exteraGramDesktop\out\Release"
+#define ReleasePath "C:\Users\xmdnx\source\repos\rabbitGramDesktop\out\Release"
 #define MyAppExeName "rabbitGram.exe"
 #define MyAppId "4356CE01-4137-4C55-9F8B-FB4EEBB6EC0C"
 #define CurrentYear GetDateTimeString('yyyy','','')
