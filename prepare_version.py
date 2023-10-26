@@ -7,6 +7,7 @@ from datetime import date
 config = {
     "make_setup": True,               # set True if you want to make setup version
     "make_portable": True,            # set True if you want to make portable version
+    "ota_enabled": True,              # set True if ota enabled
     "repo_path": "",                  # leave it blank if this script located in repo folder
     "version": "",                    # leave it blank to fill with version from SourceFiles/core/version.h and script runtime date
     "tgversion": "",                  # leave it blanl to set it automatically
@@ -40,28 +41,12 @@ def set_iss():
     iss_file = open(config["repo_path"] + "/Telegram/build/setup.iss", "w", encoding="utf-8")
     iss_file.writelines(iss_file_data)
 
-def rename_files():
+def check_files():
     log("# Renaming files...", 1)
 
-    if (not os.path.exists(os.path.join(config["repo_path"] + "/out/Release/", "Telegram.exe"))):
-        log("Telegram.exe does not exist, check if " + config["exe_filename"] + " exist...", 2)
-        if os.path.exists(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"])):
-            log(config["exe_filename"] + " exists, but Telegram.exe not exist. Skipping rename part...", 2)
-            return
-        else:
-            log(config["exe_filename"] + " does not exist too, halt...", 2)
-            exit()
-
-    if os.path.exists(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"] + ".exe")):
-        os.remove(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"] + ".exe"))
-        log(config["exe_filename"] + " removed successfully, renaming", 2)
-    else:
-        log(config["exe_filename"] + " does not exist, renaming", 2)
-
-    old_path = os.path.join(config["repo_path"] + "/out/Release/", "Telegram.exe")
-    new_path = os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"])
-    os.rename(old_path, new_path)
-    log("Renamed Telegram.exe -> " + config["exe_filename"], 2)
+    if not os.path.exists(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"])):
+        log(config["exe_filename"] + " does not exist too, halt...", 2)
+        exit()
 
 def run_iss_build():
     log("Running iscc build... If error occurs, check if iscc.exe path added to PATH", 1)
@@ -78,6 +63,8 @@ def make_portable():
     log("Copying portable files", 2)
     try:
         shutil.copyfile(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"]), os.path.join(config["repo_path"] + "/out/Release/portable", config["exe_filename"]))
+        if config["ota_enabled"]:
+            shutil.copyfile(os.path.join(config["repo_path"] + "/out/Release/", "Updater.exe"), os.path.join(config["repo_path"] + "/out/Release/portable", "Updater.exe"))
         shutil.copytree(config["repo_path"] + "/out/Release/modules", config["repo_path"] + "/out/Release/portable/modules")
         log("Files copied to 'portable' folder", 3)
     except:
