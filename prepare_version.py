@@ -76,7 +76,7 @@ if config["repo_path"] == "":
     set_repo_path()
 if config["version"] == "":
     set_version()
-rename_files()
+check_files()
 if config["make_setup"]:
     set_iss()
     run_iss_build()
