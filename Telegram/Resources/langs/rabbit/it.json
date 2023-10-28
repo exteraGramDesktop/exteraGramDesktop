@@ -265,5 +265,6 @@
 	"rtg_side_menu_elements": "Elementi del menu laterale",
 	"rtg_settings_comma_after_mention": "Aggiungi virgola dopo la menzione",
 	"rtg_settings_auto_hide_notifications": "Nascondi le notifiche automaticamente",
+	"rtg_settings_hide_notifications_after": "Nascondi dopo {seconds} secondi",
 	"dummy_last_string": ""
 }

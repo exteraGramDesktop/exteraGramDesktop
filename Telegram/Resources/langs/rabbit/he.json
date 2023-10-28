@@ -265,5 +265,6 @@
 	"rtg_side_menu_elements": "רכיבי תפריט הצד",
 	"rtg_settings_comma_after_mention": "הוסף פסיק אחרי ההזכרה",
 	"rtg_settings_auto_hide_notifications": "הסתר הודעות באופן אוטומטי",
+	"rtg_settings_hide_notifications_after": "הסתר לאחר {seconds} שניות",
 	"dummy_last_string": ""
 }

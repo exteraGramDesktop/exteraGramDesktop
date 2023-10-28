@@ -266,5 +266,6 @@
 	"rtg_side_menu_elements": "侧边菜单元素",
 	"rtg_settings_comma_after_mention": "在提及后添加逗号",
 	"rtg_settings_auto_hide_notifications": "自动隐藏通知",
+	"rtg_settings_hide_notifications_after": "在 {seconds} 秒后隐藏",
 	"dummy_last_string": ""
 }

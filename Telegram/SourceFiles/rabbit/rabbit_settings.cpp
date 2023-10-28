@@ -241,6 +241,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "auto_hide_notifications", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	{ "hide_notifications_after", {
+		.type = SettingType::IntSetting,
+		.defaultValue = 10,
+		.limitHandler = IntLimit(0, 30, 10), }},
 	//   Appearance
 	{ "userpic_roundness", {
 		.type = SettingType::IntSetting,

@@ -49,7 +49,7 @@ namespace Notifications {
 namespace Default {
 namespace {
 
-constexpr auto kAutoHideInterval = crl::time(10000);
+constexpr auto kAutoHideInterval = crl::time(RabbitSettings::JsonSettings::GetInt("hide_notifications_after") * 1000);
 
 [[nodiscard]] QPoint notificationStartPosition() {
 	const auto corner = Core::App().settings().notificationsCorner();

@@ -66,6 +66,33 @@ namespace Settings {
     	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
     	SettingsMenuJsonSwitch(rtg_settings_chat_id, show_ids);
 		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
+
+		const auto notificationHideTimeLabel = container->add(
+		    object_ptr<Ui::LabelSimple>(
+			    container,
+			    st::settingsAudioVolumeLabel),
+		    st::settingsAudioVolumeLabelPadding);
+	    const auto notificationHideTimeSlider = container->add(
+		    object_ptr<Ui::MediaSlider>(
+			    container,
+			    st::settingsAudioVolumeSlider),
+		    st::settingsAudioVolumeSliderPadding);
+	    const auto updateNotificationHideTimeLabel = [=](int value) {
+		    const auto seconds = QString::number(value);
+		    notificationHideTimeLabel->setText(ktr("rtg_settings_hide_notifications_after", { "seconds", seconds }));
+	    };
+	    const auto updateNotificationHideTime = [=](int value) {
+		    updateNotificationHideTimeLabel(value);
+		    ::RabbitSettings::JsonSettings::Set("hide_notifications_after", value);
+		    ::RabbitSettings::JsonSettings::Write();
+	    };
+	    updateNotificationHideTimeLabelSlider->resize(st::settingsAudioVolumeSlider.seekSize);
+	    updateNotificationHideTimeLabelSlider->setPseudoDiscrete(
+		    31,
+		    [](int val) { return val; },
+		    ::RabbitSettings::JsonSettings::GetInt("hide_notifications_after"),
+		    updateNotificationHideTime);
+	    updateNotificationHideTimeLabel(::RabbitSettings::JsonSettings::GetInt("hide_notifications_after"));
     }
 
 	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {

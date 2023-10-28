@@ -265,5 +265,6 @@
 	"rtg_side_menu_elements": "عناصر منو کناری",
 	"rtg_settings_comma_after_mention": "پس از اشاره کاما اضافه کنید",
 	"rtg_settings_auto_hide_notifications": "مخفی کردن آگاهی‌ها به صورت خودکار",
+	"rtg_settings_hide_notifications_after": "پنهان شدن پس از {seconds} ثانیه",
 	"dummy_last_string": ""
 }

@@ -265,5 +265,6 @@
 	"rtg_side_menu_elements": "Elemente der Seitenleiste",
 	"rtg_settings_comma_after_mention": "Komma nach Erwähnung hinzufügen",
 	"rtg_settings_auto_hide_notifications": "Benachrichtigungen automatisch ausblenden",
+	"rtg_settings_hide_notifications_after": "Verbergen nach {seconds} Sekunden",
 	"dummy_last_string": ""
 }
