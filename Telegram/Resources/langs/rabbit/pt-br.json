@@ -266,5 +266,6 @@
 	"rtg_settings_comma_after_mention": "Adicionar vírgula após a menção",
 	"rtg_settings_auto_hide_notifications": "Ocultar notificações automaticamente",
 	"rtg_settings_hide_notifications_after": "Ocultar após {seconds} segundos",
+	"rtg_general_roundness": "Curvatura Unificada",
 	"dummy_last_string": ""
 }

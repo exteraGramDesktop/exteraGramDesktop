@@ -266,5 +266,6 @@
 	"rtg_settings_comma_after_mention": "Bahseden sonra virgül ekleyin",
 	"rtg_settings_auto_hide_notifications": "Bildirimleri otomatik olarak gizle",
 	"rtg_settings_hide_notifications_after": "{seconds} saniye sonra gizle",
+	"rtg_general_roundness": "Birleşik Yuvarlaklık",
 	"dummy_last_string": ""
 }

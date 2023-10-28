@@ -250,6 +250,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 50,
 		.limitHandler = IntLimit(0, 50, 50), }},
+	{ "general_roundness", {
+		 .type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	//     Side menu elements
 	{ "side_menu_create_group", {
 		.type = SettingType::BoolSetting,

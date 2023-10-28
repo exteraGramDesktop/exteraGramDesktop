@@ -281,5 +281,6 @@
 	"rtg_settings_comma_after_mention": "Запятая после упоминания",
 	"rtg_settings_auto_hide_notifications": "Скрывать уведомления автоматически",
 	"rtg_settings_hide_notifications_after": "Скрывать через {seconds} секунд",
+	"rtg_general_roundness": "Единое закругление",
 	"dummy_last_string": ""
 }

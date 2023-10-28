@@ -61,9 +61,9 @@ void ValidateUserpicCache(
 		view.cached = Images::Round(
 			std::move(view.cached),
 			Images::CornersMask(
-				forum
-				? size * Ui::ForumUserpicRadiusMultiplier() / style::DevicePixelRatio()
-				: size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness")) / 100 / style::DevicePixelRatio()
+				(forum && !RabbitSettings::JsonSettings::GetBool("general_roundness"))
+				? size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 * Ui::ForumUserpicRadiusMultiplier() / style::DevicePixelRatio()
+				: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 / style::DevicePixelRatio()
 			)
 		);
 	} else {

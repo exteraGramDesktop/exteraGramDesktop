@@ -86,8 +86,8 @@ namespace Settings {
 		    ::RabbitSettings::JsonSettings::Set("hide_notifications_after", value);
 		    ::RabbitSettings::JsonSettings::Write();
 	    };
-	    updateNotificationHideTimeLabelSlider->resize(st::settingsAudioVolumeSlider.seekSize);
-	    updateNotificationHideTimeLabelSlider->setPseudoDiscrete(
+	    notificationHideTimeSlider->resize(st::settingsAudioVolumeSlider.seekSize);
+	    notificationHideTimeSlider->setPseudoDiscrete(
 		    31,
 		    [](int val) { return val; },
 		    ::RabbitSettings::JsonSettings::GetInt("hide_notifications_after"),
@@ -124,6 +124,8 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::GetInt("userpic_roundness"),
 			updateUserpicRoundness);
     	updateUserpicRoundnessLabel(::RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
+
+    	SettingsMenuJsonSwitch(rtg_general_roundness, general_roundness);
 
 		AddSubsectionTitle(container, rktr("rtg_side_menu_elements"));
 
