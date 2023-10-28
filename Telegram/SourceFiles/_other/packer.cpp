@@ -13,8 +13,7 @@ bool OnlyAlphaKey = false;
 
 const char *PublicKey = "\
 -----BEGIN PUBLIC KEY-----\n\
-MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAI2p1dyWYOPoNNEaQNukf72fMV5XxW0X\n\
-08Zg9L+HaFCTAgMBAAE=\n\
+MB0wDQYJKoZIhvcNAQEBBQADDAAwCQICAWkCAwEAAQ==\n\
 -----END PUBLIC KEY-----\n\
 ";
 
