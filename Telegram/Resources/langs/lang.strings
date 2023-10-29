@@ -1166,6 +1166,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 "lng_mute_box_title" = "Mute notifications for...";
 
 "lng_preview_loading" = "Getting Link Info...";
+"lng_preview_cant" = "Could not generate preview for this link.";
 
 "lng_profile_settings_section" = "Settings";
 "lng_profile_bot_settings" = "Bot Settings";
@@ -2361,6 +2362,7 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 "lng_saved_messages" = "Saved Messages";
 "lng_saved_short" = "Save";
 "lng_saved_forward_here" = "Forward messages here for quick access";
+"lng_saved_quote_here" = "Quote here to save";
 
 "lng_scheduled_messages" = "Scheduled Messages";
 "lng_scheduled_messages_empty" = "No scheduled messages here yet...";
