@@ -12,9 +12,11 @@ quint64 AlphaVersion = 0;
 bool OnlyAlphaKey = false;
 
 const char *PublicKey = "\
------BEGIN PUBLIC KEY-----\n\
-MB0wDQYJKoZIhvcNAQEBBQADDAAwCQICAWkCAwEAAQ==\n\
------END PUBLIC KEY-----\n\
+-----BEGIN RSA PUBLIC KEY-----\n\
+MIGJAoGBAMdbfVPeoecT9T2mu63VKgF8Jq2QIbElcOU7gudlZYhgolzT0dG0xWwM\n\
+XPb67+1VtEucvML1ZNkT1GNjIHl5uv1hOyQGFaJab8vbq5dypd0HtDp2wyf0FRsf\n\
+CWih9SUwvXam5G3oxyWdgDsYWxcOfag2KPouO5nf9MYx1J0gfyibAgMBAAE=\n\
+-----END RSA PUBLIC KEY-----\n\
 ";
 
 extern const char *PrivateKey;
