@@ -6,7 +6,6 @@ For license and copyright information please follow this link:
 https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "window/notifications_manager_default.h"
-#include "rabbit/rabbit_settings.h"
 
 #include "platform/platform_notifications_manager.h"
 #include "platform/platform_specific.h"
@@ -49,7 +48,7 @@ namespace Notifications {
 namespace Default {
 namespace {
 
-auto kAutoHideInterval = crl::time(RabbitSettings::JsonSettings::GetInt("hide_notifications_after") * 1000);
+auto kAutoHideInterval = crl::time(10000);
 
 [[nodiscard]] QPoint notificationStartPosition() {
 	const auto corner = Core::App().settings().notificationsCorner();
