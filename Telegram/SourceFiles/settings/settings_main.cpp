@@ -327,8 +327,8 @@ void SetupSections(
 		Rabbit::Id(),
 		{ &st::menuIconRabbit });
 
-	AddDivider(container);
 	AddSkip(container);
+	AddDivider(container);
 	
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
