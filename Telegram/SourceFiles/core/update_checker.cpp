@@ -306,12 +306,7 @@ bool UnpackUpdate(const QString &filepath) {
 	}
 
 	RSA *pbKey = [] {
-		const auto bio = MakeBIO(
-			const_cast<char*>(
-				AppBetaVersion
-					? UpdatesPublicBetaKey
-					: UpdatesPublicKey),
-			-1);
+		const auto bio = MakeBIO(UpdatesPublicBetaKey, -1);
 		return PEM_read_bio_RSAPublicKey(bio.get(), 0, 0, 0);
 	}();
 	if (!pbKey) {
