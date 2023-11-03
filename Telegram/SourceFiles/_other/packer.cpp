@@ -16,7 +16,7 @@ const char *PublicKey = "\
 MIGJAoGBAMdbfVPeoecT9T2mu63VKgF8Jq2QIbElcOU7gudlZYhgolzT0dG0xWwM\n\
 XPb67+1VtEucvML1ZNkT1GNjIHl5uv1hOyQGFaJab8vbq5dypd0HtDp2wyf0FRsf\n\
 CWih9SUwvXam5G3oxyWdgDsYWxcOfag2KPouO5nf9MYx1J0gfyibAgMBAAE=\n\
------END RSA PUBLIC KEY-----\n\
+-----END RSA PUBLIC KEY-----\
 ";
 
 extern const char *PrivateKey;
