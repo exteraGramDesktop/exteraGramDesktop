@@ -448,20 +448,6 @@ object_ptr<Ui::RpWidget> DetailsFiller::setupInfo() {
 			phoneLabel->setContextMenuHook(hook);
 		}
 
-		if (::RabbitSettings::JsonSettings::GetBool("show_ids")) {
-			auto idDrawableText = IDValue(
-				user
-			) | rpl::map([](TextWithEntities &&text) {
-				return Ui::Text::Link(text.text);
-			});
-			auto idInfo = addInfoOneLine(
-				(user->isBot()
-					? rktr("rtg_profile_bot_id")
-					: rktr("rtg_profile_user_id")),
-				std::move(idDrawableText),
-				ktr("rtg_profile_copy_id"));
-		}
-
 		auto label = user->isBot()
 			? tr::lng_info_about_label()
 			: tr::lng_info_bio_label();
@@ -572,22 +558,6 @@ object_ptr<Ui::RpWidget> DetailsFiller::setupInfo() {
 			addToLink);
 		linkLine.text->overrideLinkClickHandler(linkCallback);
 		linkLine.subtext->overrideLinkClickHandler(linkCallback);
-
-		if (::RabbitSettings::JsonSettings::GetBool("show_ids")) {
-			auto idDrawableText = IDValue(
-				_peer
-			) | rpl::map([](TextWithEntities &&text) {
-				return Ui::Text::Link(text.text);
-			});
-			auto idInfo = addInfoOneLine(
-				(_peer->isChat()
-					? rktr("rtg_profile_group_id")
-					: _peer->isMegagroup()
-					? rktr("rtg_profile_supergroup_id")
-					: rktr("rtg_profile_channel_id")),
-				std::move(idDrawableText),
-				ktr("rtg_profile_copy_id"));
-		}
 
 		if (const auto channel = _topic ? nullptr : _peer->asChannel()) {
 			auto locationText = LocationValue(

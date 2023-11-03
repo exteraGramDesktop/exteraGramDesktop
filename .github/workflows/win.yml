@@ -152,13 +152,13 @@ jobs:
           -DCMAKE_SYSTEM_VERSION=%SDK%
 
           cd ..\out
-          msbuild -m Telegram.sln /p:Configuration=Release,Platform=${{ matrix.arch }},DebugSymbols=false,DebugType=none
+          msbuild -m Telegram.sln /p:Configuration=Debug,Platform=${{ matrix.arch }},DebugSymbols=false,DebugType=none
 
       - name: Move artifact.
         if: (env.UPLOAD_ARTIFACT == 'true') || ${{ github.ref == 'refs/heads/nightly' }}
         run: |
           mkdir artifact
-          move %TBUILD%\%REPO_NAME%\out\Debug\Telegram.exe artifact/
+          move %TBUILD%\%REPO_NAME%\out\Debug\rabbitGram.exe artifact/
       - uses: actions/upload-artifact@master
         name: Upload artifact.
         if: (env.UPLOAD_ARTIFACT == 'true') || ${{ github.ref == 'refs/heads/nightly' }}

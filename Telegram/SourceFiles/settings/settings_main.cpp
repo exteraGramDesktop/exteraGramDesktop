@@ -326,6 +326,10 @@ void SetupSections(
 		rktr("rtg_settings_rabbit"),
 		Rabbit::Id(),
 		{ &st::menuIconRabbit });
+
+	AddDivider(container);
+	AddSkip(container);
+	
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
 
