@@ -36,6 +36,12 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 #include "styles/style_dialogs.h"
 #include "styles/style_widgets.h"
 
+#include <xxhash.h> // XXH64.
+
+[[nodiscard]] PeerListRowId UniqueRowIdFromString(const QString &d) {
+	return XXH64(d.data(), d.size() * sizeof(ushort), 0);
+}
+
 PaintRoundImageCallback PaintUserpicCallback(
 		not_null<PeerData*> peer,
 		bool respectSavedMessagesChat) {

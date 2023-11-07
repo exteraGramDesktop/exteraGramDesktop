@@ -260,7 +260,11 @@ public:
 		return _widget ? _widget->elementAnimationsPaused() : false;
 	}
 	bool elementHideReply(not_null<const Element*> view) override {
-		return view->isTopicRootReply();
+		if (!view->isTopicRootReply()) {
+			return false;
+		}
+		const auto reply = view->data()->Get<HistoryMessageReply>();
+		return reply && !reply->fields().manualQuote;
 	}
 	bool elementShownUnread(not_null<const Element*> view) override {
 		return view->data()->unread(view->data()->history());
@@ -3084,6 +3088,8 @@ void HistoryInner::recountHistoryGeometry() {
 		accumulate_max(oldHistoryPaddingTop, _botAbout->height);
 	}
 
+	updateBotInfo(false);
+
 	_history->resizeToWidth(_contentWidth);
 	if (_migrated) {
 		_migrated->resizeToWidth(_contentWidth);
@@ -3107,7 +3113,6 @@ void HistoryInner::recountHistoryGeometry() {
 		}
 	}
 
-	updateBotInfo(false);
 	if (const auto view = _botAbout ? _botAbout->view() : nullptr) {
 		_botAbout->height = view->resizeGetHeight(_contentWidth);
 		_botAbout->top = qMin(
