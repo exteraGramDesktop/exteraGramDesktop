@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 */
 #include "ui/controls/send_as_button.h"
+#include "rabbit/rabbit_settings.h"
 
 #include "ui/effects/cross_animation.h"
 #include "ui/painter.h"
@@ -53,7 +54,9 @@ void SendAsButton::paintEvent(QPaintEvent *e) {
 		p.setBrush(_st.activeBg);
 		{
 			PainterHighQualityEnabler hq(p);
-			p.drawEllipse(left, top, _st.size, _st.size);
+			// p.drawEllipse(left, top, _st.size, _st.size);
+			auto radius = _st.size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
+			p.drawRoundedRect(left, top, _st.size, _st.size, radius, radius);
 		}
 
 		CrossAnimation::paint(
