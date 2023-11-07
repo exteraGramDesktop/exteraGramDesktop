@@ -71,7 +71,7 @@ not_null<PeerData*> Widget::peer() const {
 }
 
 bool Widget::showInternal(not_null<ContentMemento*> memento) {
-	return false;
+	return (memento->statisticsPeer() == peer());
 }
 
 rpl::producer<QString> Widget::title() {
@@ -118,4 +118,3 @@ std::shared_ptr<Info::Memento> Make(not_null<PeerData*> peer) {
 }
 
 } // namespace Info::Boosts
-
