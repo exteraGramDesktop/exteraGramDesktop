@@ -518,8 +518,9 @@ rpl::producer<rpl::no_value, QString> Boosts::request() {
 				? (100. * premiumMemberCount / participantCount)
 				: 0;
 
+			const auto slots = data.vmy_boost_slots();
 			_boostStatus.overview = Data::BoostsOverview{
-				.isBoosted = data.is_my_boost(),
+				.mine = slots ? int(slots->v.size()) : 0,
 				.level = std::max(data.vlevel().v, 0),
 				.boostCount = std::max(
 					data.vboosts().v,
@@ -532,6 +533,20 @@ rpl::producer<rpl::no_value, QString> Boosts::request() {
 				.premiumMemberPercentage = premiumMemberPercentage,
 			};
 			_boostStatus.link = qs(data.vboost_url());
+
+			if (data.vprepaid_giveaways()) {
+				_boostStatus.prepaidGiveaway = ranges::views::all(
+					data.vprepaid_giveaways()->v
+				) | ranges::views::transform([](const MTPPrepaidGiveaway &r) {
+					return Data::BoostPrepaidGiveaway{
+						.months = r.data().vmonths().v,
+						.id = r.data().vid().v,
+						.quantity = r.data().vquantity().v,
+						.date = QDateTime::fromSecsSinceEpoch(
+							r.data().vdate().v),
+					};
+				}) | ranges::to_vector;
+			}
 
 			using namespace Data;
 			requestBoosts({ .gifts = false }, [=](BoostsListSlice &&slice) {
@@ -573,6 +588,7 @@ void Boosts::requestBoosts(
 
 		auto list = std::vector<Data::Boost>();
 		list.reserve(data.vboosts().v.size());
+		constexpr auto kMonthsDivider = int(30 * 86400);
 		for (const auto &boost : data.vboosts().v) {
 			const auto &data = boost.data();
 			const auto path = data.vused_gift_slug()
@@ -595,7 +611,8 @@ void Boosts::requestBoosts(
 					? FullMsgId{ _peer->id, data.vgiveaway_msg_id()->v }
 					: FullMsgId(),
 				QDateTime::fromSecsSinceEpoch(data.vdate().v),
-				data.vexpires().v,
+				QDateTime::fromSecsSinceEpoch(data.vexpires().v),
+				(data.vexpires().v - data.vdate().v) / kMonthsDivider,
 				std::move(giftCodeLink),
 				data.vmultiplier().value_or_empty(),
 			});
