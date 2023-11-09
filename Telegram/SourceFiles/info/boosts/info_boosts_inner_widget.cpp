@@ -15,6 +15,8 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "data/data_session.h"
 #include "data/data_user.h"
 #include "info/boosts/create_giveaway_box.h"
+#include "info/boosts/giveaway/boost_badge.h"
+#include "info/boosts/giveaway/giveaway_type_row.h"
 #include "info/boosts/info_boosts_widget.h"
 #include "info/info_controller.h"
 #include "info/profile/info_profile_icon.h"
@@ -25,11 +27,15 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "statistics/widgets/chart_header_widget.h"
 #include "ui/boxes/boost_box.h"
 #include "ui/controls/invite_link_label.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/empty_userpic.h"
+#include "ui/painter.h"
 #include "ui/rect.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/discrete_sliders.h"
 #include "ui/widgets/labels.h"
 #include "ui/wrap/slide_wrap.h"
+#include "styles/style_giveaway.h"
 #include "styles/style_info.h"
 #include "styles/style_statistics.h"
 
@@ -216,7 +222,8 @@ void FillGetBoostsButton(
 		not_null<Ui::VerticalLayout*> content,
 		not_null<Controller*> controller,
 		std::shared_ptr<Ui::Show> show,
-		not_null<PeerData*> peer) {
+		not_null<PeerData*> peer,
+		Fn<void()> reloadOnDone) {
 	if (!Api::PremiumGiftCodeOptions(peer).giveawayGiftsPurchaseAvailable()) {
 		return;
 	}
@@ -229,7 +236,12 @@ void FillGetBoostsButton(
 			tr::lng_boosts_get_boosts(),
 			st));
 	button->setClickedCallback([=] {
-		show->showBox(Box(CreateGiveawayBox, controller, peer));
+		show->showBox(Box(
+			CreateGiveawayBox,
+			controller,
+			peer,
+			reloadOnDone,
+			std::nullopt));
 	});
 	Ui::CreateChild<Info::Profile::FloatingIcon>(
 		button,
@@ -279,21 +291,27 @@ void InnerWidget::fill() {
 	const auto &status = _state;
 	const auto inner = this;
 
+	const auto reloadOnDone = crl::guard(this, [=] {
+		while (Ui::VerticalLayout::count()) {
+			delete Ui::VerticalLayout::widgetAt(0);
+		}
+		load();
+	});
+
 	{
 		auto dividerContent = object_ptr<Ui::VerticalLayout>(inner);
 		Ui::FillBoostLimit(
 			fakeShowed->events(),
-			rpl::single(status.overview.isBoosted),
 			dividerContent.data(),
-			Ui::BoostCounters{
+			rpl::single(Ui::BoostCounters{
 				.level = status.overview.level,
 				.boosts = status.overview.boostCount,
 				.thisLevelBoosts
 					= status.overview.currentLevelBoostCount,
 				.nextLevelBoosts
 					= status.overview.nextLevelBoostCount,
-				.mine = status.overview.isBoosted,
-			},
+				.mine = status.overview.mine,
+			}),
 			st::statisticsLimitsLinePadding);
 		inner->add(object_ptr<Ui::DividerLabel>(
 			inner,
@@ -307,6 +325,49 @@ void InnerWidget::fill() {
 	::Settings::AddDivider(inner);
 	::Settings::AddSkip(inner);
 
+	if (!status.prepaidGiveaway.empty()) {
+		const auto multiplier = Api::PremiumGiftCodeOptions(_peer)
+			.giveawayBoostsPerPremium();
+		::Settings::AddSkip(inner);
+		AddHeader(inner, tr::lng_boosts_prepaid_giveaway_title);
+		::Settings::AddSkip(inner);
+		for (const auto &g : status.prepaidGiveaway) {
+			using namespace Giveaway;
+			const auto button = inner->add(object_ptr<GiveawayTypeRow>(
+				inner,
+				GiveawayTypeRow::Type::Prepaid,
+				g.id,
+				tr::lng_boosts_prepaid_giveaway_quantity(
+					lt_count,
+					rpl::single(g.quantity) | tr::to_count()),
+				tr::lng_boosts_prepaid_giveaway_moths(
+					lt_count,
+					rpl::single(g.months) | tr::to_count()),
+				Info::Statistics::CreateBadge(
+					st::statisticsDetailsBottomCaptionStyle,
+					QString::number(g.quantity * multiplier),
+					st::boostsListBadgeHeight,
+					st::boostsListBadgeTextPadding,
+					st::premiumButtonBg2,
+					st::premiumButtonFg,
+					1.,
+					st::boostsListMiniIconPadding,
+					st::boostsListMiniIcon)));
+			button->setClickedCallback([=] {
+				_controller->uiShow()->showBox(Box(
+					CreateGiveawayBox,
+					_controller,
+					_peer,
+					reloadOnDone,
+					g));
+			});
+		}
+
+		::Settings::AddSkip(inner);
+		::Settings::AddDivider(inner);
+		::Settings::AddSkip(inner);
+	}
+
 	const auto hasBoosts = (status.firstSliceBoosts.multipliedTotal > 0);
 	const auto hasGifts = (status.firstSliceGifts.multipliedTotal > 0);
 	if (hasBoosts || hasGifts) {
@@ -316,15 +377,11 @@ void InnerWidget::fill() {
 			} else if (boost.userId) {
 				const auto user = _peer->owner().user(boost.userId);
 				if (boost.isGift || boost.isGiveaway) {
-					constexpr auto kMonthsDivider = int(30 * 86400);
-					const auto date = TimeId(boost.date.toSecsSinceEpoch());
-					const auto months = (boost.expiresAt - date)
-						/ kMonthsDivider;
 					const auto d = Api::GiftCode{
 						.from = _peer->id,
 						.to = user->id,
-						.date = date,
-						.months = int(months),
+						.date = TimeId(boost.date.toSecsSinceEpoch()),
+						.months = boost.expiresAfterMonths,
 					};
 					_show->showBox(Box(GiftCodePendingBox, _controller, d));
 				} else {
@@ -361,12 +418,25 @@ void InnerWidget::fill() {
 			header->setSubTitle({});
 		}
 
+		class Slider final : public Ui::SettingsSlider {
+		public:
+			using Ui::SettingsSlider::SettingsSlider;
+			void setNaturalWidth(int w) {
+				_naturalWidth = w;
+			}
+			int naturalWidth() const override {
+				return _naturalWidth;
+			}
+
+		private:
+			int _naturalWidth = 0;
+
+		};
+
 		const auto slider = inner->add(
-			object_ptr<Ui::SlideWrap<Ui::SettingsSlider>>(
+			object_ptr<Ui::SlideWrap<Slider>>(
 				inner,
-				object_ptr<Ui::SettingsSlider>(
-					inner,
-					st::defaultTabsSlider)),
+				object_ptr<Slider>(inner, st::defaultTabsSlider)),
 			st::boxRowPadding);
 		slider->toggle(!hasOneTab, anim::type::instant);
 
@@ -375,15 +445,10 @@ void InnerWidget::fill() {
 
 		{
 			const auto &st = st::defaultTabsSlider;
-			const auto sliderWidth = st.labelStyle.font->width(boostsTabText)
+			slider->entity()->setNaturalWidth(0
+				+ st.labelStyle.font->width(boostsTabText)
 				+ st.labelStyle.font->width(giftsTabText)
-				+ rect::m::sum::h(st::boxRowPadding);
-			fakeShowed->events() | rpl::take(1) | rpl::map_to(-1) | rpl::then(
-				slider->entity()->widthValue()
-			) | rpl::distinct_until_changed(
-			) | rpl::start_with_next([=](int) {
-				slider->entity()->resizeToWidth(sliderWidth);
-			}, slider->lifetime());
+				+ rect::m::sum::h(st::boxRowPadding));
 		}
 
 		const auto boostsWrap = inner->add(
@@ -395,7 +460,7 @@ void InnerWidget::fill() {
 				inner,
 				object_ptr<Ui::VerticalLayout>(inner)));
 
-		rpl::single(hasGifts ? 1 : 0) | rpl::then(
+		rpl::single(hasOneTab ? (hasGifts ? 1 : 0) : 0) | rpl::then(
 			slider->entity()->sectionActivated()
 		) | rpl::start_with_next([=](int index) {
 			boostsWrap->toggle(!index, anim::type::instant);
@@ -428,7 +493,7 @@ void InnerWidget::fill() {
 	::Settings::AddSkip(inner);
 	::Settings::AddDividerText(inner, tr::lng_boosts_link_subtext());
 
-	FillGetBoostsButton(inner, _controller, _show, _peer);
+	FillGetBoostsButton(inner, _controller, _show, _peer, reloadOnDone);
 
 	resizeToWidth(width());
 	crl::on_main(this, [=]{ fakeShowed->fire({}); });

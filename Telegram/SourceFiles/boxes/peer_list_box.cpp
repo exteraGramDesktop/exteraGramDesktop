@@ -86,16 +86,6 @@ PeerListContentDelegateShow::PeerListContentDelegateShow(
 : _show(show) {
 }
 
-void PeerListContentDelegateShow::peerListShowBox(
-		object_ptr<Ui::BoxContent> content,
-		Ui::LayerOptions options) {
-	_show->showBox(std::move(content), options);
-}
-
-void PeerListContentDelegateShow::peerListHideLayer() {
-	_show->hideLayer();
-}
-
 auto PeerListContentDelegateShow::peerListUiShow()
 -> std::shared_ptr<Main::SessionShow>{
 	return _show;
@@ -323,16 +313,6 @@ void PeerListBox::peerListSetSearchMode(PeerListSearchMode mode) {
 		_scrollBottomFixed = false;
 		setInnerFocus();
 	}
-}
-
-void PeerListBox::peerListShowBox(
-		object_ptr<Ui::BoxContent> content,
-		Ui::LayerOptions options) {
-	_show->showBox(std::move(content), options);
-}
-
-void PeerListBox::peerListHideLayer() {
-	_show->hideLayer();
 }
 
 std::shared_ptr<Main::SessionShow> PeerListBox::peerListUiShow() {
@@ -1704,9 +1684,19 @@ crl::time PeerListContent::paintRow(
 		return refreshStatusIn;
 	}
 
+	const auto opacity = row->opacity();
 	const auto &bg = selected
 		? _st.item.button.textBgOver
 		: _st.item.button.textBg;
+	if (opacity < 1.) {
+		p.setOpacity(opacity);
+	}
+	const auto guard = gsl::finally([&] {
+		if (opacity < 1.) {
+			p.setOpacity(1.);
+		}
+	});
+
 	p.fillRect(0, 0, outerWidth, _rowHeight, bg);
 	row->paintRipple(p, 0, 0, outerWidth);
 	row->paintUserpic(
