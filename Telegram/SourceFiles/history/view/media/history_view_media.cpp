@@ -419,7 +419,7 @@ Images::CornersMaskRef MediaRoundingMask(
 	const auto &large = Ui::CachedCornersMasks(Radius::BubbleLarge);
 	for (auto i = 0; i != 4; ++i) {
 		switch ((*rounding)[i]) {
-		case Corner::Small: result.p[i] = &small[i]; break;
+		case Corner::None: result.p[i] = &small[i]; break;
 		case Corner::Large: result.p[i] = &large[i]; break;
 		}
 	}
