@@ -9,8 +9,8 @@ https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/LEGAL
 
 #include "core/crash_reports.h"
 #include "core/update_checker.h"
-#include "base/platform/win/base_windows_h.h"
 
+#include <windows.h>
 #include <shellapi.h>
 #include <VersionHelpers.h>
 
