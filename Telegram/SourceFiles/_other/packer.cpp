@@ -1,9 +1,9 @@
 /*
-This file is part of Telegram Desktop,
-the official desktop application for the Telegram messaging service.
+This file is part of rabbitGram Desktop,
+the unofficial app based on Telegram Desktop.
 
 For license and copyright information please follow this link:
-https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "packer.h"
 
@@ -13,9 +13,9 @@ bool OnlyAlphaKey = false;
 
 const char *PublicKey = "\
 -----BEGIN RSA PUBLIC KEY-----\n\
-MIGJAoGBAMdbfVPeoecT9T2mu63VKgF8Jq2QIbElcOU7gudlZYhgolzT0dG0xWwM\n\
-XPb67+1VtEucvML1ZNkT1GNjIHl5uv1hOyQGFaJab8vbq5dypd0HtDp2wyf0FRsf\n\
-CWih9SUwvXam5G3oxyWdgDsYWxcOfag2KPouO5nf9MYx1J0gfyibAgMBAAE=\n\
+MIGJAoGBALpjSYBX0dSMGUFlF4RIQv6nF7COnwAGXqeBuO+hmt0F6gyoeIAv9P6J\n\
+u3m9VMzvmzFGbNPqcI37HM7EXtbHo57FlNpbx86CVwFkbiwehrPdtiQiPjr1U5W3\n\
+kc4EPJ1/MvVPDyFG8uETvUP5y95KodxCjI4Ck5zg9Tc16A4kpDMvAgMBAAE=\n\
 -----END RSA PUBLIC KEY-----\
 ";
 
