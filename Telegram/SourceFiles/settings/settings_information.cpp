@@ -9,8 +9,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/rabbit_settings.h"
 #include "rabbit/rabbit_lang.h"
 
-#include "editor/photo_editor_layer_widget.h"
-#include "settings/settings_common.h"
 #include "ui/wrap/vertical_layout.h"
 #include "ui/wrap/vertical_layout_reorder.h"
 #include "ui/wrap/padding_wrap.h"
@@ -26,6 +24,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/delayed_activation.h"
 #include "ui/painter.h"
+#include "ui/vertical_list.h"
 #include "ui/unread_badge_paint.h"
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -51,7 +50,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "apiwrap.h"
 #include "api/api_peer_photo.h"
 #include "api/api_user_names.h"
-#include "core/file_utilities.h"
 #include "base/call_delayed.h"
 #include "base/options.h"
 #include "base/unixtime.h"
@@ -64,7 +62,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "styles/style_window.h"
 
 #include <QtGui/QGuiApplication>
-#include <QtGui/QClipboard>
 #include <QtCore/QBuffer>
 
 namespace Settings {
@@ -364,7 +361,7 @@ void SetupRows(
 		not_null<UserData*> self) {
 	const auto session = &self->session();
 
-	AddSkip(container);
+	Ui::AddSkip(container);
 
 	AddRow(
 		container,
@@ -432,8 +429,8 @@ void SetupRows(
 		},
 		{ &st::menuIconUsername });
 
-	AddSkip(container);
-	AddDividerText(container, tr::lng_settings_username_about());
+	Ui::AddSkip(container);
+	Ui::AddDividerText(container, tr::lng_settings_username_about());
 }
 
 void SetupBio(
@@ -553,13 +550,13 @@ void SetupBio(
 		&self->session());
 	updated();
 
-	AddDividerText(container, tr::lng_settings_about_bio());
+	Ui::AddDividerText(container, tr::lng_settings_about_bio());
 }
 
 void SetupAccountsWrap(
 		not_null<Ui::VerticalLayout*> container,
 		not_null<Window::SessionController*> controller) {
-	AddSkip(container);
+	Ui::AddSkip(container);
 
 	SetupAccounts(container, controller);
 }
@@ -783,7 +780,7 @@ not_null<Ui::SlideWrap<Ui::SettingsButton>*> AccountsList::setupAdd() {
 	const auto result = _outer->add(
 		object_ptr<Ui::SlideWrap<Ui::SettingsButton>>(
 			_outer.get(),
-			CreateButton(
+			CreateButtonWithIcon(
 				_outer.get(),
 				tr::lng_menu_add_account(),
 				st::mainMenuAddAccountButton,

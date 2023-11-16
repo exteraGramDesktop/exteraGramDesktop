@@ -7,6 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "boxes/url_auth_box.h"
 
+#include "boxes/abstract_box.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "history/history_item_components.h"

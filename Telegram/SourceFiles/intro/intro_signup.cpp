@@ -7,6 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "intro/intro_signup.h"
 
+#include "boxes/abstract_box.h"
 #include "intro/intro_widget.h"
 #include "core/file_utilities.h"
 #include "ui/boxes/confirm_box.h"

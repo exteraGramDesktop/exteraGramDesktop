@@ -1285,8 +1285,8 @@ PRIVATE
     settings/settings_calls.h
     settings/settings_codes.cpp
     settings/settings_codes.h
-    settings/settings_common.cpp
-    settings/settings_common.h
+    settings/settings_common_session.cpp
+    settings/settings_common_session.h
     settings/settings_experimental.cpp
     settings/settings_experimental.h
     settings/settings_folders.cpp

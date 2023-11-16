@@ -9,7 +9,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "ui/rp_widget.h"
 #include "ui/effects/animations.h"
-#include "boxes/abstract_box.h"
+#include "ui/layers/box_content.h"
 #include "base/bytes.h"
 
 namespace Ui {

@@ -9,7 +9,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "base/timer.h"
 #include "base/object_ptr.h"
-#include "core/core_settings.h"
+#include "core/core_settings_proxy.h"
 #include "mtproto/connection_abstract.h"
 #include "mtproto/mtproto_proxy_data.h"
 
