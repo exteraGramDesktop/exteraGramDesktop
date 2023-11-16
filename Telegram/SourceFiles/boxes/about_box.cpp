@@ -51,7 +51,7 @@ rpl::producer<TextWithEntities> Text2() {
 rpl::producer<TextWithEntities> Text3() {
 	return rktre("rtg_about_text3", {
 		"channel_link",
-		Ui::Text::Link(ktr("rtg_about_text3_channel"), "https://t.me/rabbitGramDesktop")
+  		Ui::Text::Link(ktr("rtg_about_text3_channel"), "https://t.me/rabbitGramUpdates")
 	}, {
 		"faq_link",
 		Ui::Text::Link(tr::lng_about_text3_faq(tr::now), telegramFaqLink())

@@ -717,7 +717,7 @@ void CheckReactionNotificationSchedule(
 }
 
 [[nodiscard]] TextWithEntities UnsupportedMessageText() {
-	const auto siteLink = u"https://t.me/rabbitGramDesktop/7"_q;
+	const auto siteLink = u"https://t.me/rabbitGramUpdates"_q;
 	auto result = TextWithEntities{
 		ktr("rtg_message_unsupported", { "link", siteLink })
 	};

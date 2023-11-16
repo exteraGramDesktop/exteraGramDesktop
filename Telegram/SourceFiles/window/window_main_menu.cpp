@@ -568,7 +568,7 @@ MainMenu::MainMenu(
 
 	_telegram->setMarkedText(Ui::Text::Link(
 		u"rabbitGram Desktop"_q,
-		u"https://t.me/rabbitGramDesktop"_q));
+		u"https://t.me/rabbitGramUpdates"_q));
 	_telegram->setLinksTrusted();
 	_version->setMarkedText(
 		Ui::Text::Link(
