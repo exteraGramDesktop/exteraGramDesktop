@@ -8,6 +8,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "boxes/send_files_box.h"
 
 #include "lang/lang_keys.h"
+#include "storage/localimageloader.h"
 #include "storage/localstorage.h"
 #include "storage/storage_media_prepare.h"
 #include "mainwidget.h"

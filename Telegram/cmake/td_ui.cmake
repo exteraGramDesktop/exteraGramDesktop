@@ -169,6 +169,9 @@ PRIVATE
     platform/mac/file_bookmark_mac.mm
     platform/platform_file_bookmark.h
 
+    settings/settings_common.cpp
+    settings/settings_common.h
+
     statistics/chart_lines_filter_controller.cpp
     statistics/chart_lines_filter_controller.h
     statistics/chart_rulers_data.cpp
@@ -368,6 +371,8 @@ PRIVATE
     ui/grouped_layout.h
     ui/power_saving.cpp
     ui/power_saving.h
+    ui/vertical_list.cpp
+    ui/vertical_list.h
     ui/unread_badge_paint.cpp
     ui/unread_badge_paint.h
     ui/userpic_view.cpp

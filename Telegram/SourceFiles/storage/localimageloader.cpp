@@ -25,6 +25,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "lottie/lottie_animation.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "boxes/abstract_box.h"
 #include "boxes/send_files_box.h"
 #include "boxes/premium_limits_box.h"
 #include "ui/boxes/confirm_box.h"

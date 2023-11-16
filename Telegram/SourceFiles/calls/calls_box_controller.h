@@ -9,6 +9,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "boxes/peer_list_box.h"
 #include "ui/layers/generic_box.h"
+#include "mtproto/sender.h"
 
 namespace Window {
 class SessionController;

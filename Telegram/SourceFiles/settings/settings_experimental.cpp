@@ -12,6 +12,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/wrap/slide_wrap.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
+#include "ui/vertical_list.h"
 #include "ui/gl/gl_detection.h"
 #include "ui/chat/chat_style_radius.h"
 #include "base/options.h"
@@ -50,13 +51,13 @@ void AddOption(
 		option.defaultValue()
 	) | rpl::start_to_stream(*toggles, lifetime);
 
-	const auto button = AddButton(
+	const auto button = container->add(object_ptr<Button>(
 		container,
 		rpl::single(name),
 		(option.relevant()
 			? st::settingsButtonNoIcon
 			: st::settingsOptionDisabled)
-	)->toggleOn(toggles->events_starting_with(option.value()));
+	))->toggleOn(toggles->events_starting_with(option.value()));
 
 	const auto restarter = (option.relevant() && option.restartRequired())
 		? button->lifetime().make_state<base::Timer>()
@@ -87,23 +88,23 @@ void AddOption(
 
 	const auto &description = option.description();
 	if (!description.isEmpty()) {
-		AddSkip(container, st::settingsCheckboxesSkip);
-		AddDividerText(container, rpl::single(description));
-		AddSkip(container, st::settingsCheckboxesSkip);
+		Ui::AddSkip(container, st::settingsCheckboxesSkip);
+		Ui::AddDividerText(container, rpl::single(description));
+		Ui::AddSkip(container, st::settingsCheckboxesSkip);
 	}
 }
 
 void SetupExperimental(
 		not_null<Window::Controller*> window,
 		not_null<Ui::VerticalLayout*> container) {
-	AddSkip(container, st::settingsCheckboxesSkip);
+	Ui::AddSkip(container, st::settingsCheckboxesSkip);
 
 	container->add(
 		object_ptr<Ui::FlatLabel>(
 			container,
 			tr::lng_settings_experimental_about(),
 			st::boxLabel),
-		st::settingsDividerLabelPadding);
+		st::defaultBoxDividerLabelPadding);
 
 	auto reset = (Button*)nullptr;
 	if (base::options::changed()) {
@@ -112,21 +113,21 @@ void SetupExperimental(
 				container,
 				object_ptr<Ui::VerticalLayout>(container)));
 		const auto inner = wrap->entity();
-		AddDivider(inner);
-		AddSkip(inner, st::settingsCheckboxesSkip);
-		reset = AddButton(
+		Ui::AddDivider(inner);
+		Ui::AddSkip(inner, st::settingsCheckboxesSkip);
+		reset = inner->add(object_ptr<Button>(
 			inner,
 			tr::lng_settings_experimental_restore(),
-			st::settingsButtonNoIcon);
+			st::settingsButtonNoIcon));
 		reset->addClickHandler([=] {
 			base::options::reset();
 			wrap->hide(anim::type::normal);
 		});
-		AddSkip(inner, st::settingsCheckboxesSkip);
+		Ui::AddSkip(inner, st::settingsCheckboxesSkip);
 	}
 
-	AddDivider(container);
-	AddSkip(container, st::settingsCheckboxesSkip);
+	Ui::AddDivider(container);
+	Ui::AddSkip(container, st::settingsCheckboxesSkip);
 
 	const auto addToggle = [&](const char name[]) {
 		AddOption(

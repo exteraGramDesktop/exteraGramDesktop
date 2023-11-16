@@ -29,6 +29,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_document_resolver.h"
 #include "main/main_account.h" // Account::local.
 #include "main/main_domain.h" // Domain::activeSessionValue.
+#include "lang/lang_keys.h"
 #include "ui/chat/chat_theme.h"
 #include "ui/image/image.h"
 #include "ui/style/style_palette_colorizer.h"

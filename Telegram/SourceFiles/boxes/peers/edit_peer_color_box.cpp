@@ -37,6 +37,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/text/text_utilities.h"
 #include "ui/widgets/buttons.h"
 #include "ui/painter.h"
+#include "ui/vertical_list.h"
 #include "window/themes/window_theme.h"
 #include "window/section_widget.h"
 #include "window/window_session_controller.h"
@@ -661,11 +662,10 @@ int ColorSelector::resizeGetHeight(int newWidth) {
 	const auto st = parent->lifetime().make_state<style::SettingsButton>(
 		basicSt);
 	st->padding.setRight(rightPadding);
-	auto result = CreateButton(
+	auto result = object_ptr<Ui::SettingsButton>(
 		parent,
 		tr::lng_settings_color_emoji(),
-		*st,
-		{});
+		*st);
 	const auto raw = result.data();
 
 	const auto right = Ui::CreateChild<Ui::RpWidget>(raw);
@@ -812,11 +812,11 @@ void EditPeerColorBox(
 		{ margin, skip, margin, skip });
 
 	const auto container = box->verticalLayout();
-	AddDividerText(container, peer->isSelf()
+	Ui::AddDividerText(container, peer->isSelf()
 		? tr::lng_settings_color_about()
 		: tr::lng_settings_color_about_channel());
 
-	AddSkip(container, st::settingsColorSampleSkip);
+	Ui::AddSkip(container, st::settingsColorSampleSkip);
 
 	container->add(CreateEmojiIconButton(
 		container,
@@ -826,8 +826,8 @@ void EditPeerColorBox(
 		state->emojiId.value(),
 		[=](DocumentId id) { state->emojiId = id; }));
 
-	AddSkip(container, st::settingsColorSampleSkip);
-	AddDividerText(container, peer->isSelf()
+	Ui::AddSkip(container, st::settingsColorSampleSkip);
+	Ui::AddDividerText(container, peer->isSelf()
 		? tr::lng_settings_color_emoji_about()
 		: tr::lng_settings_color_emoji_about_channel());
 
@@ -853,7 +853,7 @@ void AddPeerColorButton(
 		not_null<Ui::VerticalLayout*> container,
 		std::shared_ptr<ChatHelpers::Show> show,
 		not_null<PeerData*> peer) {
-	const auto button = AddButton(
+	const auto button = AddButtonWithIcon(
 		container,
 		(peer->isSelf()
 			? tr::lng_settings_theme_name_color()

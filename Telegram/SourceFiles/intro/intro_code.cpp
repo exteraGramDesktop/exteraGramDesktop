@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "lang/lang_keys.h"
 #include "intro/intro_signup.h"
 #include "intro/intro_password_check.h"
+#include "boxes/abstract_box.h"
 #include "core/file_utilities.h"
 #include "core/update_checker.h"
 #include "ui/widgets/buttons.h"

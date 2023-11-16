@@ -7,7 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
-#include "settings/settings_common.h"
+#include "settings/settings_common_session.h"
 #include "ui/effects/animations.h"
 #include "base/timer.h"
 
