@@ -18,6 +18,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "ui/widgets/checkbox.h"
+#include "ui/vertical_list.h"
 #include "boxes/connection_box.h"
 #include "platform/platform_specific.h"
 #include "window/window_session_controller.h"
@@ -27,16 +28,17 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_session.h"
 #include "main/main_session.h"
 #include "styles/style_settings.h"
+#include "styles/style_layers.h"
 #include "styles/style_menu_icons.h"
 #include "apiwrap.h"
 #include "api/api_blocked_peers.h"
 #include "ui/widgets/continuous_sliders.h"
 
-#define SettingsMenuJsonSwitch(LangKey, Option) AddButton( \
+#define SettingsMenuJsonSwitch(LangKey, Option) container->add(object_ptr<Button>( \
 	container, \
 	rktr(#LangKey), \
 	st::settingsButtonNoIcon \
-)->toggleOn( \
+))->toggleOn( \
 	rpl::single(::RabbitSettings::JsonSettings::GetBool(#Option)) \
 )->toggledValue( \
 ) | rpl::filter([](bool enabled) { \
@@ -61,14 +63,14 @@ namespace Settings {
 
 	void Rabbit::SetupGeneral(not_null<Ui::VerticalLayout *> container)
     {
-	    AddSubsectionTitle(container, rktr("rtg_settings_general"));
+	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_general"));
 
     	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
 		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
     }
 
 	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
-	    AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
+	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
 
     	const auto userpicRoundnessLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
@@ -101,7 +103,7 @@ namespace Settings {
 
 		AddSubsectionTitle(container, rktr("rtg_side_menu_elements"));
 
-		AddButton(
+		AddButtonWithIcon(
 			container,
 			tr::lng_create_group_title(),
 			st::settingsButton,
@@ -116,7 +118,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-		AddButton(
+        AddButtonWithIcon(
 			container,
 			tr::lng_create_channel_title(),
 			st::settingsButton,
@@ -131,7 +133,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-		AddButton(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_my_stories(),
 			st::settingsButton,
@@ -146,7 +148,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-		AddButton(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_contacts(),
 			st::settingsButton,
@@ -161,7 +163,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-		AddButton(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_calls(),
 			st::settingsButton,
@@ -176,7 +178,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-		AddButton(
+        AddButtonWithIcon(
 			container,
 			tr::lng_saved_messages(),
 			st::settingsButton,
@@ -193,7 +195,7 @@ namespace Settings {
     }
 
     void Rabbit::SetupChats(not_null<Ui::VerticalLayout *> container) {
-        AddSubsectionTitle(container, rktr("rtg_settings_chats"));
+        Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
     	
         const auto stickerHeightLabel = container->add(
 		    object_ptr<Ui::LabelSimple>(
@@ -226,13 +228,13 @@ namespace Settings {
     }
 
     void Rabbit::SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
-		AddSkip(container);
+		Ui::AddSkip(container);
     	SetupGeneral(container);
 
-    	AddSkip(container);
+    	Ui::AddSkip(container);
     	SetupAppearance(container);
 
-    	AddSkip(container);
+    	Ui::AddSkip(container);
         SetupChats(container);
     }
 
