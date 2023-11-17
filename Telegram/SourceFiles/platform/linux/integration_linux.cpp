@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "platform/platform_integration.h"
 #include "base/platform/base_platform_info.h"
 #include "base/platform/linux/base_linux_xdp_utilities.h"
+#include "window/notifications_manager.h"
 #include "core/sandbox.h"
 #include "core/application.h"
 #include "core/core_settings.h"
