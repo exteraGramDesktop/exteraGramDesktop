@@ -103,7 +103,7 @@ namespace Settings {
 
 		AddSubsectionTitle(container, rktr("rtg_side_menu_elements"));
 
-		AddButtonWtihIcon(
+		AddButtonWithIcon(
 			container,
 			tr::lng_create_group_title(),
 			st::settingsButton,
@@ -118,7 +118,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-        AddButtonWtihIcon(
+        AddButtonWithIcon(
 			container,
 			tr::lng_create_channel_title(),
 			st::settingsButton,
@@ -133,7 +133,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-        AddButtonWtihIcon(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_my_stories(),
 			st::settingsButton,
@@ -148,7 +148,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-        AddButtonWtihIcon(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_contacts(),
 			st::settingsButton,
@@ -163,7 +163,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-        AddButtonWtihIcon(
+        AddButtonWithIcon(
 			container,
 			tr::lng_menu_calls(),
 			st::settingsButton,
@@ -178,7 +178,7 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
 
-        AddButtonWtihIcon(
+        AddButtonWithIcon(
 			container,
 			tr::lng_saved_messages(),
 			st::settingsButton,

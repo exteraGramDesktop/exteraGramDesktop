@@ -11,7 +11,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/rabbit_settings.h"
 #include "rabbit/rabbit_lang.h"
 
-#include "settings/settings_common.h"
 #include "settings/settings_codes.h"
 #include "settings/settings_chat.h"
 #include "settings/settings_information.h"
@@ -37,6 +36,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
+#include "ui/vertical_list.h"
 #include "info/profile/info_profile_badge.h"
 #include "info/profile/info_profile_emoji_status_panel.h"
 #include "data/data_user.h"
@@ -328,8 +328,8 @@ void SetupSections(
 		Rabbit::Id(),
 		{ &st::menuIconRabbit });
 
-	AddSkip(container);
-	AddDivider(container);
+	Ui::AddSkip(container);
+	Ui::AddDivider(container);
 	
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
