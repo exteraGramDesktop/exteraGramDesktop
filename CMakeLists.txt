@@ -1,8 +1,8 @@
-# This file is part of Telegram Desktop,
-# the official desktop application for the Telegram messaging service.
+# This file is part of rabbitGram Desktop,
+# the unofficial app based on Telegram Desktop.
 #
 # For license and copyright information please follow this link:
-# https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+# https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 if (APPLE)
     # target_precompile_headers with COMPILE_LANGUAGE restriction.
@@ -29,7 +29,7 @@ endif()
 project(Telegram
     LANGUAGES ${project_langs}
     VERSION ${desktop_app_version_cmake}
-    DESCRIPTION "Official Telegram Desktop messenger"
+    DESCRIPTION "rabbitGram Desktop messenger"
     HOMEPAGE_URL "https://desktop.telegram.org"
 )
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Telegram)
