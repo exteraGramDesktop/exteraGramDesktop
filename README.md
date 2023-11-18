@@ -9,20 +9,17 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 ## Features
 
 * Sticker size setting
+* Userpic corner radius
+* Auto-hide notifications
+* Side menu editor
 * Hide phone number in profile
 * Show user ID in profile
-
-## Exclusive themes
-
-You can add exclusive themes by these links: [Light][etg_light_theme] and [Dark][etg_dark_theme]
-
-Themes repo avaliable [here][etg_themes_repo]
 
 ## Supported systems
 
 The latest version is available for
 
-* Windows 7 and above (x64/x32)
+* Windows 7 and above (x64)
 
 You can build rabbitGram Desktop yourself using [build instructions][build_instructions]
 
@@ -55,15 +52,15 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 ## Build instructions
 
 * Windows [(32-bit)][win32] [(64-bit)][win64]
+* [macOS][macos]
 * [GNU/Linux using Docker][linux]
 
 [//]: # (LINKS)
 [telegram]: https://telegram.org
 [license]: LICENSE
-[etg_light_theme]: http://t.me/addtheme/exteraLightTheme
-[etg_dark_theme]: http://t.me/addtheme/exteraDarkTheme
 [etg_themes_repo]: https://github.com/xmdnx/exteraThemes/
 [win32]: docs/building-win.md
 [win64]: docs/building-win-x64.md
 [linux]: docs/building-linux.md
+[macos]: docs/building-mac.md
 [build_instructions]: https://github.com/rabbitGramDesktop/rabbitGramDesktop#build-instructions
