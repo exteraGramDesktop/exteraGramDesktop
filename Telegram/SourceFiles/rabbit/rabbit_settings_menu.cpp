@@ -232,9 +232,13 @@ namespace Settings {
     	SetupGeneral(container);
 
     	Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
     	SetupAppearance(container);
 
     	Ui::AddSkip(container);
+		Ui::AddDivider(container);
+        Ui::AddSkip(container);
         SetupChats(container);
     }
 
