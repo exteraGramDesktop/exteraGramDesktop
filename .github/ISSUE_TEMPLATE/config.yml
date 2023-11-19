@@ -5,7 +5,7 @@ contact_links:
     about: Any bug report or feature request affecting more than only rabbitGram Desktop.
   - name: Issue of other client
     url: https://bugs.telegram.org
-    about: Any bug report or feature request not about Telegram Desktop.
+    about: Any bug report or feature request not about rabbitGram Desktop.
   - name: Question
     url: https://t.me/rabbitGramDesktop
     about: Ask a question.
