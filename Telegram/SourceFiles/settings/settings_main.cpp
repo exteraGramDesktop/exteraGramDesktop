@@ -7,9 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_main.h"
 
-#include "rabbit/rabbit_settings_menu.h"
-#include "rabbit/rabbit_settings.h"
-#include "rabbit/rabbit_lang.h"
+#include "rabbit/settings_menu/rabbit_settings_menu.h"
+#include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "settings/settings_codes.h"
 #include "settings/settings_chat.h"

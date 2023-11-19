@@ -18,7 +18,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/empty_userpic.h"
 #include "ui/painter.h"
 #include "apiwrap.h" // requestFullPeer.
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "styles/style_calls.h"
 
 namespace Calls {

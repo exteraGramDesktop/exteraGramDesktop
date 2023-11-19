@@ -7,9 +7,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include <ui/boxes/single_choice_box.h>
 
-#include "rabbit/rabbit_settings.h"
-#include "rabbit/rabbit_lang.h"
-#include "rabbit/rabbit_settings_menu.h"
+#include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings_menu/rabbit_settings_menu.h"
 #include "lang_auto.h"
 #include "mainwindow.h"
 #include "settings/settings_common.h"
