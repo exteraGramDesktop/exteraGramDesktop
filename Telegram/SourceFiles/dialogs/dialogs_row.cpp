@@ -29,7 +29,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "history/history_item.h"
 #include "lang/lang_keys.h"
 #include "base/unixtime.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "styles/style_dialogs.h"
 
 namespace Dialogs {

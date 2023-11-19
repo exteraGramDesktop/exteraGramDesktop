@@ -7,7 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/empty_userpic.h"
 
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "ui/emoji_config.h"
 #include "ui/chat/chat_style.h"
 #include "ui/effects/animation_value.h"

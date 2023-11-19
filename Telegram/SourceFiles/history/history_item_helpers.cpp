@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_item_helpers.h"
-#include "rabbit/rabbit_lang.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "api/api_text_entities.h"
 #include "calls/calls_instance.h"

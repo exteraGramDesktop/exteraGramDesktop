@@ -33,7 +33,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "main/main_session.h"
 #include "apiwrap.h"
 #include "api/api_polls.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "styles/style_chat.h"
 #include "styles/style_widgets.h"
 #include "styles/style_window.h"
