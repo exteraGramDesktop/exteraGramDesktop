@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "platform/win/tray_win.h"
 
+#include "rabbit/ui/rabbit_assets.h"
+
 #include "base/invoke_queued.h"
 #include "base/qt_signal_producer.h"
 #include "core/application.h"
@@ -116,6 +118,14 @@ constexpr auto kTooltipDelay = crl::time(10000);
 	static auto ScaledLogoNoMargin = base::flat_map<int, QImage>();
 	static auto ScaledLogoDark = base::flat_map<int, QImage>();
 	static auto ScaledLogoLight = base::flat_map<int, QImage>();
+    static auto lastUsedIcon = currentAppLogoName();
+
+    if (lastUsedIcon != currentAppLogoName()) {
+        ScaledLogo = base::flat_map<int, QImage>();
+        ScaledLogoNoMargin = base::flat_map<int, QImage>();
+        ScaledLogoDark = base::flat_map<int, QImage>();
+        ScaledLogoLight = base::flat_map<int, QImage>();
+    }
 
 	const auto darkMode = IsDarkTaskbar();
 	auto &scaled = (monochrome && darkMode)

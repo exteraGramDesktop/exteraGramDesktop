@@ -7,6 +7,14 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
-constexpr auto AppRabbitVersion = 4011008;
-constexpr auto AppRabbitVersionStr = "4.11.8";
-constexpr auto AppRabbitBetaVersion = false;
+#include "ui/rp_widget.h"
+
+class IconPicker : public Ui::RpWidget
+{
+public:
+  IconPicker(QWidget *parent);
+
+protected:
+  void paintEvent(QPaintEvent *e) override;
+  void mousePressEvent(QMouseEvent *e) override;
+};

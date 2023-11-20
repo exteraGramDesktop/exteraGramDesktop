@@ -10,7 +10,7 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 
 * Sticker size setting
 * Userpic corner radius
-* Auto-hide notifications
+* Auto-hiding notifications
 * Side menu editor
 * Hide phone number in profile
 * Show user ID in profile
@@ -55,6 +55,12 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 * [macOS][macos]
 * [GNU/Linux using Docker][linux]
 
+## Special thanks to
+
+* [AyuGram Desktop][ayugram]
+* [Kotatogram][kotatogram]
+* [64Gram][64gram]
+
 [//]: # (LINKS)
 [telegram]: https://telegram.org
 [license]: LICENSE
@@ -64,3 +70,6 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 [linux]: docs/building-linux.md
 [macos]: docs/building-mac.md
 [build_instructions]: https://github.com/rabbitGramDesktop/rabbitGramDesktop#build-instructions
+[ayugram]: https://github.com/AyuGram/AyuGramDesktop
+[kotatogram]: https://github.com/kotatogram/kotatogram-desktop
+[64gram]: https://github.com/TDesktop-x64/tdesktop

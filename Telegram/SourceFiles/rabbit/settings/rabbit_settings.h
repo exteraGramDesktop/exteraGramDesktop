@@ -13,6 +13,15 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include <QtCore/QJsonArray>
 
 namespace RabbitSettings {
+
+const auto DEFAULT_ICON = QString("default");
+const auto ANGEL_ICON = QString("angel");
+const auto COLOR_ICON = QString("color");
+const auto IMPOSTOR_ICON = QString("impostor");
+const auto MATRIX_ICON = QString("matrix");
+const auto MOON_ICON = QString("moon");
+const auto OLD_ICON = QString("old");
+
 namespace JsonSettings {
 
 void Start();

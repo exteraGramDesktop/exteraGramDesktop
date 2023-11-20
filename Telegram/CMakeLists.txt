@@ -1260,6 +1260,12 @@ PRIVATE
     rabbit/settings/rabbit_settings.h
     rabbit/settings_menu/rabbit_settings_menu.cpp
     rabbit/settings_menu/rabbit_settings_menu.h
+    rabbit/ui/settings/icon_picker.cpp
+    rabbit/ui/settings/icon_picker.h
+    rabbit/ui/rabbit_assets.cpp
+    rabbit/ui/rabbit_assets.h
+    rabbit/utils/windows_utils.cpp
+    rabbit/utils/windows_utils.h
     rabbit/rabbit_version.h
     settings/cloud_password/settings_cloud_password_common.cpp
     settings/cloud_password/settings_cloud_password_common.h
@@ -1509,6 +1515,7 @@ endif()
 
 nice_target_sources(Telegram ${res_loc}
 PRIVATE
+    qrc/rabbit/rabbit.qrc
     qrc/emoji_1.qrc
     qrc/emoji_2.qrc
     qrc/emoji_3.qrc

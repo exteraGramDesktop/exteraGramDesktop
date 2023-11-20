@@ -239,6 +239,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
 	//   Appearance
+    { "app_icon", {
+    	.type = SettingType::QStringSetting,
+    	.defaultValue = DEFAULT_ICON, }},
 	{ "userpic_roundness", {
 		.type = SettingType::IntSetting,
 		.defaultValue = 50,
