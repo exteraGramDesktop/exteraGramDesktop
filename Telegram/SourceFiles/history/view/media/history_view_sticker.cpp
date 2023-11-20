@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_sticker.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "boxes/sticker_set_box.h"
 #include "history/history.h"

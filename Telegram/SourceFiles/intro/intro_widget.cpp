@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "intro/intro_widget.h"
-#include "rabbit/rabbit_lang.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "intro/intro_start.h"
 #include "intro/intro_phone.h"

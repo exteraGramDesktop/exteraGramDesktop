@@ -7,7 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "data/data_folder.h"
 
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "data/data_session.h"
 #include "data/data_channel.h"
 #include "data/data_histories.h"

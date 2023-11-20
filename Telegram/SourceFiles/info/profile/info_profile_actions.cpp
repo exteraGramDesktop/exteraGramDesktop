@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "info/profile/info_profile_actions.h"
-#include "rabbit/rabbit_lang.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "base/options.h"
 #include "data/data_peer_values.h"

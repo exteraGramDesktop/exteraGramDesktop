@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_widget.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include <string>
 
 #include "api/api_editing.h"

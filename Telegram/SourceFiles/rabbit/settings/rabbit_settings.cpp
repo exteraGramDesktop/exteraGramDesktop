@@ -5,7 +5,7 @@ the unofficial app based on Telegram Desktop.
 For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "rabbit/rabbit_version.h"
 #include "mainwindow.h"
@@ -239,6 +239,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
 	//   Appearance
+    { "app_icon", {
+    	.type = SettingType::QStringSetting,
+    	.defaultValue = DEFAULT_ICON, }},
 	{ "userpic_roundness", {
 		.type = SettingType::IntSetting,
 		.defaultValue = 50,

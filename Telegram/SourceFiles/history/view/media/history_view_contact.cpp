@@ -7,7 +7,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/media/history_view_contact.h"
 
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "core/click_handler_types.h" // ClickHandlerContext
 #include "lang/lang_keys.h"
 #include "layout/layout_selection.h"

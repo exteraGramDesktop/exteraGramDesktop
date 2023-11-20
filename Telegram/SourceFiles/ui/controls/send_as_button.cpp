@@ -6,7 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/controls/send_as_button.h"
-#include "rabbit/rabbit_settings.h"
+
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "ui/effects/cross_animation.h"
 #include "ui/painter.h"

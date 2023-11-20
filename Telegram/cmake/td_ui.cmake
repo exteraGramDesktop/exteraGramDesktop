@@ -30,6 +30,7 @@ set(style_files
     passport/passport.style
     payments/ui/payments.style
     profile/profile.style
+    rabbit/ui/rabbit_styles.style
     settings/settings.style
     media/view/media_view.style
     overview/overview.style

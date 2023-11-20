@@ -30,7 +30,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_session.h"
 #include "data/data_changes.h"
 #include "base/unixtime.h"
-#include "rabbit/rabbit_settings.h"
+#include "rabbit/settings/rabbit_settings.h"
 #include "styles/style_layers.h"
 #include "styles/style_boxes.h"
 #include "styles/style_dialogs.h"

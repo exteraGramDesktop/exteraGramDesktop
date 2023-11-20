@@ -7,9 +7,11 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include <ui/boxes/single_choice_box.h>
 
-#include "rabbit/rabbit_settings.h"
-#include "rabbit/rabbit_lang.h"
-#include "rabbit/rabbit_settings_menu.h"
+#include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings_menu/rabbit_settings_menu.h"
+#include "rabbit/ui/settings/icon_picker.h"
+
 #include "lang_auto.h"
 #include "mainwindow.h"
 #include "settings/settings_common.h"
@@ -71,7 +73,10 @@ namespace Settings {
 
 	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
 	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
-
+        
+        container->add(
+            object_ptr<IconPicker>(container),
+            st::defaultSubsectionTitlePadding);
     	const auto userpicRoundnessLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
 				container,

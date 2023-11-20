@@ -6,8 +6,8 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_information.h"
-#include "rabbit/rabbit_settings.h"
-#include "rabbit/rabbit_lang.h"
+#include "rabbit/settings/rabbit_settings.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "ui/wrap/vertical_layout.h"
 #include "ui/wrap/vertical_layout_reorder.h"

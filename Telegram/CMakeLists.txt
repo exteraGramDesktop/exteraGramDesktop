@@ -1254,13 +1254,19 @@ PRIVATE
     profile/profile_block_widget.h
     profile/profile_cover_drop_area.cpp
     profile/profile_cover_drop_area.h
+    rabbit/lang/rabbit_lang.cpp
+    rabbit/lang/rabbit_lang.h
+    rabbit/settings/rabbit_settings.cpp
+    rabbit/settings/rabbit_settings.h
+    rabbit/settings_menu/rabbit_settings_menu.cpp
+    rabbit/settings_menu/rabbit_settings_menu.h
+    rabbit/ui/settings/icon_picker.cpp
+    rabbit/ui/settings/icon_picker.h
+    rabbit/ui/rabbit_assets.cpp
+    rabbit/ui/rabbit_assets.h
+    rabbit/utils/windows_utils.cpp
+    rabbit/utils/windows_utils.h
     rabbit/rabbit_version.h
-    rabbit/rabbit_lang.cpp
-    rabbit/rabbit_lang.h
-    rabbit/rabbit_settings.cpp
-    rabbit/rabbit_settings.h
-    rabbit/rabbit_settings_menu.cpp
-    rabbit/rabbit_settings_menu.h
     settings/cloud_password/settings_cloud_password_common.cpp
     settings/cloud_password/settings_cloud_password_common.h
     settings/cloud_password/settings_cloud_password_email.cpp
@@ -1509,6 +1515,7 @@ endif()
 
 nice_target_sources(Telegram ${res_loc}
 PRIVATE
+    qrc/rabbit/rabbit.qrc
     qrc/emoji_1.qrc
     qrc/emoji_2.qrc
     qrc/emoji_3.qrc

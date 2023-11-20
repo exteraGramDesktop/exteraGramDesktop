@@ -6,7 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "tray.h"
-#include "rabbit/rabbit_lang.h"
+#include "rabbit/lang/rabbit_lang.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
