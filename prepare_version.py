@@ -7,7 +7,7 @@ from datetime import date
 config = {
     "make_setup": True,               # set True if you want to make setup version
     "make_portable": True,            # set True if you want to make portable version
-    "ota_enabled": True,              # set True if ota enabled
+    "ota_enabled": False,              # set True if ota enabled
     "repo_path": "",                  # leave it blank if this script located in repo folder
     "version": "",                    # leave it blank to fill with version from SourceFiles/core/version.h and script runtime date
     "tgversion": "",                  # leave it blanl to set it automatically
