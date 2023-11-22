@@ -198,6 +198,21 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Set("side_menu_saved_messages", enabled);
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
+
+        AddButtonWithIcon(
+			container,
+			tr::lng_menu_night_mode(),
+			st::settingsButton,
+			IconDescriptor{ &st::menuIconNightMode }
+		)->toggleOn(
+			rpl::single(::RabbitSettings::JsonSettings::GetBool("side_menu_night_mode"))
+		)->toggledValue(
+		) | rpl::filter([](bool enabled) {
+			return (enabled != ::RabbitSettings::JsonSettings::GetBool("side_menu_night_mode"));
+		}) | rpl::start_with_next([](bool enabled) {
+			::RabbitSettings::JsonSettings::Set("side_menu_night_mode", enabled);
+			::RabbitSettings::JsonSettings::Write();
+		}, container->lifetime());
     }
 
     void Rabbit::SetupChats(not_null<Ui::VerticalLayout *> container) {
