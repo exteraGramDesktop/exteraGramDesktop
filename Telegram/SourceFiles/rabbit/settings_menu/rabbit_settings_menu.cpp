@@ -77,6 +77,7 @@ namespace Settings {
         container->add(
             object_ptr<IconPicker>(container),
             st::defaultSubsectionTitlePadding);
+        
     	const auto userpicRoundnessLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
 				container,
