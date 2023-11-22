@@ -955,44 +955,46 @@ void MainMenu::setupMenu() {
 		controller->showSettings();
 	});
 
-	_nightThemeToggle = addAction(
-		tr::lng_menu_night_mode(),
-		{ &st::menuIconNightMode }
-	)->toggleOn(_nightThemeSwitches.events_starting_with(
-		Window::Theme::IsNightMode()
-	));
-	_nightThemeToggle->toggledChanges(
-	) | rpl::filter([=](bool night) {
-		return (night != Window::Theme::IsNightMode());
-	}) | rpl::start_with_next([=](bool night) {
-		if (Window::Theme::Background()->editingTheme()) {
-			_nightThemeSwitches.fire(!night);
-			controller->show(Ui::MakeInformBox(
-				tr::lng_theme_editor_cant_change_theme()));
-			return;
-		}
-		const auto weak = MakeWeak(this);
-		const auto toggle = [=] {
-			if (!weak) {
-				Window::Theme::ToggleNightMode();
-				Window::Theme::KeepApplied();
-			} else {
-				_nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
+	if (RabbitSettings::JsonSettings::GetBool("side_menu_night_mode")) {
+		_nightThemeToggle = addAction(
+			tr::lng_menu_night_mode(),
+			{ &st::menuIconNightMode }
+		)->toggleOn(_nightThemeSwitches.events_starting_with(
+			Window::Theme::IsNightMode()
+		));
+		_nightThemeToggle->toggledChanges(
+		) | rpl::filter([=](bool night) {
+			return (night != Window::Theme::IsNightMode());
+		}) | rpl::start_with_next([=](bool night) {
+			if (Window::Theme::Background()->editingTheme()) {
+				_nightThemeSwitches.fire(!night);
+				controller->show(Ui::MakeInformBox(
+					tr::lng_theme_editor_cant_change_theme()));
+				return;
 			}
-		};
-		Window::Theme::ToggleNightModeWithConfirmation(
-			&_controller->window(),
-			toggle);
-	}, _nightThemeToggle->lifetime());
+			const auto weak = MakeWeak(this);
+			const auto toggle = [=] {
+				if (!weak) {
+					Window::Theme::ToggleNightMode();
+					Window::Theme::KeepApplied();
+				} else {
+					_nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
+				}
+			};
+			Window::Theme::ToggleNightModeWithConfirmation(
+				&_controller->window(),
+				toggle);
+		}, _nightThemeToggle->lifetime());
 
-	Core::App().settings().systemDarkModeValue(
-	) | rpl::start_with_next([=](std::optional<bool> darkMode) {
-		const auto darkModeEnabled
-			= Core::App().settings().systemDarkModeEnabled();
-		if (darkModeEnabled && darkMode.has_value()) {
-			_nightThemeSwitches.fire_copy(*darkMode);
-		}
-	}, _nightThemeToggle->lifetime());
+		Core::App().settings().systemDarkModeValue(
+		) | rpl::start_with_next([=](std::optional<bool> darkMode) {
+			const auto darkModeEnabled
+				= Core::App().settings().systemDarkModeEnabled();
+			if (darkModeEnabled && darkMode.has_value()) {
+				_nightThemeSwitches.fire_copy(*darkMode);
+			}
+		}, _nightThemeToggle->lifetime());
+	}
 }
 
 void MainMenu::resizeEvent(QResizeEvent *e) {

@@ -268,6 +268,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "side_menu_saved_messages", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = true, }},
+	{ "side_menu_night_mode", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = true, }},
 	//   Chats
 	{ "sticker_height", {
 		.type = SettingType::IntSetting,
