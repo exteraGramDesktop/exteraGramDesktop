@@ -1222,9 +1222,15 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 	} else if (!_mrows->empty()) {
 		if (index < _mrows->size()) {
 			const auto user = _mrows->at(index).user;
+			const auto botStatus = _parent->chat()
+				? _parent->chat()->botStatus
+				: ((_parent->channel() && _parent->channel()->isMegagroup())
+					? _parent->channel()->mgInfo->botStatus
+					: -1);
+
 			_mentionChosen.fire({ 
 				user, 
-				RabbitSettings::JsonSettings::GetBool("comma_after_mention")
+				RabbitSettings::JsonSettings::GetBool("comma_after_mention") && botStatus != 1
 					? PrimaryUsername(user) + ","
 					: PrimaryUsername(user), 
 				method });
@@ -1251,8 +1257,6 @@ bool FieldAutocomplete::Inner::chooseAtIndex(
 			const auto commandString = QString("/%1%2").arg(
 				command,
 				insertUsername ? ('@' + PrimaryUsername(user)) : QString());
-				// TODO: comma after mention
-				// @.*username
 
 			_botCommandChosen.fire({ commandString, method });
 			return true;
