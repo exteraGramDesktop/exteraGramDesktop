@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Telegram Desktop
-Comment=Official desktop version of Telegram messaging app
-TryExec=telegram-desktop
-Exec=telegram-desktop -- %u
-Icon=telegram
+Name=rabbitGram Desktop
+Comment=Unofficial Telegram Desktop messaging app
+TryExec=rabbitgram-desktop
+Exec=DESKTOPINTEGRATION=1 rabbitgram-desktop -- %u
+Icon=rabbitgram
 Terminal=false
-StartupWMClass=TelegramDesktop
+StartupWMClass=rabbitGram
 Type=Application
 Categories=Chat;Network;InstantMessaging;Qt;
 MimeType=x-scheme-handler/tg;
@@ -17,6 +17,6 @@ X-GNOME-UsesNotifications=true
 X-GNOME-SingleWindow=true
 
 [Desktop Action quit]
-Exec=telegram-desktop -quit
-Name=Quit Telegram
+Exec=rabbitgram-desktop -quit
+Name=Quit rabbitGram
 Icon=application-exit

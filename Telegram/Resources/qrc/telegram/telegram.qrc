@@ -56,7 +56,7 @@
   <qresource prefix="/misc">
     <file alias="default_shortcuts-custom.json">../../default_shortcuts-custom.json</file>
     <file alias="default_-settings-custom.json">../../default_rabbit-settings-custom.json</file>
-    <file alias="org.telegram.desktop.desktop">../../../../lib/xdg/org.telegram.desktop.desktop</file>
+    <file alias="rabbitgram.desktop.desktop">../../../../lib/xdg/rabbitgram.desktop.desktop</file>
   </qresource>
   <qresource prefix="/rtg_lang">
     <file alias="alttg.json">../../langs/rabbit/alttg.json</file>

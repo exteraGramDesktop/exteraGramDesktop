@@ -198,7 +198,7 @@ bool GenerateDesktopFile(
 	DEBUG_LOG(("App Info: placing .desktop file to %1").arg(targetPath));
 	if (!QDir(targetPath).exists()) QDir().mkpath(targetPath);
 
-	const auto sourceFile = u":/misc/org.telegram.desktop.desktop"_q;
+	const auto sourceFile = u":/misc/rabbitgram.desktop.desktop"_q;
 	const auto targetFile = targetPath
 		+ QGuiApplication::desktopFileName()
 		+ u".desktop"_q;
@@ -295,11 +295,6 @@ bool GenerateDesktopFile(
 			| QFileDevice::ExeGroup
 			| QFileDevice::ExeOther);
 
-	if (!Core::UpdaterDisabled()) {
-		DEBUG_LOG(("App Info: removing old .desktop files"));
-		QFile::remove(u"%1telegram.desktop"_q.arg(targetPath));
-		QFile::remove(u"%1telegramdesktop.desktop"_q.arg(targetPath));
-
 		const auto appimagePath = u"file://%1%2"_q.arg(
 			cExeDir(),
 			cExeName()).toUtf8();
@@ -319,7 +314,7 @@ bool GenerateDesktopFile(
 		hashMd5Hex(d.constData(), d.size(), md5Hash);
 
 		if (!Core::Launcher::Instance().customWorkingDir()) {
-			QFile::remove(u"%1org.telegram.desktop._%2.desktop"_q.arg(
+			QFile::remove(u"%1rabbitgram.desktop._%2.desktop"_q.arg(
 				targetPath,
 				md5Hash));
 
@@ -328,7 +323,7 @@ bool GenerateDesktopFile(
 			hashMd5Hex(exePath.constData(), exePath.size(), md5Hash);
 		}
 
-		QFile::remove(u"%1org.telegram.desktop.%2.desktop"_q.arg(
+		QFile::remove(u"%1rabbitgram.desktop.%2.desktop"_q.arg(
 			targetPath,
 			md5Hash));
 	}
@@ -387,7 +382,7 @@ bool GenerateServiceFile(bool silent = false) {
 		const auto d = QFile::encodeName(QDir(cWorkingDir()).absolutePath());
 		hashMd5Hex(d.constData(), d.size(), md5Hash);
 
-		QFile::remove(u"%1org.telegram.desktop._%2.service"_q.arg(
+		QFile::remove(u"%1rabbitgram.desktop.desktop._%2.service"_q.arg(
 			targetPath,
 			md5Hash));
 	}
@@ -623,10 +618,10 @@ void start() {
 					md5Hash.data());
 			}
 
-			return u"org.telegram.desktop._%1"_q.arg(md5Hash.constData());
+			return u"rabbitgram.desktop.desktop._%1"_q.arg(md5Hash.constData());
 		}
 
-		return u"org.telegram.desktop"_q;
+		return u"rabbitgram.desktop.desktop"_q;
 	}());
 
 	LOG(("App ID: %1").arg(QGuiApplication::desktopFileName()));

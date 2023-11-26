@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component type="desktop">
+    <id>rabbitgram.desktop</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0</project_license>
+    <name>rabbitGram Desktop</name>
+    <summary>Unofficial Telegram Desktop messaging app</summary>
+    <description>
+        <p>rabbitGram Desktop – Telegram Desktop based messenger with special features</p>
+    </description>
+    <categories>
+        <category>Network</category>
+        <category>InstantMessaging</category>
+    </categories>
+    <update_contact>smcartix_at_gmail.com</update_contact>
+    <developer_name>xmdnusr</developer_name>
+    <url type="homepage">https://github.com/rabbitGramDesktop/rabbitGramDesktop</url>
+    <url type="bugtracker">https://t.me/rabbitGramDesktop/23</url>
+    <url type="contribute">https://github.com/rabbitGramDesktop/rabbitGramDesktop/blob/dev/.github/CONTRIBUTING.md</url>
+    <screenshots>
+      <screenshot type="default">
+        <image>https://user-images.githubusercontent.com/72883689/252349223-082fe7d6-eeba-4198-83ab-843d08ac909c.png</image>
+      </screenshot>
+    </screenshots>
+    <keywords>
+        <keyword>tg</keyword>
+        <keyword>telegram</keyword>
+        <keyword>tdesktop</keyword>
+        <keyword>messaging</keyword>
+        <keyword>messenger</keyword>
+        <keyword>chat</keyword>
+        <keyword>sms</keyword>
+        <keyword>im</keyword>
+	<keyword>exteragram</keyword>
+	<keyword>rabbitgram</keyword>
+    </keywords>
+    <requires>
+        <display_length compare="ge">medium</display_length>
+        <internet>always</internet>
+    </requires>
+    <supports>
+        <control>pointing</control>
+        <control>keyboard</control>
+        <control>touch</control>
+    </supports>
+    <content_rating type="oars-1.1">
+        <content_attribute id="violence-cartoon">none</content_attribute>
+        <content_attribute id="violence-fantasy">none</content_attribute>
+        <content_attribute id="violence-realistic">none</content_attribute>
+        <content_attribute id="violence-bloodshed">none</content_attribute>
+        <content_attribute id="violence-sexual">none</content_attribute>
+        <content_attribute id="violence-desecration">none</content_attribute>
+        <content_attribute id="violence-slavery">none</content_attribute>
+        <content_attribute id="violence-worship">none</content_attribute>
+        <content_attribute id="drugs-alcohol">none</content_attribute>
+        <content_attribute id="drugs-narcotics">none</content_attribute>
+        <content_attribute id="drugs-tobacco">none</content_attribute>
+        <content_attribute id="sex-nudity">none</content_attribute>
+        <content_attribute id="sex-themes">none</content_attribute>
+        <content_attribute id="sex-homosexuality">none</content_attribute>
+        <content_attribute id="sex-prostitution">none</content_attribute>
+        <content_attribute id="sex-adultery">none</content_attribute>
+        <content_attribute id="sex-appearance">none</content_attribute>
+        <content_attribute id="language-profanity">none</content_attribute>
+        <content_attribute id="language-humor">none</content_attribute>
+        <content_attribute id="language-discrimination">none</content_attribute>
+        <content_attribute id="social-chat">intense</content_attribute>
+        <content_attribute id="social-info">none</content_attribute>
+        <content_attribute id="social-audio">intense</content_attribute>
+        <content_attribute id="social-location">none</content_attribute>
+        <content_attribute id="social-contacts">intense</content_attribute>
+        <content_attribute id="money-purchasing">intense</content_attribute>
+        <content_attribute id="money-gambling">none</content_attribute>
+        <content_attribute id="money-advertising">moderate</content_attribute>
+    </content_rating>
+    <launchable type="desktop-id">rabbitgram.desktop.desktop</launchable>
+    <provides>
+        <binary>rabbitgram-desktop</binary>
+    </provides>
+</component>
