@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "ui/controls/userpic_button.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "base/call_delayed.h"
 #include "ui/effects/ripple_animation.h"
 #include "ui/empty_userpic.h"
@@ -132,9 +134,10 @@ void SetupSubButtonBackground(
 	) | rpl::start_with_next([=] {
 		auto p = QPainter(background);
 		auto hq = PainterHighQualityEnabler(p);
+		auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
 		p.setBrush(st::boxBg);
 		p.setPen(Qt::NoPen);
-		p.drawEllipse(background->rect());
+		p.drawEllipse(background->rect(), size * radius, size * radius);
 	}, background->lifetime());
 
 	upload->positionValue(
