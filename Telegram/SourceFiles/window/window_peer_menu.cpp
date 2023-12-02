@@ -281,6 +281,7 @@ private:
 	void addGiftPremium();
 	void addCreateTopic();
 	void addViewAsMessages();
+	void addViewAsTopics();
 	void addSearchTopics();
 	void addDeleteTopic();
 	void addVideoChat();
@@ -1007,7 +1008,8 @@ void Filler::addViewStatistics() {
 		if (channel->flags() & ChannelDataFlag::CanGetStatistics) {
 			_addAction(tr::lng_stats_title(tr::now), [=] {
 				if (const auto strong = weak.get()) {
-					controller->showSection(Info::Statistics::Make(peer, {}));
+					using namespace Info;
+					controller->showSection(Statistics::Make(peer, {}, {}));
 				}
 			}, &st::menuIconStats);
 		}
@@ -1147,8 +1149,27 @@ void Filler::addViewAsMessages() {
 	const auto peer = _peer;
 	const auto controller = _controller;
 	_addAction(tr::lng_forum_view_as_messages(tr::now), [=] {
+		if (const auto forum = peer->forum()) {
+			peer->owner().saveViewAsMessages(forum, true);
+		}
 		controller->showPeerHistory(peer->id);
-	}, &st::menuIconViewReplies);
+	}, &st::menuIconAsMessages);
+}
+
+void Filler::addViewAsTopics() {
+	if (!_peer
+		|| !_peer->isForum()
+		|| !_controller->adaptive().isOneColumn()) {
+		return;
+	}
+	const auto peer = _peer;
+	const auto controller = _controller;
+	_addAction(tr::lng_forum_view_as_topics(tr::now), [=] {
+		if (const auto forum = peer->forum()) {
+			peer->owner().saveViewAsMessages(forum, false);
+			controller->showForum(forum);
+		}
+	}, &st::menuIconAsTopics);
 }
 
 void Filler::addSearchTopics() {
@@ -1235,6 +1256,7 @@ void Filler::fillContextMenuActions() {
 void Filler::fillHistoryActions() {
 	addToggleMuteSubmenu(true);
 	addInfo();
+	addViewAsTopics();
 	addStoryArchive();
 	addSupportInfo();
 	addManageChat();

@@ -57,7 +57,6 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 
 ## Special thanks to
 
-* [AyuGram Desktop][ayugram]
 * [Kotatogram][kotatogram]
 * [64Gram][64gram]
 
@@ -70,6 +69,5 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 [linux]: docs/building-linux.md
 [macos]: docs/building-mac.md
 [build_instructions]: https://github.com/rabbitGramDesktop/rabbitGramDesktop#build-instructions
-[ayugram]: https://github.com/AyuGram/AyuGramDesktop
 [kotatogram]: https://github.com/kotatogram/kotatogram-desktop
 [64gram]: https://github.com/TDesktop-x64/tdesktop

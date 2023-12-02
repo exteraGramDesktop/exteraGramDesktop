@@ -235,7 +235,7 @@ rpl::producer<SelectedQuote> PreviewWrap::showQuoteSelector(
 
 	initElement();
 
-	_selection = _element->selectionFromQuote(item, quote.text);
+	_selection = _element->selectionFromQuote(quote);
 	return _selection.value(
 	) | rpl::map([=](TextSelection selection) {
 		if (const auto result = _element->selectedQuote(selection)) {
@@ -601,7 +601,11 @@ void DraftOptionsBox(
 		rpl::lifetime resolveLifetime;
 	};
 	const auto state = box->lifetime().make_state<State>();
-	state->quote = SelectedQuote{ replyItem, draft.reply.quote };
+	state->quote = SelectedQuote{
+		replyItem,
+		draft.reply.quote,
+		draft.reply.quoteOffset,
+	};
 	state->webpage = draft.webpage;
 	state->preview = previewData;
 	state->shown = previewData ? Section::Link : Section::Reply;
@@ -643,6 +647,7 @@ void DraftOptionsBox(
 		if (const auto current = state->quote.current()) {
 			result.messageId = current.item->fullId();
 			result.quote = current.text;
+			result.quoteOffset = current.offset;
 		} else {
 			result.quote = {};
 		}

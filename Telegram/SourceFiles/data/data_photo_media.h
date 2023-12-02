@@ -7,7 +7,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
-#include "base/flags.h"
 #include "data/data_photo.h"
 
 class FileLoader;

@@ -1,6 +1,6 @@
 {%- set GIT = "https://github.com" -%}
 {%- set GIT_FREEDESKTOP = GIT ~ "/gitlab-freedesktop-mirrors" -%}
-{%- set QT = "6.6.0" -%}
+{%- set QT = "6.6.1" -%}
 {%- set QT_TAG = "v" ~ QT -%}
 {%- set QT_PREFIX = "/usr/local/desktop-app/Qt-" ~ QT -%}
 {%- set OPENSSL_VER = "1_1_1" -%}
@@ -54,7 +54,7 @@ FROM builder AS patches
 RUN git init patches \
 	&& cd patches \
 	&& git remote add origin {{ GIT }}/desktop-app/patches.git \
-	&& git fetch --depth=1 origin 90a7f1b55da69c99699e6b6776268184c20387f8 \
+	&& git fetch --depth=1 origin 8b95f2787ee69f3ff16a62c68b39bb8bb3d0fa68 \
 	&& git reset --hard FETCH_HEAD \
 	&& rm -rf .git
 
@@ -687,7 +687,7 @@ RUN git clone -b OpenSSL_{{ OPENSSL_VER }}-stable --depth=1 {{ GIT }}/openssl/op
 FROM builder AS xkbcommon
 COPY --link --from=xcb {{ LibrariesPath }}/xcb-cache /
 
-RUN git clone -b xkbcommon-1.5.0 --depth=1 {{ GIT }}/xkbcommon/libxkbcommon.git \
+RUN git clone -b xkbcommon-1.6.0 --depth=1 {{ GIT }}/xkbcommon/libxkbcommon.git \
 	&& cd libxkbcommon \
 	&& meson build \
 		--buildtype=plain \
@@ -703,7 +703,22 @@ RUN git clone -b xkbcommon-1.5.0 --depth=1 {{ GIT }}/xkbcommon/libxkbcommon.git 
 	&& cd .. \
 	&& rm -rf libxkbcommon
 
+FROM builder AS glib
+RUN git clone -b 2.78.1 --depth=1 {{ GIT }}/GNOME/glib.git \
+	&& cd glib \
+	&& meson build \
+		--buildtype=plain \
+		--default-library=both \
+		-Dtests=false \
+		-Dmm-common:use-network=true \
+	&& meson compile -C build \
+	&& DESTDIR="{{ LibrariesPath }}/glib-cache" meson install -C build \
+	&& cd .. \
+	&& rm -rf glib
+
 FROM patches AS glibmm
+COPY --link --from=glib {{ LibrariesPath }}/glib-cache /
+
 RUN git clone -b 2.78.0 --depth=1 {{ GIT }}/GNOME/glibmm.git \
 	&& cd glibmm \
 	&& git apply ../patches/glibmm.patch \
@@ -715,7 +730,6 @@ RUN git clone -b 2.78.0 --depth=1 {{ GIT }}/GNOME/glibmm.git \
 		-Dsigc++-3.0:build-documentation=false \
 		-Dsigc++-3.0:build-examples=false \
 		-Dsigc++-3.0:validation=false \
-		-Dglib:tests=false \
 		-Dmm-common:use-network=true \
 	&& meson compile -C build \
 	&& DESTDIR="{{ LibrariesPath }}/glibmm-cache" meson install -C build \
@@ -723,7 +737,7 @@ RUN git clone -b 2.78.0 --depth=1 {{ GIT }}/GNOME/glibmm.git \
 	&& rm -rf glibmm
 
 FROM builder AS gobject-introspection
-COPY --link --from=glibmm {{ LibrariesPath }}/glibmm-cache /
+COPY --link --from=glib {{ LibrariesPath }}/glib-cache /
 
 RUN git clone -b 1.78.1 --depth=1 {{ GIT }}/GNOME/gobject-introspection.git \
 	&& cd gobject-introspection \
@@ -880,6 +894,7 @@ COPY --link --from=ffmpeg {{ LibrariesPath }}/ffmpeg-cache /
 COPY --link --from=openal {{ LibrariesPath }}/openal-cache /
 COPY --link --from=openssl {{ LibrariesPath }}/openssl-cache /
 COPY --link --from=xkbcommon {{ LibrariesPath }}/xkbcommon-cache /
+COPY --link --from=glib {{ LibrariesPath }}/glib-cache /
 COPY --link --from=glibmm {{ LibrariesPath }}/glibmm-cache /
 COPY --link --from=gobject-introspection {{ LibrariesPath }}/gobject-introspection-cache /
 COPY --link --from=qt {{ LibrariesPath }}/qt-cache /
