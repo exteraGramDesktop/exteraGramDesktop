@@ -56,10 +56,8 @@ jobs:
       - name: Get repository name.
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
-      - name: Submodule cleanup fix
-        run: |
-          git submodule foreach --recursive git clean -ffdx
-          git submodule foreach --recursive git reset --hard
+      - name: Clear repository
+        run: sudo rm -fr $GITHUB_WORKSPACE && mkdir $GITHUB_WORKSPACE
 
       - name: Clone.
         uses: actions/checkout@v4
