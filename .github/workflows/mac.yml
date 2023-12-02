@@ -56,16 +56,16 @@ jobs:
       - name: Get repository name.
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
+      - name: Submodule cleanup fix
+        run: |
+          git submodule foreach --recursive git clean -ffdx
+          git submodule foreach --recursive git reset --hard
+
       - name: Clone.
         uses: actions/checkout@v4
         with:
           submodules: true
           path: ${{ env.REPO_NAME }}
-
-      - name: Submodule cleanup fix
-        run: |
-          git submodule foreach --recursive git clean -ffdx
-          git submodule foreach --recursive git reset --hard
 
       - name: First set up.
         run: |
