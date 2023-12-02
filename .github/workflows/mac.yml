@@ -59,7 +59,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v4
         with:
-          submodules: false
+          submodules: true
           path: ${{ env.REPO_NAME }}
 
       - name: Submodule cleanup fix
