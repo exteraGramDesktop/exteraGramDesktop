@@ -59,7 +59,7 @@ jobs:
       - name: Clone.
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false
           path: ${{ env.REPO_NAME }}
 
       - name: First set up.
