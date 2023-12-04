@@ -56,13 +56,10 @@ jobs:
       - name: Get repository name.
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
-      - name: Clear repository
-        run: sudo rm -fr $GITHUB_WORKSPACE && mkdir $GITHUB_WORKSPACE
-
       - name: Clone.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3.1.0
         with:
-          submodules: true
+          submodules: recursive
           path: ${{ env.REPO_NAME }}
 
       - name: First set up.
