@@ -137,7 +137,7 @@ void SetupSubButtonBackground(
 		auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
 		p.setBrush(st::boxBg);
 		p.setPen(Qt::NoPen);
-		p.drawEllipse(background->rect(), size * radius, size * radius);
+		p.drawRoundedRect(background->rect(), size * radius, size * radius);
 	}, background->lifetime());
 
 	upload->positionValue(
