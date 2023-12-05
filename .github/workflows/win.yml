@@ -52,6 +52,7 @@ jobs:
 
     env:
       UPLOAD_ARTIFACT: "true"
+      ARTIFACT_NAME: "rabbitGram"
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
