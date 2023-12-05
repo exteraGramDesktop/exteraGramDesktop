@@ -134,10 +134,9 @@ void SetupSubButtonBackground(
 	) | rpl::start_with_next([=] {
 		auto p = QPainter(background);
 		auto hq = PainterHighQualityEnabler(p);
-		auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
 		p.setBrush(st::boxBg);
 		p.setPen(Qt::NoPen);
-		p.drawRoundedRect(background->rect(), size * radius, size * radius);
+		p.drawEllipse(background->rect());
 	}, background->lifetime());
 
 	upload->positionValue(
