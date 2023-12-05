@@ -52,7 +52,6 @@ jobs:
 
     env:
       UPLOAD_ARTIFACT: "true"
-      ARTIFACT_NAME: "rabbitGram"
       ONLY_CACHE: "false"
       PREPARE_PATH: "Telegram/build/prepare/prepare.py"
 
@@ -60,8 +59,7 @@ jobs:
       run:
         shell: cmd
 
-    steps:
-      
+    steps:      
       - name: Disk Space Optimizer
         uses: hugoalh/disk-space-optimizer-ghaction@v0.5.0
     
@@ -119,7 +117,7 @@ jobs:
       - name: Read configuration matrix.
         shell: bash
         run: |
-          ARTIFACT_NAME="Telegram"
+          ARTIFACT_NAME="rabbitGram"
 
           ARCH=""
           if [ -n "${{ matrix.arch }}" ]; then
@@ -150,7 +148,7 @@ jobs:
           fi
           echo "TDESKTOP_BUILD_DEFINE=$DEFINE" >> $GITHUB_ENV
 
-          API=""
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
           API="-D TDESKTOP_API_ID=${{ secrets.API_ID }} -D TDESKTOP_API_HASH=${{ secrets.API_HASH }}"
           echo "TDESKTOP_BUILD_API=$API" >> $GITHUB_ENV
 
@@ -174,13 +172,13 @@ jobs:
           -D DESKTOP_APP_NO_PDB=ON ^
           %TDESKTOP_BUILD_DEFINE%
 
-          cmake --build ..\out --config Debug --parallel
+          cmake --build ..\out --config Release --parallel
 
       - name: Move artifact.
         if: (env.UPLOAD_ARTIFACT == 'true') || (github.ref == 'refs/heads/nightly')
         run: |
           mkdir artifact
-          move %TBUILD%\%REPO_NAME%\out\Debug\rabbitGram.exe artifact/
+          move %TBUILD%\%REPO_NAME%\out\Release\rabbitGram.exe artifact/
       - uses: actions/upload-artifact@master
         name: Upload artifact.
         if: (env.UPLOAD_ARTIFACT == 'true') || (github.ref == 'refs/heads/nightly')
