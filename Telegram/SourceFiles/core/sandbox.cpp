@@ -40,10 +40,12 @@ namespace {
 
 base::options::toggle OptionForceWaylandFractionalScaling({
 	.id = kOptionForceWaylandFractionalScaling,
-	.name = "Force enable fractional-scale-v1",
-	.description = "Enable fractional-scale-v1 on Wayland without "
+	.name = "Enable xdg-output fractional scaling",
+	.description = "Enable xdg-output based fractional scaling on Wayland. "
+		"This works without fractional-scale-v1 and without "
 		"precise High DPI scaling. "
 		"Requires Qt with Desktop App Toolkit patches.",
+	.defaultValue = true,
 	.scope = [] {
 #ifdef DESKTOP_APP_QT_PATCHED
 		return Platform::IsWayland();
@@ -181,16 +183,9 @@ int Sandbox::start() {
 
 	// https://github.com/telegramdesktop/tdesktop/issues/948
 	// and https://github.com/telegramdesktop/tdesktop/issues/5022
-	const auto restartHint = [](QSessionManager &manager) {
+	connect(this, &QGuiApplication::saveStateRequest, [](auto &manager) {
 		manager.setRestartHint(QSessionManager::RestartNever);
-	};
-
-	connect(
-		this,
-		&QGuiApplication::saveStateRequest,
-		this,
-		restartHint,
-		Qt::DirectConnection);
+	});
 
 	LOG(("Connecting local socket to %1...").arg(_localServerName));
 	_localSocket.connectToServer(_localServerName);
@@ -258,12 +253,7 @@ void Sandbox::setupScreenScale() {
 	logEnv("QT_USE_PHYSICAL_DPI");
 	logEnv("QT_FONT_DPI");
 
-	// Like Qt::HighDpiScaleFactorRoundingPolicy::RoundPreferFloor.
-	// Round up for .75 and higher. This favors "small UI" over "large UI".
-	const auto roundedRatio = ((ratio - qFloor(ratio)) < 0.75)
-		? qFloor(ratio)
-		: qCeil(ratio);
-	const auto useRatio = std::clamp(roundedRatio, 1, 3);
+	const auto useRatio = std::clamp(qCeil(ratio), 1, 3);
 	style::SetDevicePixelRatio(useRatio);
 
 	const auto screen = Sandbox::primaryScreen();

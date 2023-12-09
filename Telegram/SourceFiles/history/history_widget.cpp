@@ -137,6 +137,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/chat/chat_theme.h"
 #include "ui/chat/chat_style.h"
 #include "ui/chat/continuous_scroll.h"
+#include "ui/widgets/elastic_scroll.h"
 #include "ui/widgets/popup_menu.h"
 #include "ui/item_text_options.h"
 #include "main/main_session.h"
@@ -273,6 +274,15 @@ HistoryWidget::HistoryWidget(
 		update();
 	}, lifetime());
 
+	base::install_event_filter(_scroll.data(), [=](not_null<QEvent*> e) {
+		const auto consumed = (e->type() == QEvent::Wheel)
+			&& _list
+			&& _list->consumeScrollAction(
+				Ui::ScrollDelta(static_cast<QWheelEvent*>(e.get())));
+		return consumed
+			? base::EventFilterResult::Cancel
+			: base::EventFilterResult::Continue;
+	});
 	_scroll->scrolls(
 	) | rpl::start_with_next([=] {
 		handleScroll();
@@ -286,9 +296,6 @@ HistoryWidget::HistoryWidget(
 		if (_history
 			&& _history->loadedAtBottom()
 			&& session().data().sponsoredMessages().append(_history)) {
-			if (_list) {
-				_list->setCanHaveFromUserpicsSponsored(true);
-			}
 			_scroll->contentAdded();
 		}
 	}, lifetime());
@@ -510,10 +517,7 @@ HistoryWidget::HistoryWidget(
 			if (!_peer || isRecording()) {
 				return false;
 			}
-			const auto replyTo = (_replyTo && !_editMsgId)
-				? _replyEditMsg
-				: 0;
-			const auto topic = replyTo ? replyTo->topic() : nullptr;
+			const auto topic = resolveReplyToTopic();
 			return topic
 				? Data::CanSendAnyOf(topic, Data::FilesSendRestrictions())
 				: Data::CanSendAnyOf(_peer, Data::FilesSendRestrictions());
@@ -1085,7 +1089,7 @@ void HistoryWidget::initTabbedSelector() {
 		if (!data.recipientOverride) {
 			return true;
 		} else if (data.recipientOverride != _peer) {
-			showHistory(data.recipientOverride->id, ShowAtTheEndMsgId, {});
+			showHistory(data.recipientOverride->id, ShowAtTheEndMsgId);
 		}
 		return (data.recipientOverride == _peer);
 	}) | rpl::start_with_next([=](ChatHelpers::InlineChosen data) {
@@ -1280,9 +1284,8 @@ void HistoryWidget::scrollToAnimationCallback(
 }
 
 void HistoryWidget::enqueueMessageHighlight(
-		not_null<HistoryView::Element*> view,
-		const TextWithEntities &part) {
-	_highlighter.enqueue(view, part);
+		const HistoryView::SelectedQuote &quote) {
+	_highlighter.enqueue(quote);
 }
 
 Ui::ChatPaintHighlight HistoryWidget::itemHighlight(
@@ -1983,10 +1986,12 @@ bool HistoryWidget::insideJumpToEndInsteadOfToUnread() const {
 void HistoryWidget::showHistory(
 		const PeerId &peerId,
 		MsgId showAtMsgId,
-		const TextWithEntities &highlightPart) {
+		const TextWithEntities &highlightPart,
+		int highlightPartOffsetHint) {
 	_pinnedClickedId = FullMsgId();
 	_minPinnedId = std::nullopt;
 	_showAtMsgHighlightPart = {};
+	_showAtMsgHighlightPartOffsetHint = 0;
 
 	const auto wasDialogsEntryState = computeDialogsEntryState();
 	const auto startBot = (showAtMsgId == ShowAndStartBotMsgId);
@@ -2034,10 +2039,16 @@ void HistoryWidget::showHistory(
 						).arg(_history->inboxReadTillId().bare
 						).arg(Logs::b(_history->loadedAtBottom())
 						).arg(showAtMsgId.bare));
-					delayedShowAt(showAtMsgId, highlightPart);
+					delayedShowAt(
+						showAtMsgId,
+						highlightPart,
+						highlightPartOffsetHint);
 				} else if (_showAtMsgId != showAtMsgId) {
 					clearAllLoadRequests();
-					setMsgId(showAtMsgId, highlightPart);
+					setMsgId(
+						showAtMsgId,
+						highlightPart,
+						highlightPartOffsetHint);
 					firstLoadMessages();
 					doneShow();
 				}
@@ -2057,7 +2068,10 @@ void HistoryWidget::showHistory(
 					_cornerButtons.skipReplyReturn(skipId);
 				}
 
-				setMsgId(showAtMsgId, highlightPart);
+				setMsgId(
+					showAtMsgId,
+					highlightPart,
+					highlightPartOffsetHint);
 				if (_historyInited) {
 					DEBUG_LOG(("JumpToEnd(%1, %2, %3): "
 						"Showing instant at %4."
@@ -2134,6 +2148,7 @@ void HistoryWidget::showHistory(
 		setHistory(nullptr);
 		_list = nullptr;
 		_peer = nullptr;
+		_topicsRequested.clear();
 		_canSendMessages = false;
 		_canSendTexts = false;
 		_fieldDisabled = nullptr;
@@ -2161,6 +2176,7 @@ void HistoryWidget::showHistory(
 
 	_showAtMsgId = showAtMsgId;
 	_showAtMsgHighlightPart = highlightPart;
+	_showAtMsgHighlightPartOffsetHint = highlightPartOffsetHint;
 	_historyInited = false;
 	_contactStatus = nullptr;
 
@@ -2338,9 +2354,6 @@ void HistoryWidget::showHistory(
 					_scroll->setTrackingContent(
 						sponsored.canHaveFor(_history));
 				} else if (state == State::InjectToMiddle) {
-					if (_list) {
-						_list->setCanHaveFromUserpicsSponsored(true);
-					}
 					injectSponsoredMessages();
 				}
 			});
@@ -2720,8 +2733,6 @@ std::optional<QString> HistoryWidget::writeRestriction() const {
 		: std::nullopt;
 	if (result) {
 		return result;
-	} else if (_peer && _peer->isForum()) {
-		return tr::lng_forum_replies_only(tr::now);
 	}
 	return std::nullopt;
 }
@@ -3315,7 +3326,10 @@ void HistoryWidget::messagesReceived(
 		}
 
 		_delayedShowAtRequest = 0;
-		setMsgId(_delayedShowAtMsgId, _delayedShowAtMsgHighlightPart);
+		setMsgId(
+			_delayedShowAtMsgId,
+			_delayedShowAtMsgHighlightPart,
+			_delayedShowAtMsgHighlightPartOffsetHint);
 		historyLoaded();
 	}
 	if (session().supportMode()) {
@@ -3539,13 +3553,15 @@ void HistoryWidget::loadMessagesDown() {
 
 void HistoryWidget::delayedShowAt(
 		MsgId showAtMsgId,
-		const TextWithEntities &highlightPart) {
+		const TextWithEntities &highlightPart,
+		int highlightPartOffsetHint) {
 	if (!_history) {
 		return;
 	}
 	if (_delayedShowAtMsgHighlightPart != highlightPart) {
 		_delayedShowAtMsgHighlightPart = highlightPart;
 	}
+	_delayedShowAtMsgHighlightPartOffsetHint = highlightPartOffsetHint;
 	if (_delayedShowAtRequest && _delayedShowAtMsgId == showAtMsgId) {
 		return;
 	}
@@ -4130,10 +4146,12 @@ PeerData *HistoryWidget::peer() const {
 // Sometimes _showAtMsgId is set directly.
 void HistoryWidget::setMsgId(
 		MsgId showAtMsgId,
-		const TextWithEntities &highlightPart) {
+		const TextWithEntities &highlightPart,
+		int highlightPartOffsetHint) {
 	if (_showAtMsgHighlightPart != highlightPart) {
 		_showAtMsgHighlightPart = highlightPart;
 	}
+	_showAtMsgHighlightPartOffsetHint = highlightPartOffsetHint;
 	if (_showAtMsgId != showAtMsgId) {
 		_showAtMsgId = showAtMsgId;
 		if (_history) {
@@ -4254,11 +4272,11 @@ void HistoryWidget::cornerButtonsShowAtPosition(
 			).arg(_history->peer->name()
 			).arg(_history->inboxReadTillId().bare
 			).arg(Logs::b(_history->loadedAtBottom())));
-		showHistory(_peer->id, ShowAtUnreadMsgId, {});
+		showHistory(_peer->id, ShowAtUnreadMsgId);
 	} else if (_peer && position.fullId.peer == _peer->id) {
-		showHistory(_peer->id, position.fullId.msg, {});
+		showHistory(_peer->id, position.fullId.msg);
 	} else if (_migrated && position.fullId.peer == _migrated->peer->id) {
-		showHistory(_peer->id, -position.fullId.msg, {});
+		showHistory(_peer->id, -position.fullId.msg);
 	}
 }
 
@@ -5215,7 +5233,31 @@ void HistoryWidget::updateFieldPlaceholder() {
 			&& !_keyboard->placeholder().isEmpty()) {
 			return rpl::single(_keyboard->placeholder());
 		} else if (const auto channel = _history->peer->asChannel()) {
-			if (channel->isBroadcast()) {
+			const auto topic = resolveReplyToTopic();
+			const auto topicRootId = topic
+				? topic->rootId()
+				: channel->forum()
+				? resolveReplyToTopicRootId()
+				: MsgId();
+			if (topicRootId) {
+				auto title = rpl::single(topic
+					? topic->title()
+					: (topicRootId == Data::ForumTopic::kGeneralId)
+					? u"General"_q
+					: u"Topic"_q
+				) | rpl::then(session().changes().topicUpdates(
+					Data::TopicUpdate::Flag::Title
+				) | rpl::filter([=](const Data::TopicUpdate &update) {
+					return (update.topic->peer() == channel)
+						&& (update.topic->rootId() == topicRootId);
+				}) | rpl::map([=](const Data::TopicUpdate &update) {
+					return update.topic->title();
+				}));
+				const auto phrase = replyTo().messageId
+					? tr::lng_forum_reply_in
+					: tr::lng_forum_message_in;
+				return phrase(lt_topic, std::move(title));
+			} else if (channel->isBroadcast()) {
 				return session().data().notifySettings().silentPosts(channel)
 					? tr::lng_broadcast_silent_ph()
 					: tr::lng_broadcast_ph();
@@ -5276,15 +5318,42 @@ bool HistoryWidget::showSendingFilesError(
 	return true;
 }
 
+MsgId HistoryWidget::resolveReplyToTopicRootId() {
+	Expects(_peer != nullptr);
+
+	const auto replyToInfo = replyTo();
+	const auto replyToMessage = (replyToInfo.messageId.peer == _peer->id)
+		? session().data().message(replyToInfo.messageId)
+		: nullptr;
+	const auto result = replyToMessage
+		? replyToMessage->topicRootId()
+		: replyToInfo.topicRootId;
+	if (result
+		&& _peer->isForum()
+		&& !_peer->forumTopicFor(result)
+		&& _topicsRequested.emplace(result).second) {
+		_peer->forum()->requestTopic(result, crl::guard(_list, [=] {
+			updateCanSendMessage();
+			updateFieldPlaceholder();
+			_topicsRequested.remove(result);
+		}));
+	}
+	return result;
+}
+
+Data::ForumTopic *HistoryWidget::resolveReplyToTopic() {
+	return _peer
+		? _peer->forumTopicFor(resolveReplyToTopicRootId())
+		: nullptr;
+}
+
 bool HistoryWidget::showSendMessageError(
 		const TextWithTags &textWithTags,
-		bool ignoreSlowmodeCountdown) const {
+		bool ignoreSlowmodeCountdown) {
 	if (!_canSendMessages) {
 		return false;
 	}
-	const auto topicRootId = _replyEditMsg
-		? _replyEditMsg->topicRootId()
-		: 0;
+	const auto topicRootId = resolveReplyToTopicRootId();
 	const auto error = GetErrorTextForSending(
 		_peer,
 		{
@@ -5683,6 +5752,8 @@ FullReplyTo HistoryWidget::replyTo() const {
 		? _replyTo
 		: _kbReplyTo
 		? FullReplyTo{ _kbReplyTo->fullId() }
+		: (_peer && _peer->forum())
+		? FullReplyTo{ .topicRootId = Data::ForumTopic::kGeneralId }
 		: FullReplyTo();
 }
 
@@ -5710,9 +5781,11 @@ int HistoryWidget::countInitialScrollTop() {
 			const auto view = item->mainView();
 			Assert(view != nullptr);
 
-			enqueueMessageHighlight(
-				view,
-				base::take(_showAtMsgHighlightPart));
+			enqueueMessageHighlight({
+				item,
+				base::take(_showAtMsgHighlightPart),
+				base::take(_showAtMsgHighlightPartOffsetHint),
+			});
 			const auto result = itemTopForHighlight(view);
 			createUnreadBarIfBelowVisibleArea(result);
 			return result;
@@ -6321,7 +6394,12 @@ void HistoryWidget::editDraftOptions() {
 
 void HistoryWidget::jumpToReply(FullReplyTo to) {
 	if (const auto item = session().data().message(to.messageId)) {
-		JumpToMessageClickHandler(item, {}, to.quote)->onClick({});
+		JumpToMessageClickHandler(
+			item,
+			{},
+			to.quote,
+			to.quoteOffset
+		)->onClick({});
 	}
 }
 
@@ -6396,8 +6474,7 @@ void HistoryWidget::handlePeerMigration() {
 	if (_peer != channel) {
 		showHistory(
 			channel->id,
-			(_showAtMsgId > 0) ? (-_showAtMsgId) : _showAtMsgId,
-			{});
+			(_showAtMsgId > 0) ? (-_showAtMsgId) : _showAtMsgId);
 		channel->session().api().chatParticipants().requestCountDelayed(
 			channel);
 	} else {
@@ -6493,7 +6570,7 @@ bool HistoryWidget::showSlowmodeError() {
 			if (const auto item = _history->latestSendingMessage()) {
 				if (const auto view = item->mainView()) {
 					animatedScrollToItem(item->id);
-					enqueueMessageHighlight(view, {});
+					enqueueMessageHighlight({ item });
 				}
 				return tr::lng_slowmode_no_many(tr::now);
 			}
@@ -7149,17 +7226,22 @@ void HistoryWidget::clearFieldText(
 
 void HistoryWidget::replyToMessage(FullReplyTo id) {
 	if (const auto item = session().data().message(id.messageId)) {
-		replyToMessage(item, id.quote);
+		replyToMessage(item, id.quote, id.quoteOffset);
 	}
 }
 
 void HistoryWidget::replyToMessage(
 		not_null<HistoryItem*> item,
-		TextWithEntities quote) {
+		TextWithEntities quote,
+		int quoteOffset) {
 	if (isJoinChannel()) {
 		return;
 	}
-	_processingReplyTo = { .messageId = item->fullId(), .quote = quote};
+	_processingReplyTo = {
+		.messageId = item->fullId(),
+		.quote = quote,
+		.quoteOffset = quoteOffset,
+	};
 	_processingReplyItem = item;
 	processReply();
 }
@@ -7551,11 +7633,7 @@ bool HistoryWidget::updateCanSendMessage() {
 	if (!_peer) {
 		return false;
 	}
-	const auto checkTopicFromReplyTo = _replyTo
-		&& !_editMsgId
-		&& (_replyTo.messageId.peer == _peer->id);
-	const auto replyTo = checkTopicFromReplyTo ? _replyEditMsg : 0;
-	const auto topic = replyTo ? replyTo->topic() : nullptr;
+	const auto topic = resolveReplyToTopic();
 	const auto allWithoutPolls = Data::AllSendRestrictions()
 		& ~ChatRestriction::SendPolls;
 	const auto newCanSendMessages = topic
@@ -7767,6 +7845,9 @@ void HistoryWidget::updateReplyEditTexts(bool force) {
 		_replyEditMsg = session().data().message(
 			_editMsgId ? _peer->id : _replyTo.messageId.peer,
 			_editMsgId ? _editMsgId : _replyTo.messageId.msg);
+		if (!_editMsgId) {
+			updateFieldPlaceholder();
+		}
 	}
 	if (_replyEditMsg) {
 		const auto media = _replyEditMsg->media();

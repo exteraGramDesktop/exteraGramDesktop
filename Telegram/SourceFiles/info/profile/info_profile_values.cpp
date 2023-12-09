@@ -9,6 +9,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/rabbit_settings.h"
 #include "rabbit/rabbit_lang.h"
 
+#include "api/api_chat_participants.h"
+#include "apiwrap.h"
 #include "info/profile/info_profile_badge.h"
 #include "core/application.h"
 #include "core/click_handler_types.h"
@@ -519,6 +521,20 @@ rpl::producer<int> CommonGroupsCountValue(not_null<UserData*> user) {
 		UpdateFlag::CommonChats
 	) | rpl::map([=] {
 		return user->commonChatsCount();
+	});
+}
+
+rpl::producer<int> SimilarChannelsCountValue(
+		not_null<ChannelData*> channel) {
+	const auto participants = &channel->session().api().chatParticipants();
+	participants->loadSimilarChannels(channel);
+	return rpl::single(channel) | rpl::then(
+		participants->similarLoaded()
+	) | rpl::filter(
+		rpl::mappers::_1 == channel
+	) | rpl::map([=] {
+		const auto &similar = participants->similar(channel);
+		return int(similar.list.size()) + similar.more;
 	});
 }
 

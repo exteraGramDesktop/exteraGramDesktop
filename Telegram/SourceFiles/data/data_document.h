@@ -12,7 +12,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_types.h"
 #include "data/data_cloud_file.h"
 #include "core/file_location.h"
-#include "ui/image/image.h"
 
 enum class ChatRestriction;
 class mtpFileLoader;
