@@ -1,5 +1,7 @@
 # rabbitGram Desktop – Telegram Desktop based messenger with special features
 
+[![Windows.](https://github.com/rabbitgramdesktop/rabbitgramdesktop/actions/workflows/win.yml/badge.svg)](https://github.com/rabbitgramdesktop/rabbitgramdesktop/actions/workflows/win.yml)
+
 This is the complete source code and the build instructions for the app based on the official [Telegram][telegram] messenger desktop client.
 
 ![image](https://github.com/xmdnx/exteraGramDesktop/assets/72883689/082fe7d6-eeba-4198-83ab-843d08ac909c)
