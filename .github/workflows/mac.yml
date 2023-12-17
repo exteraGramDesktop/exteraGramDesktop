@@ -130,7 +130,6 @@ jobs:
           cd $REPO_NAME/out/Debug
           mkdir artifact
           mv rabbitGram.app artifact/
-          mv Updater artifact/
       - uses: actions/upload-artifact@master
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
