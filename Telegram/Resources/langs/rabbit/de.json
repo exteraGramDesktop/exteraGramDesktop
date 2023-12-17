@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "Benachrichtigungen automatisch ausblenden",
 	"rtg_settings_hide_notifications_after": "Verbergen nach {seconds} Sekunden",
 	"rtg_general_roundness": "Einheitliche Rundung",
+	"rtg_settings_appicon": "App-Symbol",
 	"dummy_last_string": ""
 }

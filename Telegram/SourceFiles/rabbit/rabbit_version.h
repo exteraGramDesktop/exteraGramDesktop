@@ -10,3 +10,5 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 constexpr auto AppRabbitVersion = 4012002;
 constexpr auto AppRabbitVersionStr = "4.12.2";
 constexpr auto AppRabbitBetaVersion = false;
+
+constexpr auto DummyString = "1";

@@ -268,5 +268,6 @@
 	"rtg_settings_auto_hide_notifications": "自动隐藏通知",
 	"rtg_settings_hide_notifications_after": "在 {seconds} 秒后隐藏",
 	"rtg_general_roundness": "统一曲率",
+	"rtg_settings_appicon": "应用图标",
 	"dummy_last_string": ""
 }

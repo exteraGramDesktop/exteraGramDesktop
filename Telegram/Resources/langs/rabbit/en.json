@@ -281,5 +281,6 @@
 	"rtg_settings_auto_hide_notifications": "Hide notifications automatically",
 	"rtg_settings_hide_notifications_after": "Hide after {seconds} seconds",
 	"rtg_general_roundness": "Single Corner Radius",
+	"rtg_settings_appicon": "App icon",
 	"dummy_last_string": ""
 }

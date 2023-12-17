@@ -268,5 +268,6 @@
 	"rtg_settings_auto_hide_notifications": "Masquer les notifications automatiquement",
 	"rtg_settings_hide_notifications_after": "Cacher après {seconds} secondes",
 	"rtg_general_roundness": "Courbure Unifiée",
+	"rtg_settings_appicon": "Icône de l'application",
 	"dummy_last_string": ""
 }

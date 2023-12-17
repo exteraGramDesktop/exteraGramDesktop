@@ -71,12 +71,17 @@ namespace Settings {
 		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
     }
 
-	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
-	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
+	void Rabbit::SetupAppIcon(not_null<Ui::VerticalLayout *> container)
+	{
+		Ui::AddSubsectionTitle(container, rktr("rtg_settings_appicon"));
         
         container->add(
             object_ptr<IconPicker>(container),
             st::defaultSubsectionTitlePadding);
+	}
+
+	void Rabbit::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
+	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
         
     	const auto userpicRoundnessLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
@@ -251,6 +256,11 @@ namespace Settings {
     void Rabbit::SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
 		Ui::AddSkip(container);
     	SetupGeneral(container);
+
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+    	SetupAppIcon(container);
 
     	Ui::AddSkip(container);
 		Ui::AddDivider(container);

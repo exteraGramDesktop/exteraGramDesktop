@@ -27,6 +27,7 @@ namespace Settings {
 
     private:
         void SetupGeneral(not_null<Ui::VerticalLayout *> container);
+        void SetupAppIcon(not_null<Ui::VerticalLayout *> container);
         void SetupAppearance(not_null<Ui::VerticalLayout *> container);
         void SetupChats(not_null<Ui::VerticalLayout *> container);
 

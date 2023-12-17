@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "Скрывать уведомления автоматически",
 	"rtg_settings_hide_notifications_after": "Скрыть по истечении {seconds} секунд",
 	"rtg_general_roundness": "Единые скругления",
+	"rtg_settings_appicon": "Пиктограмма программы",
 	"dummy_last_string": ""
 }

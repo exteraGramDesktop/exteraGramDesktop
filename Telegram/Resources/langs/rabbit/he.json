@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "הסתר הודעות באופן אוטומטי",
 	"rtg_settings_hide_notifications_after": "הסתר לאחר {seconds} שניות",
 	"rtg_general_roundness": "מעגלות מאוחדות",
+	"rtg_settings_appicon": "אייקון האפליקציה",
 	"dummy_last_string": ""
 }

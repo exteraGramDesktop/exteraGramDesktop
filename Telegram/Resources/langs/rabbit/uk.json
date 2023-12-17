@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "Приховувати сповіщення автоматично",
 	"rtg_settings_hide_notifications_after": "Сховати через {seconds} секунд",
 	"rtg_general_roundness": "Єдине закруглення",
+	"rtg_settings_appicon": "Іконка додатка",
 	"dummy_last_string": ""
 }

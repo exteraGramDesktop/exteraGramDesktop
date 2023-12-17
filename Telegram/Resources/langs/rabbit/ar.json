@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "إخفاء الإشعارات تلقائيًا",
 	"rtg_settings_hide_notifications_after": "إخفاء بعد {seconds} ثانية",
 	"rtg_general_roundness": "التدوير الموحد",
+	"rtg_settings_appicon": "رمز التطبيق",
 	"dummy_last_string": ""
 }

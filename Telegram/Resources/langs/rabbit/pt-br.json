@@ -267,5 +267,6 @@
 	"rtg_settings_auto_hide_notifications": "Ocultar notificações automaticamente",
 	"rtg_settings_hide_notifications_after": "Ocultar após {seconds} segundos",
 	"rtg_general_roundness": "Curvatura Unificada",
+	"rtg_settings_appicon": "Ícone do aplicativo",
 	"dummy_last_string": ""
 }
