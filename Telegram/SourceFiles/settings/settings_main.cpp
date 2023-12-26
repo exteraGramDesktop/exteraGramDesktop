@@ -7,13 +7,10 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "settings/settings_main.h"
 
-<<<<<<< HEAD
 #include "rabbit/rabbit_settings_menu.h"
 #include "rabbit/rabbit_settings.h"
 #include "rabbit/rabbit_lang.h"
 #include "settings/settings_common.h"
-=======
->>>>>>> af6e15ed59b1abef20fa6703f80fe02a43587179
 #include "settings/settings_codes.h"
 #include "settings/settings_chat.h"
 #include "settings/settings_information.h"
@@ -39,11 +36,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
-<<<<<<< HEAD
-=======
 #include "ui/new_badges.h"
 #include "ui/vertical_list.h"
->>>>>>> 5a47ed268c42cc19d5104f3c54e289c368fbfd13
 #include "info/profile/info_profile_badge.h"
 #include "info/profile/info_profile_emoji_status_panel.h"
 #include "data/data_user.h"
