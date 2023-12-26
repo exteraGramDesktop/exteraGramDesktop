@@ -36,10 +36,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
-<<<<<<< HEAD
-=======
 #include "ui/new_badges.h"
->>>>>>> tdev
 #include "ui/vertical_list.h"
 #include "info/profile/info_profile_badge.h"
 #include "info/profile/info_profile_emoji_status_panel.h"
