@@ -10,7 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/settings_menu/rabbit_settings_menu.h"
 #include "rabbit/settings/rabbit_settings.h"
 #include "rabbit/lang/rabbit_lang.h"
-
+#include "settings/settings_common.h"
 #include "settings/settings_codes.h"
 #include "settings/settings_chat.h"
 #include "settings/settings_information.h"
@@ -36,6 +36,10 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/widgets/buttons.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
+<<<<<<< HEAD
+=======
+#include "ui/new_badges.h"
+>>>>>>> tdev
 #include "ui/vertical_list.h"
 #include "info/profile/info_profile_badge.h"
 #include "info/profile/info_profile_emoji_status_panel.h"
@@ -64,6 +68,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "core/file_utilities.h"
 #include "core/application.h"
 #include "base/call_delayed.h"
+#include "base/unixtime.h"
 #include "base/platform/base_platform_info.h"
 #include "styles/style_settings.h"
 #include "styles/style_boxes.h"
@@ -433,6 +438,21 @@ void SetupPremium(
 		controller->setPremiumRef("settings");
 		showOther(PremiumId());
 	});
+	{
+		const auto button = AddButtonWithIcon(
+			container,
+			tr::lng_settings_gift_premium(),
+			st::settingsButton,
+			{ .icon = &st::menuIconGiftPremium }
+		);
+		button->addClickHandler([=] {
+			controller->showGiftPremiumsBox();
+		});
+		constexpr auto kNewExpiresAt = int(1735689600);
+		if (base::unixtime::now() < kNewExpiresAt) {
+			Ui::NewBadge::AddToRight(button);
+		}
+	}
 	Ui::AddSkip(container);
 }
 

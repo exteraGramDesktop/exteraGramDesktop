@@ -6,6 +6,7 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include <windows.h>
+#include <shellapi.h>
 
 #include <array>
 #include <string>
