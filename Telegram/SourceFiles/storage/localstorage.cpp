@@ -542,7 +542,7 @@ QString autoupdatePrefixFile() {
 const QString &readAutoupdatePrefixRaw() {
 	Expects(!Core::UpdaterDisabled());
 
-	const auto &result = AutoupdatePrefix();
+	/* const auto &result = AutoupdatePrefix();
 	if (!result.isEmpty()) {
 		return result;
 	}
@@ -552,7 +552,7 @@ const QString &readAutoupdatePrefixRaw() {
 		if (!value.isEmpty()) {
 			return AutoupdatePrefix(value);
 		}
-	}
+	} */
 	return AutoupdatePrefix("https://rabbitgramdesktop.github.io/rabbitGramDesktopUpdates/");
 }
 
