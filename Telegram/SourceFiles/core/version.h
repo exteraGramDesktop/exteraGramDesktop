@@ -18,11 +18,12 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #endif // TDESKTOP_ALLOW_CLOSED_ALPHA
 
 // used in Updater.cpp and Setup.iss for Windows
+<<<<<<< HEAD
 constexpr auto AppId = "{4356CE01-4137-4C55-9F8B-FB4EEBB6EC0C}"_cs;
 constexpr auto AppNameOld = "rabbitGram Win (Unofficial)"_cs;
 constexpr auto AppName = "rabbitGram Desktop"_cs;
 constexpr auto AppFile = "rabbitGram"_cs;
-constexpr auto AppVersion = 4013001;
-constexpr auto AppVersionStr = "4.13.1";
+constexpr auto AppVersion = 4014000;
+constexpr auto AppVersionStr = "4.14";
 constexpr auto AppBetaVersion = false;
 constexpr auto AppAlphaVersion = TDESKTOP_ALPHA_VERSION;
