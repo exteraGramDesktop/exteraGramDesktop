@@ -345,12 +345,6 @@ int Folder::storiesUnreadCount() const {
 	return _storiesUnreadCount;
 }
 
-void Folder::requestChatListMessage() {
-	if (!chatListMessageKnown()) {
-		owner().histories().requestDialogEntry(this);
-	}
-}
-
 TimeId Folder::adjustedChatListTimeId() const {
 	return chatListTimeId();
 }

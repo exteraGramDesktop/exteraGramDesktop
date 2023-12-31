@@ -262,8 +262,10 @@ void Row::recountHeight(float64 narrowRatio) {
 			: st::defaultDialogRow.height;
 	} else if (_id.folder()) {
 		_height = st::defaultDialogRow.height;
-	} else {
+	} else if (_id.topic()) {
 		_height = st::forumTopicRow.height;
+	} else {
+		_height = st::defaultDialogRow.height;
 	}
 }
 
