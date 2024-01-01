@@ -651,7 +651,7 @@ void HttpChecker::start() {
 		+ qstr("/current")
 		+ (updaterVersion > 1 ? QString::number(updaterVersion) : QString());
 	auto url = QUrl(path);
-	DEBUG_LOG(("Update Info: requesting update state"));
+	LOG(("Update Info: requesting update state from '%1'").arg(path));
 	const auto request = QNetworkRequest(url);
 	_manager = std::make_unique<QNetworkAccessManager>();
 	_reply = _manager->get(request);
