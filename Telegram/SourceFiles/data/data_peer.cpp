@@ -1128,6 +1128,9 @@ Data::RestrictionCheckResult PeerData::amRestricted(
 		}
 	};
 	if (const auto user = asUser()) {
+		if (user->meRequiresPremiumToWrite() && !user->session().premium()) {
+			return Result::Explicit();
+		}
 		return (right == ChatRestriction::SendVoiceMessages
 			|| right == ChatRestriction::SendVideoMessages)
 			? ((user->flags() & UserDataFlag::VoiceMessagesForbidden)
@@ -1146,7 +1149,8 @@ Data::RestrictionCheckResult PeerData::amRestricted(
 				: ChatRestrictions(0));
 		return (channel->amCreator() || allowByAdminRights(right, channel))
 			? Result::Allowed()
-			: (defaultRestrictions & right)
+			: ((defaultRestrictions & right)
+				&& !channel->unrestrictedByBoosts())
 			? Result::WithEveryone()
 			: (channel->restrictions() & right)
 			? Result::Explicit()

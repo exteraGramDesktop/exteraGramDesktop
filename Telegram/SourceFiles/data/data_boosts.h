@@ -10,6 +10,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 namespace Data {
 
 struct BoostsOverview final {
+	bool group = false;
 	int mine = 0;
 	int level = 0;
 	int boostCount = 0;

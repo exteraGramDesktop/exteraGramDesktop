@@ -33,6 +33,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include <QtGui/QSessionManager>
 #include <QtGui/QScreen>
 #include <QtGui/qpa/qplatformscreen.h>
+#include <ksandbox.h>
 
 namespace Core {
 namespace {
@@ -216,7 +217,7 @@ void Sandbox::setupScreenScale() {
 	const auto logEnv = [](const char *name) {
 		const auto value = qEnvironmentVariable(name);
 		if (!value.isEmpty()) {
-			LOG(("%1: %2").arg(name).arg(value));
+			LOG(("%1: %2").arg(name, value));
 		}
 	};
 	logEnv("QT_DEVICE_PIXEL_RATIO");
@@ -517,8 +518,10 @@ void Sandbox::refreshGlobalProxy() {
 		|| proxy.type == MTP::ProxyData::Type::Http) {
 		QNetworkProxy::setApplicationProxy(
 			MTP::ToNetworkProxy(MTP::ToDirectIpProxy(proxy)));
-	} else if (!Core::IsAppLaunched()
-		|| Core::App().settings().proxy().isSystem()) {
+	} else if ((!Core::IsAppLaunched()
+		|| Core::App().settings().proxy().isSystem())
+		// this works stable only in sandboxed environment where it works through portal
+		&& (!Platform::IsLinux() || KSandbox::isInside() || cDebugMode())) {
 		QNetworkProxyFactory::setUseSystemConfiguration(true);
 	} else {
 		QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);

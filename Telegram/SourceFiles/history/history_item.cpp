@@ -139,6 +139,7 @@ struct HistoryItem::CreateConfig {
 	UserId viaBotId = 0;
 	int viewsCount = -1;
 	int forwardsCount = -1;
+	int boostsApplied = 0;
 	QString postAuthor;
 
 	MsgId originalId = 0;
@@ -352,6 +353,8 @@ HistoryItem::HistoryItem(
 		FlagsFromMTP(id, data.vflags().v, localFlags),
 		data.vdate().v,
 		data.vfrom_id() ? peerFromMTP(*data.vfrom_id()) : PeerId(0)) {
+	_boostsApplied = data.vfrom_boosts_applied().value_or_empty();
+
 	const auto media = data.vmedia();
 	const auto checked = media
 		? CheckMessageMedia(*media)
@@ -561,11 +564,8 @@ HistoryItem::HistoryItem(
 		}
 	}
 
-	const auto dropCustomEmoji = dropForwardInfo
-		&& !history->session().premium()
-		&& !history->peer->isSelf();
-	setText(dropCustomEmoji
-		? DropCustomEmoji(original->originalText())
+	setText(dropForwardInfo
+		? DropDisallowedCustomEmoji(history->peer, original->originalText())
 		: original->originalText());
 }
 
@@ -765,7 +765,7 @@ HistoryItem::HistoryItem(
 : id(id)
 , _history(history)
 , _from(from ? history->owner().peer(from) : history->peer)
-, _flags(FinalizeMessageFlags(flags))
+, _flags(FinalizeMessageFlags(history, flags))
 , _date(date) {
 	if (isHistoryEntry() && IsClientMsgId(id)) {
 		_history->registerClientSideMessage(this);
@@ -880,13 +880,14 @@ void HistoryItem::updateDependentServiceText() {
 	}
 }
 
-bool HistoryItem::updateServiceDependent(bool force) {
+void HistoryItem::updateServiceDependent(bool force) {
 	auto dependent = GetServiceDependentData();
 	Assert(dependent != nullptr);
 
 	if (!force) {
 		if (!dependent->msgId || dependent->msg) {
-			return true;
+			dependent->pendingResolve = false;
+			return;
 		}
 	}
 
@@ -918,6 +919,17 @@ bool HistoryItem::updateServiceDependent(bool force) {
 			}
 		}
 	}
+
+	// Record resolve state for upcoming on-demand resolving.
+	if (dependent->msg || !dependent->msgId || force) {
+		dependent->pendingResolve = false;
+	} else {
+		dependent->pendingResolve = true;
+		dependent->requestedResolve = false;
+	}
+
+	// updateDependentServiceText may call UpdateComponents!
+	// So the `dependent` pointer becomes invalid.
 	if (dependent->msg) {
 		updateDependentServiceText();
 	} else if (force) {
@@ -930,7 +942,6 @@ bool HistoryItem::updateServiceDependent(bool force) {
 	if (force && gotDependencyItem) {
 		Core::App().notifications().checkDelayed();
 	}
-	return (dependent->msg || !dependent->msgId);
 }
 
 MsgId HistoryItem::dependencyMsgId() const {
@@ -948,9 +959,49 @@ void HistoryItem::checkBuyButton() {
 	}
 }
 
+void HistoryItem::resolveDependent(
+		not_null<HistoryServiceDependentData*> dependent) {
+	if (!dependent->pendingResolve || dependent->requestedResolve) {
+		return;
+	}
+	dependent->requestedResolve = true;
+	RequestDependentMessageItem(
+		this,
+		(dependent->peerId ? dependent->peerId : _history->peer->id),
+		dependent->msgId);
+}
+
+void HistoryItem::resolveDependent(not_null<HistoryMessageReply*> reply) {
+	if (!reply->acquireResolve()) {
+		return;
+	} else if (const auto messageId = reply->messageId()) {
+		RequestDependentMessageItem(
+			this,
+			reply->externalPeerId(),
+			reply->messageId());
+	} else if (reply->storyId()) {
+		RequestDependentMessageStory(
+			this,
+			reply->externalPeerId(),
+			reply->storyId());
+	}
+}
+
+void HistoryItem::resolveDependent() {
+	if (const auto dependent = GetServiceDependentData()) {
+		resolveDependent(dependent);
+	} else if (const auto reply = Get<HistoryMessageReply>()) {
+		resolveDependent(reply);
+	}
+}
+
 bool HistoryItem::notificationReady() const {
 	if (const auto dependent = GetServiceDependentData()) {
-		return (dependent->msg || !dependent->msgId);
+		if (dependent->msg || !dependent->msgId) {
+			return true;
+		}
+		const_cast<HistoryItem*>(this)->resolveDependent(
+			const_cast<HistoryServiceDependentData*>(dependent));
 	}
 	return true;
 }
@@ -1235,6 +1286,22 @@ uint8 HistoryItem::colorIndex() const {
 	Unexpected("No displayFrom and no displayHiddenSenderInfo.");
 }
 
+PeerData *HistoryItem::contentColorsFrom() const {
+	if (const auto forwarded = Get<HistoryMessageForwarded>()) {
+		return forwarded->originalSender;
+	}
+	return displayFrom();
+}
+
+uint8 HistoryItem::contentColorIndex() const {
+	if (const auto forwarded = Get<HistoryMessageForwarded>()) {
+		return forwarded->originalSender
+			? forwarded->originalSender->colorIndex()
+			: forwarded->originalHiddenSenderInfo->colorIndex;
+	}
+	return colorIndex();
+}
+
 std::unique_ptr<HistoryView::Element> HistoryItem::createView(
 		not_null<HistoryView::ElementDelegate*> delegate,
 		HistoryView::Element *replacing) {
@@ -1407,8 +1474,9 @@ void HistoryItem::returnSavedMedia() {
 		return;
 	}
 	const auto wasGrouped = history()->owner().groups().isGrouped(this);
-	_media = std::move(_savedLocalEditMediaData->media);
-	setText(_savedLocalEditMediaData->text);
+	const auto data = Get<HistoryMessageSavedMediaData>();
+	_media = std::move(data->media);
+	setText(data->text);
 	clearSavedMedia();
 	if (wasGrouped) {
 		history()->owner().groups().refreshMessage(this, true);
@@ -1421,19 +1489,18 @@ void HistoryItem::returnSavedMedia() {
 void HistoryItem::savePreviousMedia() {
 	Expects(_media != nullptr);
 
-	using Data = SavedMediaData;
-	_savedLocalEditMediaData = std::make_unique<Data>(Data{
-		.text = originalText(),
-		.media = _media->clone(this),
-	});
+	AddComponents(HistoryMessageSavedMediaData::Bit());
+	const auto data = Get<HistoryMessageSavedMediaData>();
+	data->text = originalText();
+	data->media = _media->clone(this);
 }
 
 bool HistoryItem::isEditingMedia() const {
-	return _savedLocalEditMediaData != nullptr;
+	return Has<HistoryMessageSavedMediaData>();
 }
 
 void HistoryItem::clearSavedMedia() {
-	_savedLocalEditMediaData = nullptr;
+	RemoveComponents(HistoryMessageSavedMediaData::Bit());
 }
 
 bool HistoryItem::definesReplyKeyboard() const {
@@ -1585,9 +1652,10 @@ void HistoryItem::applyEdition(HistoryMessageEdition &&edition) {
 	//	}
 	//}
 
+	const auto editingMedia = isEditingMedia();
 	const auto updatingSavedLocalEdit = !edition.savePreviousMedia
-		&& (_savedLocalEditMediaData != nullptr);
-	if (!_savedLocalEditMediaData && edition.savePreviousMedia) {
+		&& editingMedia;
+	if (!editingMedia && edition.savePreviousMedia) {
 		savePreviousMedia();
 	}
 	Assert(!updatingSavedLocalEdit || !isLocalUpdateMedia());
@@ -1616,7 +1684,7 @@ void HistoryItem::applyEdition(HistoryMessageEdition &&edition) {
 		setReplyMarkup(base::take(edition.replyMarkup));
 	}
 	if (updatingSavedLocalEdit) {
-		_savedLocalEditMediaData->media = edition.mtpMedia
+		Get<HistoryMessageSavedMediaData>()->media = edition.mtpMedia
 			? CreateMedia(this, *edition.mtpMedia)
 			: nullptr;
 	} else {
@@ -1633,13 +1701,13 @@ void HistoryItem::applyEdition(HistoryMessageEdition &&edition) {
 		setForwardsCount(edition.forwards);
 	}
 	const auto &checkedMedia = updatingSavedLocalEdit
-		? _savedLocalEditMediaData->media
+		? Get<HistoryMessageSavedMediaData>()->media
 		: _media;
 	auto updatedText = checkedMedia
 		? edition.textWithEntities
 		: EnsureNonEmpty(edition.textWithEntities);
 	if (updatingSavedLocalEdit) {
-		_savedLocalEditMediaData->text = std::move(updatedText);
+		Get<HistoryMessageSavedMediaData>()->text = std::move(updatedText);
 	} else {
 		setText(std::move(updatedText));
 		addToSharedMediaIndex();
@@ -1799,7 +1867,7 @@ void HistoryItem::applySentMessage(
 void HistoryItem::updateSentContent(
 		const TextWithEntities &textWithEntities,
 		const MTPMessageMedia *media) {
-	if (_savedLocalEditMediaData) {
+	if (isEditingMedia()) {
 		return;
 	}
 	setText(textWithEntities);
@@ -1931,10 +1999,9 @@ void HistoryItem::destroyHistoryEntry() {
 }
 
 Storage::SharedMediaTypesMask HistoryItem::sharedMediaTypes() const {
-	auto result = Storage::SharedMediaTypesMask {};
-	const auto media = _savedLocalEditMediaData
-		? _savedLocalEditMediaData->media.get()
-		: _media.get();
+	auto result = Storage::SharedMediaTypesMask{};
+	const auto saved = Get<HistoryMessageSavedMediaData>();
+	const auto media = saved ? saved->media.get() : _media.get();
 	if (media) {
 		result.set(media->sharedMediaTypes());
 	}
@@ -2413,6 +2480,10 @@ const std::vector<Data::MessageReaction> &HistoryItem::reactions() const {
 	return _reactions ? _reactions->list() : kEmpty;
 }
 
+bool HistoryItem::reactionsAreTags() const {
+	return _flags & MessageFlag::ReactionsAreTags;
+}
+
 auto HistoryItem::recentReactions() const
 -> const base::flat_map<
 		Data::ReactionId,
@@ -2594,7 +2665,7 @@ TextWithEntities HistoryItem::translatedTextWithLocalEntities() const {
 TextForMimeData HistoryItem::clipboardText() const {
 	return isService()
 		? TextForMimeData()
-		: TextForMimeData::WithExpandedLinks(_text);
+		: TextForMimeData::WithExpandedLinks(translatedText());
 }
 
 bool HistoryItem::changeViewsCount(int count) {
@@ -3125,6 +3196,8 @@ TextWithEntities HistoryItem::notificationText(
 
 ItemPreview HistoryItem::toPreview(ToPreviewOptions options) const {
 	if (isService()) {
+		const_cast<HistoryItem*>(this)->resolveDependent();
+
 		// Don't show small media for service messages (chat photo changed).
 		// Because larger version is shown exactly to the left of the small.
 		//auto media = _media ? _media->toPreview(options) : ItemPreview();
@@ -3285,19 +3358,7 @@ void HistoryItem::createComponents(CreateConfig &&config) {
 
 	if (const auto reply = Get<HistoryMessageReply>()) {
 		reply->set(std::move(config.reply));
-		if (!reply->updateData(this)) {
-			if (const auto messageId = reply->messageId()) {
-				RequestDependentMessageItem(
-					this,
-					reply->externalPeerId(),
-					reply->messageId());
-			} else if (reply->storyId()) {
-				RequestDependentMessageStory(
-					this,
-					reply->externalPeerId(),
-					reply->storyId());
-			}
-		}
+		reply->updateData(this);
 	}
 	if (const auto via = Get<HistoryMessageVia>()) {
 		via->create(&_history->owner(), config.viaBotId);
@@ -3341,6 +3402,12 @@ void HistoryItem::createComponents(CreateConfig &&config) {
 		_flags |= MessageFlag::HasReplyMarkup;
 	} else {
 		_flags &= ~MessageFlag::HasReplyMarkup;
+	}
+
+	if (out() && isSending()) {
+		if (const auto channel = _history->peer->asMegagroup()) {
+			_boostsApplied = channel->mgInfo->boostsApplied;
+		}
 	}
 }
 
@@ -3540,31 +3607,40 @@ bool HistoryItem::changeReactions(const MTPMessageReactions *reactions) {
 	}
 	if (!reactions) {
 		_flags &= ~MessageFlag::CanViewReactions;
+		if (_history->peer->isSelf()) {
+			_flags |= MessageFlag::ReactionsAreTags;
+		}
 		return (base::take(_reactions) != nullptr);
 	}
-	return reactions->match([&](const MTPDmessageReactions &data) {
-		if (data.is_can_see_list()) {
-			_flags |= MessageFlag::CanViewReactions;
-		} else {
-			_flags &= ~MessageFlag::CanViewReactions;
+	const auto &data = reactions->data();
+	const auto empty = data.vresults().v.isEmpty();
+	if (data.is_reactions_as_tags()
+		|| (empty && _history->peer->isSelf())) {
+		_flags |= MessageFlag::ReactionsAreTags;
+	} else {
+		_flags &= ~MessageFlag::ReactionsAreTags;
+	}
+	if (data.is_can_see_list()) {
+		_flags |= MessageFlag::CanViewReactions;
+	} else {
+		_flags &= ~MessageFlag::CanViewReactions;
+	}
+	if (empty) {
+		return (base::take(_reactions) != nullptr);
+	} else if (!_reactions) {
+		_reactions = std::make_unique<Data::MessageReactions>(this);
+	}
+	const auto min = data.is_min();
+	const auto &list = data.vresults().v;
+	const auto &recent = data.vrecent_reactions().value_or_empty();
+	if (min && hasUnreadReaction()) {
+		// We can't update reactions from min if we have unread.
+		if (_reactions->checkIfChanged(list, recent, min)) {
+			updateReactionsUnknown();
 		}
-		if (data.vresults().v.isEmpty()) {
-			return (base::take(_reactions) != nullptr);
-		} else if (!_reactions) {
-			_reactions = std::make_unique<Data::MessageReactions>(this);
-		}
-		const auto min = data.is_min();
-		const auto &list = data.vresults().v;
-		const auto &recent = data.vrecent_reactions().value_or_empty();
-		if (min && hasUnreadReaction()) {
-			// We can't update reactions from min if we have unread.
-			if (_reactions->checkIfChanged(list, recent, min)) {
-				updateReactionsUnknown();
-			}
-			return false;
-		}
-		return _reactions->change(list, recent, min);
-	});
+		return false;
+	}
+	return _reactions->change(list, recent, min);
 }
 
 void HistoryItem::applyTTL(const MTPDmessage &data) {
@@ -3861,14 +3937,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 					dependent->topId = data.vreply_to_top_id().value_or(id);
 					dependent->topicPost = data.is_forum_topic()
 						|| Has<HistoryServiceTopicInfo>();
-					if (!updateServiceDependent()) {
-						RequestDependentMessageItem(
-							this,
-							(dependent->peerId
-								? dependent->peerId
-								: _history->peer->id),
-							dependent->msgId);
-					}
+					updateServiceDependent();
 				}
 			}
 		}, [](const MTPDmessageReplyStoryHeader &data) {
@@ -4724,11 +4793,13 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 	auto prepareGiveawayLaunch = [&](const MTPDmessageActionGiveawayLaunch &action) {
 		auto result = PreparedServiceText();
 		result.links.push_back(fromLink());
-		result.text = tr::lng_action_giveaway_started(
-			tr::now,
-			lt_from,
-			fromLinkText(), // Link 1.
-			Ui::Text::WithEntities);
+		result.text = (_history->peer->isMegagroup()
+			? tr::lng_action_giveaway_started_group
+			: tr::lng_action_giveaway_started)(
+				tr::now,
+				lt_from,
+				fromLinkText(), // Link 1.
+				Ui::Text::WithEntities);
 		return result;
 	};
 
@@ -4746,6 +4817,20 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 					lt_count,
 					winners))
 		};
+		return result;
+	};
+
+	auto prepareBoostApply = [&](const MTPDmessageActionBoostApply &action) {
+		auto result = PreparedServiceText();
+		const auto boosts = action.vboosts().v;
+		result.links.push_back(fromLink());
+		result.text = tr::lng_action_boost_apply(
+			tr::now,
+			lt_count,
+			boosts,
+			lt_from,
+			fromLinkText(), // Link 1.
+			Ui::Text::WithEntities);
 		return result;
 	};
 
@@ -4790,6 +4875,7 @@ void HistoryItem::setServiceMessageByAction(const MTPmessageAction &action) {
 		prepareGiftCode,
 		prepareGiveawayLaunch,
 		prepareGiveawayResults,
+		prepareBoostApply,
 		PrepareErrorText<MTPDmessageActionEmpty>));
 
 	// Additional information.

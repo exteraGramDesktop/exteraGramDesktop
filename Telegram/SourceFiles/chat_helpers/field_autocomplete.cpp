@@ -332,7 +332,7 @@ void FieldAutocomplete::showFiltered(
 		plainQuery = base::StringViewMid(query, 1);
 		break;
 	}
-	bool resetScroll = (_type != type || _filter != plainQuery);
+	const auto resetScroll = (_type != type || _filter != plainQuery);
 	if (resetScroll) {
 		_type = type;
 		_filter = TextUtilities::RemoveAccents(plainQuery.toString());
@@ -343,10 +343,11 @@ void FieldAutocomplete::showFiltered(
 }
 
 void FieldAutocomplete::showStickers(EmojiPtr emoji) {
-	bool resetScroll = (_emoji != emoji);
-	_emoji = emoji;
-	_type = Type::Stickers;
-	if (!emoji) {
+	const auto resetScroll = (_emoji != emoji);
+	if (resetScroll || emoji) {
+		_emoji = emoji;
+		_type = Type::Stickers;
+	} else if (!emoji) {
 		rowsUpdated(
 			base::take(_mrows),
 			base::take(_hrows),
