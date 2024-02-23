@@ -149,6 +149,11 @@ struct HistoryMessageForwarded : public RuntimeComponent<HistoryMessageForwarded
 	bool story = false;
 };
 
+struct HistoryMessageSavedMediaData : public RuntimeComponent<HistoryMessageSavedMediaData, HistoryItem> {
+	TextWithEntities text;
+	std::unique_ptr<Data::Media> media;
+};
+
 struct HistoryMessageSaved : public RuntimeComponent<HistoryMessageSaved, HistoryItem> {
 	Data::SavedSublist *sublist = nullptr;
 };
@@ -271,7 +276,7 @@ struct HistoryMessageReply
 		MsgId messageId,
 		MsgId topMessageId,
 		bool topicPost);
-	bool updateData(not_null<HistoryItem*> holder, bool force = false);
+	void updateData(not_null<HistoryItem*> holder, bool force = false);
 
 	// Must be called before destructor.
 	void clearData(not_null<HistoryItem*> holder);
@@ -317,6 +322,8 @@ struct HistoryMessageReply
 		return _multiline;
 	}
 
+	[[nodiscard]] bool acquireResolve();
+
 	void setTopMessageId(MsgId topMessageId);
 
 	void refreshReplyToMedia();
@@ -331,6 +338,8 @@ private:
 	uint8 _unavailable : 1 = 0;
 	uint8 _displaying : 1 = 0;
 	uint8 _multiline : 1 = 0;
+	uint8 _pendingResolve : 1 = 0;
+	uint8 _requestedResolve : 1 = 0;
 
 };
 
@@ -562,6 +571,8 @@ struct HistoryServiceDependentData {
 	MsgId msgId = 0;
 	MsgId topId = 0;
 	bool topicPost = false;
+	bool pendingResolve = false;
+	bool requestedResolve = false;
 };
 
 struct HistoryServicePinned

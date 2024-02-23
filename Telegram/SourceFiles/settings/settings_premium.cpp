@@ -177,26 +177,61 @@ using Order = std::vector<QString>;
 
 [[nodiscard]] Order FallbackOrder() {
 	return Order{
-		u"wallpapers"_q,
 		u"stories"_q,
-		u"double_limits"_q,
 		u"more_upload"_q,
-		u"faster_download"_q,
+		u"double_limits"_q,
+		u"last_seen"_q,
 		u"voice_to_text"_q,
-		u"no_ads"_q,
-		u"emoji_status"_q,
-		u"infinite_reactions"_q,
-		u"premium_stickers"_q,
-		u"animated_emoji"_q,
-		u"advanced_chat_management"_q,
-		u"profile_badge"_q,
-		u"animated_userpics"_q,
+		u"faster_download"_q,
 		u"translations"_q,
+		u"animated_emoji"_q,
+		u"emoji_status"_q,
+		u"saved_tags"_q,
+		//u"peer_colors"_q,
+		u"wallpapers"_q,
+		u"profile_badge"_q,
+		u"message_privacy"_q,
+		u"advanced_chat_management"_q,
+		u"no_ads"_q,
+		//u"app_icons"_q,
+		u"infinite_reactions"_q,
+		u"animated_userpics"_q,
+		u"premium_stickers"_q,
 	};
 }
 
 [[nodiscard]] base::flat_map<QString, Entry> EntryMap() {
 	return base::flat_map<QString, Entry>{
+		{
+			u"saved_tags"_q,
+			Entry{
+				&st::settingsPremiumIconTags,
+				tr::lng_premium_summary_subtitle_tags_for_messages(),
+				tr::lng_premium_summary_about_tags_for_messages(),
+				PremiumPreview::TagsForMessages,
+				true,
+			},
+		},
+		{
+			u"last_seen"_q,
+			Entry{
+				&st::settingsPremiumIconLastSeen,
+				tr::lng_premium_summary_subtitle_last_seen(),
+				tr::lng_premium_summary_about_last_seen(),
+				PremiumPreview::LastSeen,
+				true,
+			},
+		},
+		{
+			u"message_privacy"_q,
+			Entry{
+				&st::settingsPremiumIconPrivacy,
+				tr::lng_premium_summary_subtitle_message_privacy(),
+				tr::lng_premium_summary_about_message_privacy(),
+				PremiumPreview::MessagePrivacy,
+				true,
+			},
+		},
 		{
 			u"wallpapers"_q,
 			Entry{
@@ -204,7 +239,6 @@ using Order = std::vector<QString>;
 				tr::lng_premium_summary_subtitle_wallpapers(),
 				tr::lng_premium_summary_about_wallpapers(),
 				PremiumPreview::Wallpapers,
-				true,
 			},
 		},
 		{
@@ -1316,12 +1350,29 @@ void ShowPremiumPromoToast(
 		std::shared_ptr<ChatHelpers::Show> show,
 		TextWithEntities textWithLink,
 		const QString &ref) {
+	ShowPremiumPromoToast(show, [=](
+			not_null<Main::Session*> session,
+			ChatHelpers::WindowUsage usage) {
+		Expects(&show->session() == session);
+
+		return show->resolveWindow(usage);
+	}, std::move(textWithLink), ref);
+}
+
+void ShowPremiumPromoToast(
+		std::shared_ptr<Main::SessionShow> show,
+		Fn<Window::SessionController*(
+			not_null<Main::Session*>,
+			ChatHelpers::WindowUsage)> resolveWindow,
+		TextWithEntities textWithLink,
+		const QString &ref) {
 	using WeakToast = base::weak_ptr<Ui::Toast::Instance>;
 	const auto toast = std::make_shared<WeakToast>();
 	(*toast) = show->showToast({
 		.text = std::move(textWithLink),
 		.st = &st::defaultMultilineToast,
 		.duration = Ui::Toast::kDefaultDuration * 2,
+		.adaptive = true,
 		.multiline = true,
 		.filter = crl::guard(&show->session(), [=](
 				const ClickHandlerPtr &,
@@ -1330,7 +1381,8 @@ void ShowPremiumPromoToast(
 				if (const auto strong = toast->get()) {
 					strong->hideAnimated();
 					(*toast) = nullptr;
-					if (const auto controller = show->resolveWindow(
+					if (const auto controller = resolveWindow(
+							&show->session(),
 							ChatHelpers::WindowUsage::PremiumPromo)) {
 						Settings::ShowPremium(controller, ref);
 					}
@@ -1492,6 +1544,12 @@ not_null<Ui::GradientButton*> CreateSubscribeButton(
 			return PremiumPreview::EmojiStatus;
 		} else if (s == u"infinite_reactions"_q) {
 			return PremiumPreview::InfiniteReactions;
+		} else if (s == u"saved_tags"_q) {
+			return PremiumPreview::TagsForMessages;
+		} else if (s == u"last_seen"_q) {
+			return PremiumPreview::LastSeen;
+		} else if (s == u"message_privacy"_q) {
+			return PremiumPreview::MessagePrivacy;
 		} else if (s == u"premium_stickers"_q) {
 			return PremiumPreview::Stickers;
 		} else if (s == u"animated_emoji"_q) {

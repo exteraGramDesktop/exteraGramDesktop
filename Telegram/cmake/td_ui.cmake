@@ -101,6 +101,10 @@ PRIVATE
 
     history/history_view_top_toast.cpp
     history/history_view_top_toast.h
+    history/view/controls/history_view_characters_limit.cpp
+    history/view/controls/history_view_characters_limit.h
+    history/view/controls/history_view_voice_record_button.cpp
+    history/view/controls/history_view_voice_record_button.h
 
     info/profile/info_profile_icon.cpp
     info/profile/info_profile_icon.h
@@ -236,6 +240,8 @@ PRIVATE
     ui/boxes/rate_call_box.h
     ui/boxes/report_box.cpp
     ui/boxes/report_box.h
+    ui/boxes/show_or_premium_box.cpp
+    ui/boxes/show_or_premium_box.h
     ui/boxes/single_choice_box.cpp
     ui/boxes/single_choice_box.h
     ui/boxes/time_picker_box.cpp

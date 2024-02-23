@@ -49,6 +49,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "history/history_item_helpers.h" // GetErrorTextForSending.
 #include "history/view/media/history_view_media.h"
 #include "history/view/history_view_service_message.h"
+#include "history/view/history_view_sublist_section.h"
 #include "lang/lang_keys.h"
 #include "lang/lang_cloud_manager.h"
 #include "inline_bots/inline_bot_layout_item.h"
@@ -727,24 +728,23 @@ void MainWidget::searchMessages(const QString &query, Dialogs::Key inChat) {
 			_dialogs->setInnerFocus();
 		}
 	} else {
-		const auto searchIn = [&](not_null<Window::Controller*> window) {
-			if (const auto controller = window->sessionController()) {
-				controller->content()->searchMessages(query, inChat);
-				controller->widget()->activate();
-			}
-		};
-		const auto account = &session().account();
-		if (const auto peer = inChat.peer()) {
-			if (peer == controller()->singlePeer()) {
-				if (_history->peer() != peer) {
-					controller()->showPeerHistory(peer);
+		if (const auto sublist = inChat.sublist()) {
+			controller()->showSection(
+				std::make_shared<HistoryView::SublistMemento>(sublist));
+		} else if (!Data::SearchTagsFromQuery(query).empty()) {
+			inChat = controller()->session().data().history(
+				controller()->session().user());
+		}
+		if ((!_mainSection
+			|| !_mainSection->searchInChatEmbedded(inChat, query))
+			&& !_history->searchInChatEmbedded(inChat, query)) {
+			const auto account = &session().account();
+			if (const auto window = Core::App().windowFor(account)) {
+				if (const auto controller = window->sessionController()) {
+					controller->content()->searchMessages(query, inChat);
+					controller->widget()->activate();
 				}
-				_history->searchInChatEmbedded(query);
-			} else if (const auto window = Core::App().windowFor(peer)) {
-				searchIn(window);
 			}
-		} else if (const auto window = Core::App().windowFor(account)) {
-			searchIn(window);
 		}
 	}
 }
@@ -755,7 +755,6 @@ void MainWidget::handleAudioUpdate(const Media::Player::TrackState &state) {
 	const auto item = session().data().message(state.id.contextId());
 	if (!Media::Player::IsStoppedOrStopping(state.state)) {
 		const auto ttlSeconds = item
-			&& !item->out()
 			&& item->media()
 			&& item->media()->ttlSeconds();
 		if (!ttlSeconds) {
@@ -1379,7 +1378,7 @@ void MainWidget::showHistory(
 
 	if (!back && (way != Way::ClearStack)) {
 		// This may modify the current section, for example remove its contents.
-		saveSectionInStack();
+		saveSectionInStack(params);
 	}
 
 	if (_history->peer()
@@ -1501,13 +1500,23 @@ Ui::ChatTheme *MainWidget::customChatTheme() const {
 	return _history->customChatTheme();
 }
 
-void MainWidget::saveSectionInStack() {
+bool MainWidget::saveSectionInStack(
+		const SectionShow &params,
+		Window::SectionWidget *newMainSection) {
 	if (_mainSection) {
 		if (auto memento = _mainSection->createMemento()) {
+			if (params.dropSameFromStack
+				&& newMainSection
+				&& newMainSection->sameTypeAs(memento.get())) {
+				// When choosing saved sublist we want to save the original
+				// "Saved Messages" in the stack, but don't save every
+				// sublist in a new stack entry when clicking them through.
+				return false;
+			}
 			_stack.push_back(std::make_unique<StackItemSection>(
 				std::move(memento)));
 		} else {
-			return;
+			return false;
 		}
 	} else if (const auto history = _history->history()) {
 		_stack.push_back(std::make_unique<StackItemHistory>(
@@ -1515,7 +1524,9 @@ void MainWidget::saveSectionInStack() {
 			_history->msgId(),
 			_history->replyReturns()));
 	} else {
-		return;
+		// We pretend that we "saved" the chats list state in stack,
+		// so that we do animate a transition from chats list to a section.
+		return true;
 	}
 	const auto raw = _stack.back().get();
 	raw->setThirdSectionWeak(_thirdSection.data());
@@ -1528,6 +1539,7 @@ void MainWidget::saveSectionInStack() {
 			}
 		}
 	}, raw->lifetime());
+	return true;
 }
 
 void MainWidget::showSection(
@@ -1730,7 +1742,11 @@ void MainWidget::showNewSection(
 
 	if (saveInStack) {
 		// This may modify the current section, for example remove its contents.
-		saveSectionInStack();
+		if (!saveSectionInStack(params, newMainSection)) {
+			saveInStack = false;
+			animatedShow = false;
+			animationParams = Window::SectionSlideParams();
+		}
 	}
 	auto &settingSection = newThirdSection
 		? _thirdSection
@@ -2446,6 +2462,10 @@ auto MainWidget::thirdSectionForCurrentMainSection(
 		return std::make_shared<Info::Memento>(
 			peer,
 			Info::Memento::DefaultSection(peer));
+	} else if (const auto sublist = key.sublist()) {
+		return std::make_shared<Info::Memento>(
+			session().user(),
+			Info::Memento::DefaultSection(session().user()));
 	}
 	Unexpected("Key in MainWidget::thirdSectionForCurrentMainSection().");
 }
@@ -2674,10 +2694,6 @@ void MainWidget::updateWindowAdaptiveLayout() {
 
 int MainWidget::backgroundFromY() const {
 	return -getMainSectionTop();
-}
-
-void MainWidget::searchInChat(Dialogs::Key chat) {
-	searchMessages(QString(), chat);
 }
 
 bool MainWidget::contentOverlapped(const QRect &globalRect) {

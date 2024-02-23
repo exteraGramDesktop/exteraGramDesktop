@@ -446,7 +446,6 @@ QByteArray SerializeMessage(
 		pushAction("send_payment");
 		push("amount", data.amount);
 		push("currency", data.currency);
-		const auto amount = FormatMoneyAmount(data.amount, data.currency);
 		pushReplyToMsgId("invoice_message_id");
 		if (data.recurringUsed) {
 			push("recurring", "used");
@@ -618,6 +617,10 @@ QByteArray SerializeMessage(
 			? "set_same_chat_wallpaper"
 			: "set_chat_wallpaper");
 		pushReplyToMsgId("message_id");
+	}, [&](const ActionBoostApply &data) {
+		pushActor();
+		pushAction("boost_apply");
+		push("boosts", data.boosts);
 	}, [](v::null_t) {});
 
 	if (v::is_null(message.action.content)) {

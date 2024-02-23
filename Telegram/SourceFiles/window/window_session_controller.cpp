@@ -552,7 +552,7 @@ void SessionNavigation::showPeerByLinkResolved(
 		} else {
 			showPeerInfo(peer, params);
 		}
-	} else if (resolveType == ResolveType::Boost && peer->isBroadcast()) {
+	} else if (resolveType == ResolveType::Boost && peer->isChannel()) {
 		resolveBoostState(peer->asChannel());
 	} else {
 		// Show specific posts only in channels / supergroups.
@@ -630,7 +630,9 @@ void SessionNavigation::resolveBoostState(not_null<ChannelData*> channel) {
 		uiShow()->show(Box(Ui::BoostBox, Ui::BoostBoxData{
 			.name = channel->name(),
 			.boost = ParseBoostCounters(result),
+			.features = LookupBoostFeatures(channel),
 			.allowMulti = (BoostsForGift(_session) > 0),
+			.group = channel->isMegagroup(),
 		}, submit));
 	}).fail([=](const MTP::Error &error) {
 		_boostStateResolving = nullptr;
@@ -659,10 +661,12 @@ void SessionNavigation::applyBoost(
 					uiShow()->show(
 						Box(Ui::GiftForBoostsBox, name, receive, again));
 				} else {
-					uiShow()->show(Box(Ui::BoostBoxAlready));
+					uiShow()->show(
+						Box(Ui::BoostBoxAlready, channel->isMegagroup()));
 				}
 			} else if (!_session->premium()) {
-				uiShow()->show(Box(Ui::PremiumForBoostsBox, [=] {
+				const auto group = channel->isMegagroup();
+				uiShow()->show(Box(Ui::PremiumForBoostsBox, group, [=] {
 					const auto id = peerToChannel(channel->id).bare;
 					Settings::ShowPremium(
 						parentController(),
@@ -674,12 +678,16 @@ void SessionNavigation::applyBoost(
 				uiShow()->show(
 					Box(Ui::GiftForBoostsBox, name, receive, again));
 			} else {
-				uiShow()->show(Box(Ui::GiftedNoBoostsBox));
+				uiShow()->show(
+					Box(Ui::GiftedNoBoostsBox, channel->isMegagroup()));
 			}
 			done({});
 		} else {
 			const auto weak = std::make_shared<QPointer<Ui::BoxContent>>();
-			const auto reassign = [=](std::vector<int> slots, int sources) {
+			const auto reassign = [=](
+					std::vector<int> slots,
+					int groups,
+					int channels) {
 				const auto count = int(slots.size());
 				const auto callback = [=](Ui::BoostCounters counters) {
 					if (const auto strong = weak->data()) {
@@ -691,10 +699,14 @@ void SessionNavigation::applyBoost(
 						lt_count,
 						count,
 						lt_channels,
-						tr::lng_boost_reassign_channels(
-							tr::now,
-							lt_count,
-							sources)));
+						(!groups
+							? tr::lng_boost_reassign_channels
+							: !channels
+							? tr::lng_boost_reassign_groups
+							: tr::lng_boost_reassign_mixed)(
+									tr::now,
+									lt_count,
+									groups + channels)));
 				};
 				applyBoostsChecked(
 					channel,
@@ -978,6 +990,16 @@ void SessionNavigation::showPollResults(
 	showSection(std::make_shared<Info::Memento>(poll, contextId), params);
 }
 
+void SessionNavigation::searchInChat(Dialogs::Key inChat) {
+	searchMessages(QString(), inChat);
+}
+
+void SessionNavigation::searchMessages(
+		const QString &query,
+		Dialogs::Key inChat) {
+	parentController()->content()->searchMessages(query, inChat);
+}
+
 auto SessionNavigation::showToast(Ui::Toast::Config &&config)
 -> base::weak_ptr<Ui::Toast::Instance> {
 	return uiShow()->showToast(std::move(config));
@@ -1218,25 +1240,54 @@ void SessionController::showGiftPremiumBox(UserData *user) {
 	}
 }
 
-void SessionController::showGiftPremiumsBox() {
-	_giftPremiumValidator.showChoosePeerBox();
+void SessionController::showGiftPremiumsBox(const QString &ref) {
+	_giftPremiumValidator.showChoosePeerBox(ref);
 }
 
 void SessionController::init() {
 	if (session().supportMode()) {
-		initSupportMode();
+		session().supportHelper().registerWindow(this);
 	}
+	setupShortcuts();
 }
 
-void SessionController::initSupportMode() {
-	session().supportHelper().registerWindow(this);
-
+void SessionController::setupShortcuts() {
 	Shortcuts::Requests(
 	) | rpl::filter([=] {
-		return (Core::App().activeWindow() == &window());
+		return (Core::App().activeWindow() == &window())
+			&& !isLayerShown()
+			&& !window().locked();
 	}) | rpl::start_with_next([=](not_null<Shortcuts::Request*> request) {
 		using C = Shortcuts::Command;
 
+		const auto app = &Core::App();
+		const auto accountsCount = int(app->domain().accounts().size());
+		auto &&accounts = ranges::views::zip(
+			Shortcuts::kShowAccount,
+			ranges::views::ints(0, accountsCount));
+		for (const auto &[command, index] : accounts) {
+			request->check(command) && request->handle([=] {
+				const auto list = app->domain().orderedAccounts();
+				if (index >= list.size()) {
+					return false;
+				}
+				const auto account = list[index];
+				if (account == &session().account()) {
+					return false;
+				}
+				const auto window = app->separateWindowForAccount(account);
+				if (window) {
+					window->activate();
+				} else {
+					app->domain().maybeActivate(account);
+				}
+				return true;
+			});
+		}
+
+		if (!session().supportMode()) {
+			return;
+		}
 		request->check(C::SupportHistoryBack) && request->handle([=] {
 			return chatEntryHistoryMove(-1);
 		});
@@ -1291,7 +1342,7 @@ void SessionController::activateFirstChatsFilter() {
 bool SessionController::uniqueChatsInSearchResults() const {
 	return session().supportMode()
 		&& !session().settings().supportAllSearchResults()
-		&& !searchInChat.current();
+		&& !_searchInChat.current();
 }
 
 void SessionController::openFolder(not_null<Data::Folder*> folder) {
@@ -2713,7 +2764,7 @@ void SessionController::openPeerStories(
 HistoryView::PaintContext SessionController::preparePaintContext(
 		PaintContextArgs &&args) {
 	const auto visibleAreaTopLocal = content()->mapFromGlobal(
-		QPoint(0, args.visibleAreaTopGlobal)).y();
+		args.visibleAreaPositionGlobal).y();
 	const auto viewport = QRect(
 		0,
 		args.visibleAreaTop - visibleAreaTopLocal,

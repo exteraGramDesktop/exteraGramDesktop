@@ -13,6 +13,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "styles/style_chat_helpers.h"
 #include "styles/style_layers.h"
 
+#include <QtMath>
+
 namespace HistoryView::Controls {
 
 namespace {

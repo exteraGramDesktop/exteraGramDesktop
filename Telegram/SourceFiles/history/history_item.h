@@ -21,6 +21,7 @@ struct HistoryMessageMarkupData;
 struct HistoryMessageReplyMarkup;
 struct HistoryMessageTranslation;
 struct HistoryMessageForwarded;
+struct HistoryMessageSavedMediaData;
 struct HistoryServiceDependentData;
 enum class HistorySelfDestructType;
 struct PreparedServiceText;
@@ -195,6 +196,8 @@ public:
 	void checkStoryForwardInfo();
 	void checkBuyButton();
 
+	void resolveDependent();
+
 	void updateServiceText(PreparedServiceText &&text);
 	void updateStoryMentionText();
 
@@ -314,8 +317,8 @@ public:
 	[[nodiscard]] bool isLocal() const {
 		return _flags & MessageFlag::Local;
 	}
-	[[nodiscard]] bool isFakeBotAbout() const {
-		return _flags & MessageFlag::FakeBotAbout;
+	[[nodiscard]] bool isFakeAboutView() const {
+		return _flags & MessageFlag::FakeAboutView;
 	}
 	[[nodiscard]] bool showSimilarChannels() const {
 		return _flags & MessageFlag::ShowSimilarChannels;
@@ -454,6 +457,7 @@ public:
 		not_null<UserData*> from) const;
 	[[nodiscard]] crl::time lastReactionsRefreshTime() const;
 
+	[[nodiscard]] bool reactionsAreTags() const;
 	[[nodiscard]] bool hasDirectLink() const;
 	[[nodiscard]] bool changesWallPaper() const;
 
@@ -516,6 +520,11 @@ public:
 	[[nodiscard]] PeerData *displayFrom() const;
 	[[nodiscard]] uint8 colorIndex() const;
 
+	// In forwards we show name in sender's color, but the message
+	// content uses the color of the original sender.
+	[[nodiscard]] PeerData *contentColorsFrom() const;
+	[[nodiscard]] uint8 contentColorIndex() const;
+
 	[[nodiscard]] std::unique_ptr<HistoryView::Element> createView(
 		not_null<HistoryView::ElementDelegate*> delegate,
 		HistoryView::Element *replacing = nullptr);
@@ -528,15 +537,14 @@ public:
 		return _ttlDestroyAt;
 	}
 
+	[[nodiscard]] int boostsApplied() const {
+		return _boostsApplied;
+	}
+
 	MsgId id;
 
 private:
 	struct CreateConfig;
-
-	struct SavedMediaData {
-		TextWithEntities text;
-		std::unique_ptr<Data::Media> media;
-	};
 
 	HistoryItem(
 		not_null<History*> history,
@@ -581,7 +589,7 @@ private:
 	[[nodiscard]] auto GetServiceDependentData() const
 		-> const HistoryServiceDependentData *;
 	void updateDependentServiceText();
-	bool updateServiceDependent(bool force = false);
+	void updateServiceDependent(bool force = false);
 	void setServiceText(PreparedServiceText &&prepared);
 
 	void setStoryFields(not_null<Data::Story*> story);
@@ -596,6 +604,9 @@ private:
 		not_null<HistoryMessageTranslation*> translation,
 		bool used);
 	void setSelfDestruct(HistorySelfDestructType type, MTPint mtpTTLvalue);
+
+	void resolveDependent(not_null<HistoryServiceDependentData*> dependent);
+	void resolveDependent(not_null<HistoryMessageReply*> reply);
 
 	[[nodiscard]] TextWithEntities fromLinkText() const;
 	[[nodiscard]] ClickHandlerPtr fromLink() const;
@@ -644,13 +655,13 @@ private:
 
 	TextWithEntities _text;
 
-	std::unique_ptr<SavedMediaData> _savedLocalEditMediaData;
 	std::unique_ptr<Data::Media> _media;
 	std::unique_ptr<Data::MessageReactions> _reactions;
 	crl::time _reactionsLastRefreshed = 0;
 
 	TimeId _date = 0;
 	TimeId _ttlDestroyAt = 0;
+	int _boostsApplied = 0;
 
 	HistoryView::Element *_mainView = nullptr;
 	MessageGroupId _groupId = MessageGroupId();
@@ -661,3 +672,5 @@ private:
 	friend class HistoryView::ServiceMessagePainter;
 
 };
+
+constexpr auto kSize = int(sizeof(HistoryItem));

@@ -32,7 +32,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 namespace {
 
 constexpr auto kShortPollTimeout = 60 * crl::time(1000);
-constexpr auto kMaxDeviceModelLength = 32;
 
 using EntryData = Api::Websites::Entry;
 
