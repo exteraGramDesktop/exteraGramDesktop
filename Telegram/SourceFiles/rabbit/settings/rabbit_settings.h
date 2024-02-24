@@ -21,6 +21,7 @@ const auto IMPOSTOR_ICON = QString("impostor");
 const auto MATRIX_ICON = QString("matrix");
 const auto MOON_ICON = QString("moon");
 const auto OLD_ICON = QString("old");
+const auto TWITCH_ICON = QString("twitch");
 
 namespace JsonSettings {
 

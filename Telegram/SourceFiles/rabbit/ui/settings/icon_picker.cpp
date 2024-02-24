@@ -29,6 +29,7 @@ const QVector<QString> icons{
 		RabbitSettings::MATRIX_ICON,
 		RabbitSettings::MOON_ICON,
 		RabbitSettings::OLD_ICON,
+		RabbitSettings::TWITCH_ICON,
 };
 
 const auto rows = static_cast<int>(icons.size()) / 4 + std::min(1, static_cast<int>(icons.size()) % 4);
