@@ -249,6 +249,21 @@ namespace Settings {
 		    ::RabbitSettings::JsonSettings::GetInt("sticker_height"),
 		    updateStickerHeight);
 	    updateStickerHeightLabel(::RabbitSettings::JsonSettings::GetInt("sticker_height"));
+
+		AddButtonWithIcon(
+			container,
+			rktr("rtg_mute_for_selected_time"),
+			st::settingsButton,
+			IconDescriptor{ &st::menuIconReschedule }
+		)->toggleOn(
+			rpl::single(::RabbitSettings::JsonSettings::GetBool("show_seconds"))
+		)->toggledValue(
+		) | rpl::filter([](bool enabled) {
+			return (enabled != ::RabbitSettings::JsonSettings::GetBool("show_seconds"));
+		}) | rpl::start_with_next([](bool enabled) {
+			::RabbitSettings::JsonSettings::Set("show_seconds", enabled);
+			::RabbitSettings::JsonSettings::Write();
+		}, container->lifetime());
 		
 		SettingsMenuJsonSwitch(rtg_settings_comma_after_mention, comma_after_mention);
     }

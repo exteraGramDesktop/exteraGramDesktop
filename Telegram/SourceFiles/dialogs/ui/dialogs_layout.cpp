@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "data/data_drafts.h"
 #include "data/data_forum_topic.h"
 #include "data/data_saved_sublist.h"
@@ -94,7 +96,11 @@ void PaintRowDate(
 	const auto dt = [&] {
 		if ((lastDate == nowDate)
 			|| (qAbs(lastTime.secsTo(now)) < kRecentlyInSeconds)) {
-			return QLocale().toString(lastTime.time(), QLocale::ShortFormat);
+			return QLocale().toString(
+				lastTime.time(), 
+				RabbitSettings::JsonSettings::GetBool("show_seconds")
+					? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t") 
+					: QLocale::system().timeFormat(QLocale::ShortFormat));
 		} else if (qAbs(lastDate.daysTo(nowDate)) < 7) {
 			return langDayOfWeek(lastDate);
 		} else {

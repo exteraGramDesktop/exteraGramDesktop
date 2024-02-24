@@ -276,6 +276,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 		.type = SettingType::IntSetting,
 		.defaultValue = 170,
 		.limitHandler = IntLimit(64, 256, 170), }},
+	{ "show_seconds", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	{ "comma_after_mention", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},

@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/history_inner_widget.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "core/file_utilities.h"
 #include "core/click_handler_types.h"
 #include "history/history_item_helpers.h"
@@ -2853,7 +2855,11 @@ TextForMimeData HistoryInner::getSelectedText() const {
 		const auto i = texts.emplace(item->position(), Part{
 			.name = item->author()->name(),
 			.time = QString(", [%1]\n").arg(
-				QLocale().toString(ItemDateTime(item), QLocale::ShortFormat)),
+				QLocale().toString(
+					ItemDateTime(item), 
+					RabbitSettings::JsonSettings::GetBool("show_seconds")
+						? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t") 
+						: QLocale::system().timeFormat(QLocale::ShortFormat))),
 			.unwrapped = std::move(unwrapped),
 		}).first;
 		fullSize += i->second.name.size()

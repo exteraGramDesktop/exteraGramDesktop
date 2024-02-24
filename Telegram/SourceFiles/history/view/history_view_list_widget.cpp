@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "history/view/history_view_list_widget.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "base/unixtime.h"
 #include "base/qt/qt_key_modifiers.h"
 #include "base/qt/qt_common_adapters.h"
@@ -2337,7 +2339,11 @@ TextForMimeData ListWidget::getSelectedText() const {
 			not_null<HistoryItem*> item,
 			TextForMimeData &&unwrapped) {
 		auto time = QString(", [%1]\n").arg(
-			QLocale().toString(ItemDateTime(item), QLocale::ShortFormat));
+			QLocale().toString(
+				ItemDateTime(item), 
+				RabbitSettings::JsonSettings::GetBool("show_seconds")
+					? QLocale::system().timeFormat(QLocale::LongFormat).remove(" t") 
+					: QLocale::system().timeFormat(QLocale::ShortFormat)));
 		auto part = TextForMimeData();
 		auto size = item->author()->name().size()
 			+ time.size()
