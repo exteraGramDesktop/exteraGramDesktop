@@ -7,10 +7,12 @@ from datetime import date
 config = {
     "make_setup": True,               # set True if you want to make setup version
     "make_portable": True,            # set True if you want to make portable version
+    "make_ota_package": True,         # set True if you want to make OTA package
     "ota_enabled": True,              # set True if ota enabled
     "repo_path": "",                  # leave it blank if this script located in repo folder
     "version": "",                    # leave it blank to fill with version from SourceFiles/core/version.h and script runtime date
-    "tgversion": "",                  # leave it blanl to set it automatically
+    "tgversion": "",                  # leave it blank to set it automatically
+    "intversion": 0,                  # leave it 0 to set automatically
     "exe_filename": "rabbitGram.exe", # set executable name here
 }
 
@@ -26,10 +28,13 @@ def set_repo_path():
 
 def set_version():
     log("Setting version...", 1)
-    version_file = open(config["repo_path"] + "/Telegram/SourceFiles/core/version.h", "r")
-    version_code = version_file.readlines()[25]
-    config["version"] += version_code.replace('constexpr auto AppVersionStr = "', '').replace('";', date.today().strftime("-%d%m%Y")).replace('\n', '')
-    config["tgversion"] += version_code.replace('constexpr auto AppVersionStr = "', '').replace('";', '').replace('\n', '')    
+    with open(config["repo_path"] + "/Telegram/SourceFiles/core/version.h", "r") as version_file:
+        version_code = version_file.readlines()[25]
+        config["version"] += version_code.replace('constexpr auto AppVersionStr = "', '').replace('";', date.today().strftime("-%d%m%Y")).replace('\n', '')
+        config["tgversion"] += version_code.replace('constexpr auto AppVersionStr = "', '').replace('";', '').replace('\n', '')
+    with open(config["repo_path"] + "/Telegram/SourceFiles/core/version.h", "r") as version_file:
+        int_version_code = version_file.readlines()[24]
+        config["intversion"] += int(int_version_code.replace("constexpr auto AppVersion = ", '').replace(';', '').replace('\n', ''))
 
 def set_iss():
     log("Updating iss file...", 1)
@@ -44,13 +49,13 @@ def set_iss():
 def check_files():
     log("# Renaming files...", 1)
 
-    if not os.path.exists(os.path.join(config["repo_path"] + "/out/Release/", config["exe_filename"])):
-        log(config["exe_filename"] + " does not exist too, halt...", 2)
+    if not os.path.exists(os.path.join(f"{config["repo_path"]}/out/Release/{config["exe_filename"]}")):
+        log(f"{config["exe_filename"]} does not exist too, halt...", 2)
         exit()
 
 def run_iss_build():
     log("Running iscc build... If error occurs, check if iscc.exe path added to PATH", 1)
-    os.system("iscc " + config["repo_path"] + "/Telegram/build/setup.iss")
+    os.system(f"iscc {config["repo_path"]}/Telegram/build/setup.iss")
 
 def make_portable():
     log("Making portable version", 1)
@@ -70,7 +75,16 @@ def make_portable():
     except:
         log("Files already exist", 3)
     log("Making archive...", 2)
-    shutil.make_archive(os.path.join(config["repo_path"] + "/out/Release/releases/rtgdrelease-" + config["version"] + "/rtgdportable-x64." + config["version"]), 'zip', os.path.join(config["repo_path"] + "/out/Release/portable"))
+    shutil.make_archive(os.path.join(f"{config["repo_path"]}/out/Release/releases/rtgdrelease-{config["version"]}/rtgdportable-x64.{config["version"]}"), 'zip', os.path.join(f"{config["repo_path"]}/out/Release/portable"))
+
+def make_ota_package():
+    log("Making OTA package", 1)
+    first_loc = os.getcwd()
+    os.chdir(f"{config["repo_path"]}/out/Release")
+    cmd = f"Packer.exe -path {config['exe_filename']} -version {config['intversion']} -target win64"
+    os.system(cmd)
+    os.chdir(first_loc)
+    shutil.copyfile(os.path.join(f"{config["repo_path"]}/out/Release/tx64upd{config["intversion"]}"), os.path.join(f"{config["repo_path"]}/out/Release/releases/rtgdrelease-{config["version"]}/tx64upd{config["intversion"]}"))
 
 if config["repo_path"] == "":
     set_repo_path()
@@ -82,5 +96,7 @@ if config["make_setup"]:
     run_iss_build()
 if config["make_portable"]:
     make_portable()
+if config["make_ota_package"]:
+    make_ota_package()
 
 log("All done!", 1)
