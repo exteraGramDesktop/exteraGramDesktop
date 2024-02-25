@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/ui/dialogs_video_userpic.h"
 
+#include "rabbit/settings/rabbit_settings.h"
+
 #include "core/file_location.h"
 #include "data/data_peer.h"
 #include "data/data_photo.h"
@@ -89,7 +91,20 @@ void VideoUserpic::paintLeft(
 		startReady();
 
 		const auto now = paused ? crl::time(0) : crl::now();
-		p.drawImage(x, y, _video->current(request(size), now));
+
+		p.save();
+
+		QPainterPath roundedRect;
+		QImage image = _video->current(request(size), now);
+		roundedRect.addRoundedRect(
+			QRect(x, y, image.height(), image.width()),
+			image.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100,
+			image.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
+    	p.setClipPath(roundedRect);
+		p.drawImage(x, y, image);
+
+		p.restore();
+		/* p.drawImage(x, y, _video->current(request(size), now)); */
 	} else {
 		_peer->paintUserpicLeft(p, view, x, y, w, size);
 	}
@@ -100,7 +115,8 @@ Media::Clip::FrameRequest VideoUserpic::request(int size) const {
 		.frame = { size, size },
 		.outer = { size, size },
 		.factor = cIntRetinaFactor(),
-		.radius = ImageRoundRadius::Ellipse,
+		// .radius = ImageRoundRadius::Ellipse,
+		.radius = ImageRoundRadius::None,
 	};
 }
 
