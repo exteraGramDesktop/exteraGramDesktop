@@ -347,7 +347,7 @@ void PeerData::paintUserpic(
 		isForum());
 
 	p.save();
-
+	auto hq = PainterHighQualityEnabler(p);
 	QPainterPath roundedRect;
 	QImage image = view.cached;
 	roundedRect.addRoundedRect(
@@ -356,7 +356,6 @@ void PeerData::paintUserpic(
 		size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
     p.setClipPath(roundedRect);
 	p.drawImage(x, y, image);
-
 	p.restore();
 	/* p.drawImage(QRect(x, y, size, size), view.cached); */
 }
