@@ -264,6 +264,21 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::Set("show_seconds", enabled);
 			::RabbitSettings::JsonSettings::Write();
 		}, container->lifetime());
+
+		AddButtonWithIcon(
+			container,
+			rktr("rtg_profile_mention_user"),
+			st::settingsButton,
+			IconDescriptor{ &st::menuIconDockBounce }
+		)->toggleOn(
+			rpl::single(::RabbitSettings::JsonSettings::GetBool("show_sender_userpic"))
+		)->toggledValue(
+		) | rpl::filter([](bool enabled) {
+			return (enabled != ::RabbitSettings::JsonSettings::GetBool("show_sender_userpic"));
+		}) | rpl::start_with_next([](bool enabled) {
+			::RabbitSettings::JsonSettings::Set("show_sender_userpic", enabled);
+			::RabbitSettings::JsonSettings::Write();
+		}, container->lifetime());
 		
 		SettingsMenuJsonSwitch(rtg_settings_comma_after_mention, comma_after_mention);
     }

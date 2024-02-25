@@ -279,6 +279,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "show_seconds", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	{ "show_sender_userpic", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	{ "comma_after_mention", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
