@@ -252,7 +252,7 @@ namespace Settings {
 
 		AddButtonWithIcon(
 			container,
-			rktr("rtg_mute_for_selected_time"),
+			rktr("rtg_settings_show_seconds"),
 			st::settingsButton,
 			IconDescriptor{ &st::menuIconReschedule }
 		)->toggleOn(
@@ -267,7 +267,7 @@ namespace Settings {
 
 		AddButtonWithIcon(
 			container,
-			rktr("rtg_profile_mention_user"),
+			rktr("rtg_settings_show_sender_avatar"),
 			st::settingsButton,
 			IconDescriptor{ &st::menuIconDockBounce }
 		)->toggleOn(

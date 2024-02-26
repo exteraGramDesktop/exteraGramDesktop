@@ -269,5 +269,7 @@
 	"rtg_settings_hide_notifications_after": "Cacher après {seconds} secondes",
 	"rtg_general_roundness": "Courbure Unifiée",
 	"rtg_settings_appicon": "Icône de l'application",
+	"rtg_settings_show_seconds": "Afficher les secondes",
+	"rtg_settings_show_sender_avatar": "Avatar de l'expéditeur dans les groupes",
 	"dummy_last_string": ""
 }

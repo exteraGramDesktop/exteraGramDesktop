@@ -282,5 +282,7 @@
 	"rtg_settings_hide_notifications_after": "Hide after {seconds} seconds",
 	"rtg_general_roundness": "Single Corner Radius",
 	"rtg_settings_appicon": "App icon",
+	"rtg_settings_show_seconds": "Show seconds",
+	"rtg_settings_show_sender_avatar": "Sender's avatar in groups",
 	"dummy_last_string": ""
 }

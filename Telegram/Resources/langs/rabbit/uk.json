@@ -268,5 +268,7 @@
 	"rtg_settings_hide_notifications_after": "Сховати через {seconds} секунд",
 	"rtg_general_roundness": "Єдине закруглення",
 	"rtg_settings_appicon": "Іконка додатка",
+	"rtg_settings_show_seconds": "Показувати секунди",
+	"rtg_settings_show_sender_avatar": "Аватар відправника в групах",
 	"dummy_last_string": ""
 }

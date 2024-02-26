@@ -283,5 +283,7 @@
 	"rtg_settings_hide_notifications_after": "Скрывать через {seconds} секунд",
 	"rtg_general_roundness": "Единое закругление",
 	"rtg_settings_appicon": "Иконка приложения",
+	"rtg_settings_show_seconds": "Показывать секунды",
+	"rtg_settings_show_sender_avatar": "Аватар отправителя в группах",
 	"dummy_last_string": ""
 }

@@ -269,5 +269,7 @@
 	"rtg_settings_hide_notifications_after": "Ocultar después de {seconds} segundos",
 	"rtg_general_roundness": "Curvatura Unificada",
 	"rtg_settings_appicon": "Ícono de la aplicación",
+	"rtg_settings_show_seconds": "Mostrar segundos",
+	"rtg_settings_show_sender_avatar": "Avatar del remitente en grupos",
 	"dummy_last_string": ""
 }

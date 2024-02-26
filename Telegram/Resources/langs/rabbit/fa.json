@@ -268,5 +268,7 @@
 	"rtg_settings_hide_notifications_after": "پنهان شدن پس از {seconds} ثانیه",
 	"rtg_general_roundness": "خمیدگی یکپارچه",
 	"rtg_settings_appicon": "نماد برنامه",
+	"rtg_settings_show_seconds": "نمایش ثانیه ها",
+	"rtg_settings_show_sender_avatar": "آواتار فرستندها در گروه ها",
 	"dummy_last_string": ""
 }

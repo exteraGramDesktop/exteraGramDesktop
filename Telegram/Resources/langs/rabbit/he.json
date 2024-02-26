@@ -268,5 +268,7 @@
 	"rtg_settings_hide_notifications_after": "הסתר לאחר {seconds} שניות",
 	"rtg_general_roundness": "מעגלות מאוחדות",
 	"rtg_settings_appicon": "אייקון האפליקציה",
+	"rtg_settings_show_seconds": "הצג שניות",
+	"rtg_settings_show_sender_avatar": "האווטאר של השולח בקבוצות",
 	"dummy_last_string": ""
 }

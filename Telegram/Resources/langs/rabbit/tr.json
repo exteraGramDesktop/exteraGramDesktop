@@ -268,5 +268,7 @@
 	"rtg_settings_hide_notifications_after": "{seconds} saniye sonra gizle",
 	"rtg_general_roundness": "Birleşik Yuvarlaklık",
 	"rtg_settings_appicon": "Uygulama simgesi",
+	"rtg_settings_show_seconds": "Saniyeleri göster",
+	"rtg_settings_show_sender_avatar": "Gönderenin gruplarda avatarı",
 	"dummy_last_string": ""
 }

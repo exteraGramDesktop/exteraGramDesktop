@@ -269,5 +269,7 @@
 	"rtg_settings_hide_notifications_after": "在 {seconds} 秒后隐藏",
 	"rtg_general_roundness": "统一曲率",
 	"rtg_settings_appicon": "应用图标",
+	"rtg_settings_show_seconds": "显示秒数",
+	"rtg_settings_show_sender_avatar": "发送者的头像在群组",
 	"dummy_last_string": ""
 }

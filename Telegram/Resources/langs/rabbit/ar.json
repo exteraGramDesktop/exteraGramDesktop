@@ -268,5 +268,7 @@
 	"rtg_settings_hide_notifications_after": "إخفاء بعد {seconds} ثانية",
 	"rtg_general_roundness": "التدوير الموحد",
 	"rtg_settings_appicon": "رمز التطبيق",
+	"rtg_settings_show_seconds": "عرض الثواني",
+	"rtg_settings_show_sender_avatar": "صورة المرسل في القروبات",
 	"dummy_last_string": ""
 }
