@@ -432,41 +432,20 @@ void Row::PaintCornerBadgeFrame(
 	q.setBrush(data->active
 		? st::dialogsOnlineBadgeFgActive
 		: st::dialogsOnlineBadgeFg);
-	if ((peer->isChannel() && Data::ChannelHasActiveCall(peer->asChannel())) || online) {
-		if (!RabbitSettings::JsonSettings::GetBool("general_roundness")) {
-			q.drawEllipse(
-				QRectF(
-					(46 - size -
-						(RabbitSettings::JsonSettings::GetInt("userpic_roundness") == 50
-							? skip.x()
-							: -(stroke / 2))),
-					(46 - size -
-						(RabbitSettings::JsonSettings::GetInt("userpic_roundness") == 50
-							? skip.y()
-							: -(stroke / 2))),
-					size,
-					size
-				).marginsRemoved({ shrink, shrink, shrink, shrink })
-			);
-		} else {
-			q.drawRoundedRect(
-				QRectF(
-					(46 - size -
-						(RabbitSettings::JsonSettings::GetInt("userpic_roundness") == 50
-							? skip.x()
-							: -(stroke / 2))),
-					(46 - size -
-						(RabbitSettings::JsonSettings::GetInt("userpic_roundness") == 50
-							? skip.y()
-							: -(stroke / 2))),
-					size,
-					size
-				).marginsRemoved({ shrink, shrink, shrink, shrink }),
-				size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100,
-				size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100
-			);
-		}
-	}
+
+	QRectF badgeRect = QRectF(
+				photoSize - skip.x() - size,
+				photoSize - skip.y() - size,
+				size,
+				size
+			).marginsRemoved({ shrink, shrink, shrink, shrink });
+	auto radius = size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
+	auto isVideoCallOrOnline = (peer->isChannel() && Data::ChannelHasActiveCall(peer->asChannel())) || online;
+	auto drawRect = RabbitSettings::JsonSettings::GetBool("general_roundness");
+
+	if (!isVideoCallOrOnline || (isVideoCallOrOnline && drawRect)) {
+		q.drawRoundedRect(badgeRect, radius, radius);
+	} else { q.drawEllipse(badgeRect); }
 }
 
 void Row::paintUserpic(
