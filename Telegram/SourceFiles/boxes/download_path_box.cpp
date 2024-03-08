@@ -45,7 +45,9 @@ void DownloadPathBox::prepare() {
 
 	setTitle(tr::lng_download_path_header());
 
-	_group->setChangedCallback([this](Directory value) { radioChanged(value); });
+	_group->setChangedCallback([this](Directory value) {
+		radioChanged(value);
+	});
 
 	_pathLink->addClickHandler([=] { editPath(); });
 	if (!_path.isEmpty() && _path != FileDialog::Tmp()) {
@@ -55,7 +57,7 @@ void DownloadPathBox::prepare() {
 }
 
 void DownloadPathBox::updateControlsVisibility() {
-	auto custom = (_group->value() == Directory::Custom);
+	auto custom = (_group->current() == Directory::Custom);
 	_pathLink->setVisible(custom);
 
 	auto newHeight = st::boxOptionListPadding.top() + (_default ? _default->getMargins().top() + _default->heightNoMargins() : 0) + st::boxOptionListSkip + _temp->heightNoMargins() + st::boxOptionListSkip + _dir->heightNoMargins();
@@ -123,7 +125,7 @@ void DownloadPathBox::editPath() {
 
 void DownloadPathBox::save() {
 #ifndef OS_WIN_STORE
-	auto value = _group->value();
+	auto value = _group->current();
 	auto computePath = [this, value] {
 		if (value == Directory::Custom) {
 			return _path;
