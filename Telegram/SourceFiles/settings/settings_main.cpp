@@ -334,16 +334,18 @@ void SetupSections(
 		rktr("rtg_settings_rabbit"),
 		Rabbit::Id(),
 		{ &st::menuIconRabbit });
-
-	Ui::AddSkip(container);
-	Ui::AddDivider(container);
 	
 	if (controller->session().supportMode()) {
 		SetupSupport(controller, container);
 
+		Ui::AddSkip(container);
 		Ui::AddDivider(container);
 		Ui::AddSkip(container);
 	} else {
+		Ui::AddSkip(container);
+		Ui::AddDivider(container);
+		Ui::AddSkip(container);
+
 		addSection(
 			tr::lng_settings_my_account(),
 			Information::Id(),
