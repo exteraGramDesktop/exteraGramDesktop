@@ -29,6 +29,7 @@ const QVector<QString> icons{
 		RabbitSettings::MATRIX_ICON,
 		RabbitSettings::MOON_ICON,
 		RabbitSettings::OLD_ICON,
+		RabbitSettings::SEASONAL_ICON,
 		RabbitSettings::TWITCH_ICON,
 };
 

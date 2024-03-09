@@ -21,6 +21,9 @@
         <file alias="art/rabbit/old/app.png">../../art/rabbit/old/app.png</file>
         <file alias="art/rabbit/old/app_preview.png">../../art/rabbit/old/app_preview.png</file>
         <file alias="art/rabbit/old/app_icon.ico">../../art/rabbit/old/app_icon.ico</file>
+        <file alias="art/rabbit/seasonal/app.png">../../art/rabbit/seasonal/app.png</file>
+        <file alias="art/rabbit/seasonal/app_preview.png">../../art/rabbit/seasonal/app_preview.png</file>
+        <file alias="art/rabbit/seasonal/app_icon.ico">../../art/rabbit/seasonal/app_icon.ico</file>
         <file alias="art/rabbit/twitch/app.png">../../art/rabbit/twitch/app.png</file>
         <file alias="art/rabbit/twitch/app_preview.png">../../art/rabbit/twitch/app_preview.png</file>
         <file alias="art/rabbit/twitch/app_icon.ico">../../art/rabbit/twitch/app_icon.ico</file>
