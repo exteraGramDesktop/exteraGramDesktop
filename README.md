@@ -1,21 +1,29 @@
-# rabbitGram Desktop – Telegram Desktop based messenger with special features
+<div align="center">
 
-[![Windows.](https://github.com/rabbitgramdesktop/rabbitgramdesktop/actions/workflows/win.yml/badge.svg)](https://github.com/rabbitgramdesktop/rabbitgramdesktop/actions/workflows/win.yml)
+<img src="docs/assets/logo.png" alt="rabbitGram logo" width="200"/>
+
+# rabbitGram Desktop
+### Telegram Desktop based messenger with special features
 
 This is the complete source code and the build instructions for the app based on the official [Telegram][telegram] messenger desktop client.
 
-![image](https://github.com/xmdnx/exteraGramDesktop/assets/72883689/082fe7d6-eeba-4198-83ab-843d08ac909c)
+<img src="docs/assets/screenshot_channel.png" alt="Screenshot"/>
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 
+</div>
+
 ## Features
 
-* Sticker size setting
-* Userpic corner radius
-* Auto-hiding notifications
-* Side menu editor
 * Hide phone number in profile
-* Show user ID in profile
+* Auto-hiding notifications
+* Custom app icon
+* Userpic corner radius
+* Side menu editor
+* Sticker size setting
+* Seconds in time
+* Sender's avatar in groups
+* Comma after mention
 
 ## Supported systems
 
@@ -60,6 +68,7 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 ## Special thanks to
 
 * [Kotatogram][kotatogram]
+* [Materialgram][materialgram]
 * [64Gram][64gram]
 
 [//]: # (LINKS)
@@ -72,4 +81,5 @@ You can build rabbitGram Desktop yourself using [build instructions][build_instr
 [macos]: docs/building-mac.md
 [build_instructions]: https://github.com/rabbitGramDesktop/rabbitGramDesktop#build-instructions
 [kotatogram]: https://github.com/kotatogram/kotatogram-desktop
+[materialgram]: https://github.com/kukuruzka165/materialgram
 [64gram]: https://github.com/TDesktop-x64/tdesktop

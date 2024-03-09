@@ -12,7 +12,7 @@ The build is done in **Visual Studio 2022** with **10.0.22000.0** SDK version.
 
 Choose an empty folder for the future build, for example **D:\\TBuild**. It will be named ***BuildPath*** in the rest of this document. Create two folders there, ***BuildPath*\\ThirdParty** and ***BuildPath*\\Libraries**.
 
-All commands (if not stated otherwise) will be launched from **x86 Native Tools Command Prompt for VS 2022.bat** (should be in **Start Menu > Visual Studio 2022** menu folder). Pay attention not to use any other Command Prompt.
+All commands (if not stated otherwise) will be launched from **x86 Native Tools Command Prompt for VS 2022** (should be in **Start Menu > Visual Studio 2022** menu folder). Pay attention not to use any other Command Prompt.
 
 ### Obtain your API credentials
 
@@ -26,20 +26,20 @@ You will require **api_id** and **api_hash** to access the Telegram API servers.
 
 ## Clone source code and prepare libraries
 
-Open **x86 Native Tools Command Prompt for VS 2022.bat**, go to ***BuildPath*** and run
+Open **x86 Native Tools Command Prompt for VS 2022**, go to ***BuildPath*** and run
 
-    git clone --recursive https://github.com/rabbitGramDesktop.git
-    rabbitGramDesktop\Telegram\build\prepare\win.bat
+    git clone --recursive https://github.com/rabbitgramdesktop.git
+    rabbitgramdesktop\Telegram\build\prepare\win.bat
 
 ## Build the project
 
-Go to ***BuildPath*\\rabbitGramDesktop\\Telegram** and run (using [your **api_id** and **api_hash**](#obtain-your-api-credentials))
+Go to ***BuildPath*\\rabbitgramdesktop\\Telegram** and run (using [your **api_id** and **api_hash**](#obtain-your-api-credentials))
 
     configure.bat -D TDESKTOP_API_ID=YOUR_API_ID -D TDESKTOP_API_HASH=YOUR_API_HASH
 
-* Open ***BuildPath*\\rabbitGramDesktop\\out\\Telegram.sln** in Visual Studio 2022
+* Open ***BuildPath*\\rabbitgramdesktop\\out\\Telegram.sln** in Visual Studio 2022
 * Select Telegram project and press Build > Build Telegram (Debug and Release configurations)
-* The result Telegram.exe will be located in ***BuildPath*\rabbitGramDesktop\out\Debug** (and **Release**)
+* The result rabbitGram.exe will be located in ***BuildPath*\rabbitgramdesktop\out\Debug** (and **Release**)
 
 ### Qt Visual Studio Tools
 
