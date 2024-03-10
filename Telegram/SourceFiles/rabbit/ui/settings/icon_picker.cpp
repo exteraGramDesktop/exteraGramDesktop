@@ -101,6 +101,7 @@ void IconPicker::mousePressEvent(QMouseEvent *e)
 				const auto &iconName = icons[idx];
 				if (appIcon != iconName) {
 					RabbitSettings::JsonSettings::Set("app_icon", iconName);
+					RabbitSettings::JsonSettings::Write();
 					changed = true;
 					break;
 				}
