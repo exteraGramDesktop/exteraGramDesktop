@@ -4869,6 +4869,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 "lng_iv_open_in_browser" = "Open in Browser";
 "lng_iv_share" = "Share";
+"lng_iv_join_channel" = "Join";
+"lng_iv_window_title" = "Instant View";
 
 // Wnd specific
 
