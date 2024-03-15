@@ -9,12 +9,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "rabbit/settings/rabbit_settings.h"
 #include "rabbit/lang/rabbit_lang.h"
-#include "rabbit/settings_menu/rabbit_settings_menu.h"
-#include "rabbit/ui/settings/icon_picker.h"
-
-#include "rabbit/settings_menu/sections/rabbit_appearance.h"
-#include "rabbit/settings_menu/sections/rabbit_chats.h"
 #include "rabbit/settings_menu/sections/rabbit_general.h"
+#include "rabbit/ui/settings/icon_picker.h"
 
 #include "lang_auto.h"
 #include "mainwindow.h"
@@ -56,53 +52,33 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 namespace Settings {
 
-    rpl::producer<QString> Rabbit::title() {
-        return rktr("rtg_settings_rabbit");
+    rpl::producer<QString> RabbitGeneral::title() {
+        return rktr("rtg_settings_general");
     }
 
-    Rabbit::Rabbit(
+    RabbitGeneral::RabbitGeneral(
             QWidget *parent,
             not_null<Window::SessionController *> controller)
             : Section(parent) {
         setupContent(controller);
     }
 
-    void Rabbit::SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
-		const auto addSection = [&](
-				rpl::producer<QString> label,
-				Type type,
-				IconDescriptor &&descriptor) {
-			AddButtonWithIcon(
-				container,
-				std::move(label),
-				st::settingsButton,
-				std::move(descriptor)
-			)->addClickHandler([=] {
-				showOther(type);
-			});
-		};
+    void RabbitGeneral::SetupGeneral(not_null<Ui::VerticalLayout *> container) {
+        Ui::AddSubsectionTitle(container, rktr("rtg_settings_general"));
 
-		Ui::AddSkip(container);
-    	addSection(
-			rktr("rtg_settings_general"),
-			RabbitGeneral::Id(),
-			{ &st::menuIconShowAll });
-
-		addSection(
-			rktr("rtg_settings_appearance"),
-			RabbitAppearance::Id(),
-			{ &st::menuIconPalette });
-
-		addSection(
-			rktr("rtg_settings_chats"),
-			RabbitChats::Id(),
-			{ &st::menuIconChatBubble });
+    	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
+		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
     }
 
-    void Rabbit::setupContent(not_null<Window::SessionController *> controller) {
+    void RabbitGeneral::SetupRabbitGeneral(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {
+		Ui::AddSkip(container);
+    	SetupGeneral(container);
+    }
+
+    void RabbitGeneral::setupContent(not_null<Window::SessionController *> controller) {
         const auto content = Ui::CreateChild<Ui::VerticalLayout>(this);
 
-        SetupRabbitSettings(content, controller);
+        SetupRabbitGeneral(content, controller);
 
         Ui::ResizeFitChild(this, content);
     }

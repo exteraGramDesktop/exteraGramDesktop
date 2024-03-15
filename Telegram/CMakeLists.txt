@@ -1295,6 +1295,12 @@ PRIVATE
     rabbit/lang/rabbit_lang.h
     rabbit/settings/rabbit_settings.cpp
     rabbit/settings/rabbit_settings.h
+    rabbit/settings_menu/sections/rabbit_appearance.cpp
+    rabbit/settings_menu/sections/rabbit_appearance.h
+    rabbit/settings_menu/sections/rabbit_chats.cpp
+    rabbit/settings_menu/sections/rabbit_chats.h
+    rabbit/settings_menu/sections/rabbit_general.cpp
+    rabbit/settings_menu/sections/rabbit_general.h
     rabbit/settings_menu/rabbit_settings_menu.cpp
     rabbit/settings_menu/rabbit_settings_menu.h
     rabbit/ui/settings/icon_picker.cpp

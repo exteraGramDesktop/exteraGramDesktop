@@ -19,14 +19,18 @@ namespace Window {
 } // namespace Window
 
 namespace Settings {
-    class Rabbit : public Section<Rabbit> {
+    class RabbitAppearance : public Section<RabbitAppearance> {
     public:
-        Rabbit(QWidget *parent, not_null<Window::SessionController *> controller);
+        RabbitAppearance(QWidget *parent, not_null<Window::SessionController *> controller);
 
         [[nodiscard]] rpl::producer<QString> title() override;
 
     private:
-        void SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> null);
+        void SetupAppIcon(not_null<Ui::VerticalLayout *> container);
+        void SetupAppearance(not_null<Ui::VerticalLayout *> container);
+        void SetupSideMenu(not_null<Ui::VerticalLayout *> container);
+
+        void SetupRabbitAppearance(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> null);
         void setupContent(not_null<Window::SessionController *> controller);
     };
 

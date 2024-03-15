@@ -339,6 +339,7 @@ void SetupSections(
 			showOther(type);
 		});
 	};
+
 	addSection(
 		rktr("rtg_settings_rabbit"),
 		Rabbit::Id(),
