@@ -26,11 +26,6 @@ namespace Settings {
         [[nodiscard]] rpl::producer<QString> title() override;
 
     private:
-        void SetupGeneral(not_null<Ui::VerticalLayout *> container);
-        void SetupAppIcon(not_null<Ui::VerticalLayout *> container);
-        void SetupAppearance(not_null<Ui::VerticalLayout *> container);
-        void SetupChats(not_null<Ui::VerticalLayout *> container);
-
         void SetupRabbitSettings(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> null);
         void setupContent(not_null<Window::SessionController *> controller);
     };
