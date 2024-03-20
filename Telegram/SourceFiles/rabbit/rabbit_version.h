@@ -7,6 +7,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
-constexpr auto AppRabbitVersion = 4015004;
-constexpr auto AppRabbitVersionStr = "4.15.4";
+constexpr auto AppRabbitVersion = 4015005;
+constexpr auto AppRabbitVersionStr = "4.15.5";
 constexpr auto AppRabbitBetaVersion = true;
