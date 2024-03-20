@@ -54,7 +54,7 @@ FROM builder AS patches
 RUN git init patches \
 	&& cd patches \
 	&& git remote add origin {{ GIT }}/desktop-app/patches.git \
-	&& git fetch --depth=1 origin b8390aef3db43f973486c6e512f4e825ffd09691 \
+	&& git fetch --depth=1 origin 75140a10eefcecaad7b3f3aa4586b880a39007ff \
 	&& git reset --hard FETCH_HEAD \
 	&& rm -rf .git
 
@@ -257,6 +257,7 @@ RUN git clone -b v1.16.2 --depth=1 {{ GIT }}/strukturag/libheif.git \
 	&& cmake -GNinja -B build . \
 		-DCMAKE_BUILD_TYPE=None \
 		-DBUILD_SHARED_LIBS=OFF \
+		-DBUILD_TESTING=OFF \
 		-DENABLE_PLUGIN_LOADING=OFF \
 		-DWITH_X265=OFF \
 		-DWITH_AOM_DECODER=OFF \

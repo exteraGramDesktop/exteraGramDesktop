@@ -6616,7 +6616,7 @@ void HistoryWidget::keyPressEvent(QKeyEvent *e) {
 			&& _field->empty()
 			&& !_editMsgId
 			&& !_replyTo) {
-			editMessage(item);
+			editMessage(item, {});
 			return;
 		}
 		_scroll->keyPressEvent(e);
@@ -7580,13 +7580,9 @@ void HistoryWidget::setReplyFieldsFromProcessing() {
 	setInnerFocus();
 }
 
-void HistoryWidget::editMessage(FullMsgId itemId) {
-	if (const auto item = session().data().message(itemId)) {
-		editMessage(item);
-	}
-}
-
-void HistoryWidget::editMessage(not_null<HistoryItem*> item) {
+void HistoryWidget::editMessage(
+		not_null<HistoryItem*> item,
+		const TextSelection &selection) {
 	if (_chooseTheme) {
 		toggleChooseChatTheme(_peer);
 	} else if (_voiceRecordBar->isActive()) {
@@ -7635,6 +7631,7 @@ void HistoryWidget::editMessage(not_null<HistoryItem*> item) {
 	updateReplyToName();
 	updateControlsGeometry();
 	updateField();
+	SelectTextInFieldWithMargins(_field, selection);
 
 	_saveDraftText = true;
 	_saveDraftStart = crl::now();
