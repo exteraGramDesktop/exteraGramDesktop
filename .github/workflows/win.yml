@@ -78,10 +78,6 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
 
-      - name: Clear jemalloc.
-        shell: bash
-        run: git rm --cached Telegram/ThirdParty/jemalloc
-
       - name: Clone.
         uses: actions/checkout@v3.1.0
         with:
