@@ -13,6 +13,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "settings/settings_common.h"
 #include "core/application.h"
+#include "core/click_handler_types.h"
 #include "settings/settings_business.h"
 #include "settings/settings_codes.h"
 #include "settings/settings_chat.h"
@@ -31,13 +32,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/basic_click_handlers.h"
 #include "ui/boxes/confirm_box.h"
 #include "ui/controls/userpic_button.h"
-#include "ui/wrap/vertical_layout.h"
 #include "ui/wrap/slide_wrap.h"
-#include "ui/wrap/padding_wrap.h"
 #include "ui/widgets/menu/menu_add_action_callback.h"
-#include "ui/widgets/labels.h"
 #include "ui/widgets/continuous_sliders.h"
-#include "ui/widgets/buttons.h"
 #include "ui/text/text_utilities.h"
 #include "ui/toast/toast.h"
 #include "ui/new_badges.h"
@@ -48,9 +45,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_session.h"
 #include "data/data_cloud_themes.h"
 #include "data/data_chat_filters.h"
-#include "data/data_peer_values.h" // Data::AmPremiumValue
 #include "lang/lang_cloud_manager.h"
-#include "lang/lang_keys.h"
 #include "lang/lang_instance.h"
 #include "storage/localstorage.h"
 #include "main/main_session.h"
@@ -67,13 +62,9 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "info/profile/info_profile_values.h"
 #include "window/window_controller.h"
 #include "window/window_session_controller.h"
-#include "core/file_utilities.h"
-#include "core/application.h"
 #include "base/call_delayed.h"
-#include "base/unixtime.h"
 #include "base/platform/base_platform_info.h"
 #include "styles/style_settings.h"
-#include "styles/style_boxes.h"
 #include "styles/style_info.h"
 #include "styles/style_menu_icons.h"
 
@@ -233,7 +224,7 @@ void Cover::initViewers() {
 	}, lifetime());
 
 	_username->overrideLinkClickHandler([=] {
-		const auto username = _user->userName();
+		const auto username = _user->username();
 		if (username.isEmpty()) {
 			_controller->show(Box(UsernamesBox, _user));
 		} else {
@@ -392,7 +383,7 @@ void SetupSections(
 	} else {
 		const auto enabled = [=] {
 			const auto result = account->appConfig().get<bool>(
-				"dialog_filters_enabled",
+				u"dialog_filters_enabled"_q,
 				false);
 			if (result) {
 				preload();
@@ -457,10 +448,7 @@ void SetupPremium(
 	button->addClickHandler([=] {
 		showOther(BusinessId());
 	});
-	constexpr auto kNewExpiresAt = int(1711958400);
-	if (base::unixtime::now() < kNewExpiresAt) {
-		Ui::NewBadge::AddToRight(button);
-	}
+	Ui::NewBadge::AddToRight(button);
 
 	if (controller->session().premiumCanBuy()) {
 		const auto button = AddButtonWithIcon(
@@ -631,26 +619,20 @@ void SetupInterfaceScale(
 	}
 }
 
-void OpenFaq() {
-	File::OpenUrl(telegramFaqLink());
-}
-
-void SetupFaq(not_null<Ui::VerticalLayout*> container, bool icon) {
-	AddButtonWithIcon(
-		container,
-		tr::lng_settings_faq(),
-		icon ? st::settingsButton : st::settingsButtonNoIcon,
-		{ icon ? &st::menuIconFaq : nullptr }
-	)->addClickHandler(OpenFaq);
-}
-
 void SetupHelp(
 		not_null<Window::SessionController*> controller,
 		not_null<Ui::VerticalLayout*> container) {
 	Ui::AddDivider(container);
 	Ui::AddSkip(container);
 
-	SetupFaq(container);
+	AddButtonWithIcon(
+		container,
+		tr::lng_settings_faq(),
+		st::settingsButton,
+		{ &st::menuIconFaq }
+	)->addClickHandler([=] {
+		OpenFaq(controller);
+	});
 
 	AddButtonWithIcon(
 		container,
@@ -694,7 +676,10 @@ void SetupHelp(
 		auto box = Ui::MakeConfirmBox({
 			.text = tr::lng_settings_ask_sure(),
 			.confirmed = sure,
-			.cancelled = OpenFaq,
+			.cancelled = [=](Fn<void()> close) {
+				OpenFaq(controller);
+				close();
+			},
 			.confirmText = tr::lng_settings_ask_ok(),
 			.cancelText = tr::lng_settings_faq_button(),
 			.strictCancel = true,
@@ -771,6 +756,14 @@ void Main::setupContent(not_null<Window::SessionController*> controller) {
 	controller->session().api().sensitiveContent().reload();
 	controller->session().api().globalPrivacy().reload();
 	controller->session().data().cloudThemes().refresh();
+}
+
+void OpenFaq(base::weak_ptr<Window::SessionController> weak) {
+	UrlClickHandler::Open(
+		tr::lng_settings_faq_link(tr::now),
+		QVariant::fromValue(ClickHandlerContext{
+			.sessionWindow = weak,
+		}));
 }
 
 } // namespace Settings

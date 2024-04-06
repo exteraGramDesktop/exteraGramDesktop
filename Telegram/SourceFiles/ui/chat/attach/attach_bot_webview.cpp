@@ -525,6 +525,9 @@ bool Panel::showWebview(
 				_webview->window.navigate(url);
 			}
 		}, &st::menuIconRestore);
+		callback(tr::lng_bot_terms(tr::now), [=] {
+			File::OpenUrl(tr::lng_mini_apps_tos_url(tr::now));
+		}, &st::menuIconGroupLog);
 		const auto main = (_menuButtons & MenuButton::RemoveFromMainMenu);
 		if (main || (_menuButtons & MenuButton::RemoveFromMenu)) {
 			const auto handler = [=] {
@@ -798,6 +801,7 @@ void Panel::openExternalLink(const QJsonObject &args) {
 		return;
 	}
 	const auto url = args["url"].toString();
+	const auto iv = args["try_instant_view"].toBool();
 	const auto lower = url.toLower();
 	if (url.isEmpty()
 		|| (!lower.startsWith("http://") && !lower.startsWith("https://"))) {
@@ -806,8 +810,11 @@ void Panel::openExternalLink(const QJsonObject &args) {
 		return;
 	} else if (!allowOpenLink()) {
 		return;
+	} else if (iv) {
+		_delegate->botOpenIvLink(url);
+	} else {
+		File::OpenUrl(url);
 	}
-	File::OpenUrl(url);
 }
 
 void Panel::openInvoice(const QJsonObject &args) {

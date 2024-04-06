@@ -59,6 +59,7 @@ for arg in sys.argv[1:]:
         options.append(arg)
     elif arg == 'run':
         customRunCommand = True
+
 buildQt5 = not 'skip-qt5' in options if win else 'build-qt5' in options
 buildQt6 = 'build-qt6' in options if win else not 'skip-qt6' in options
 
@@ -424,7 +425,7 @@ if customRunCommand:
 stage('patches', """
     git clone https://github.com/desktop-app/patches.git
     cd patches
-    git checkout cc0c2f8365
+    git checkout 1fef4b342a
 """)
 
 stage('msys64', """
@@ -578,9 +579,9 @@ mac:
     cmake --install build
 """)
 
-stage('openssl', """
-    git clone -b OpenSSL_1_1_1-stable https://github.com/openssl/openssl openssl
-    cd openssl
+stage('openssl3', """
+    git clone -b openssl-3.2.1 https://github.com/openssl/openssl openssl3
+    cd openssl3
 win32:
     perl Configure no-shared no-tests debug-VC-WIN32
 win64:
@@ -695,14 +696,17 @@ mac:
     make install
 """)
 
+# Somehow in x86 Debug build dav1d crashes on AV1 10bpc videos.
 stage('dav1d', """
-    git clone -b 1.4.1 --depth 1 https://code.videolan.org/videolan/dav1d.git
+    git clone -b 1.4.1 https://code.videolan.org/videolan/dav1d.git
     cd dav1d
 win:
     if "%X8664%" equ "x64" (
         SET "TARGET=x86_64"
+        SET "DAV1D_ASM_DISABLE="
     ) else (
         SET "TARGET=x86"
+        SET "DAV1D_ASM_DISABLE=-Denable_asm=false"
     )
     set FILE=cross-file.txt
     echo [binaries] > %FILE%
@@ -718,7 +722,7 @@ win:
 
 depends:python/Scripts/activate.bat
     %THIRDPARTY_DIR%\\python\\Scripts\\activate.bat
-    meson setup --cross-file %FILE% --prefix %LIBS_DIR%/local --default-library=static --buildtype=debug -Denable_tools=false -Denable_tests=false -Db_vscrt=mtd builddir-debug
+    meson setup --cross-file %FILE% --prefix %LIBS_DIR%/local --default-library=static --buildtype=debug -Denable_tools=false -Denable_tests=false %DAV1D_ASM_DISABLE% -Db_vscrt=mtd builddir-debug
     meson compile -C builddir-debug
     meson install -C builddir-debug
 release:
@@ -774,7 +778,7 @@ mac:
 """)
 
 stage('libavif', """
-    git clone -b v1.0.4 --depth 1 https://github.com/AOMediaCodec/libavif.git
+    git clone -b v1.0.4 https://github.com/AOMediaCodec/libavif.git
     cd libavif
 win:
     cmake . ^
@@ -804,7 +808,7 @@ mac:
 """)
 
 stage('libde265', """
-    git clone --depth 1 -b v1.0.15 https://github.com/strukturag/libde265.git
+    git clone -b v1.0.15 https://github.com/strukturag/libde265.git
     cd libde265
 win:
     cmake . ^
@@ -880,7 +884,7 @@ mac:
 """)
 
 stage('libheif', """
-    git clone --depth 1 -b v1.17.6 https://github.com/strukturag/libheif.git
+    git clone -b v1.17.6 https://github.com/strukturag/libheif.git
     cd libheif
 win:
     %THIRDPARTY_DIR%\\msys64\\usr\\bin\\sed.exe -i 's/LIBHEIF_EXPORTS/LIBDE265_STATIC_BUILD/g' libheif/CMakeLists.txt
@@ -932,7 +936,7 @@ mac:
 """)
 
 stage('libjxl', """
-    git clone -b v0.8.2 --depth 1 --recursive --shallow-submodules https://github.com/libjxl/libjxl.git
+    git clone -b v0.8.2 --recursive --shallow-submodules https://github.com/libjxl/libjxl.git
     cd libjxl
 """ + setVar("cmake_defines", """
     -DBUILD_SHARED_LIBS=OFF
@@ -1051,9 +1055,7 @@ depends:yasm/yasm
 
 stage('nv-codec-headers', """
 win:
-    git clone https://github.com/FFmpeg/nv-codec-headers.git
-    cd nv-codec-headers
-    git checkout n11.1.5.1
+    git clone -b n12.1.14.0 https://github.com/FFmpeg/nv-codec-headers.git
 """)
 
 stage('regex', """
@@ -1061,9 +1063,8 @@ stage('regex', """
 """)
 
 stage('ffmpeg', """
-    git clone https://github.com/FFmpeg/FFmpeg.git ffmpeg
+    git clone -b n6.1.1 https://github.com/FFmpeg/FFmpeg.git ffmpeg
     cd ffmpeg
-    git checkout 7268323193
 win:
     SET PATH_BACKUP_=%PATH%
     SET PATH=%ROOT_DIR%\\ThirdParty\\msys64\\usr\\bin;%PATH%
@@ -1094,6 +1095,7 @@ depends:yasm/yasm
         --disable-network \
         --disable-everything \
         --enable-protocol=file \
+        --enable-libdav1d \
         --enable-libopus \
         --enable-libvpx \
         --enable-hwaccel=h264_videotoolbox \
@@ -1115,6 +1117,7 @@ depends:yasm/yasm
         --enable-decoder=gif \
         --enable-decoder=h264 \
         --enable-decoder=hevc \
+        --enable-decoder=libdav1d \
         --enable-decoder=libvpx_vp8 \
         --enable-decoder=libvpx_vp9 \
         --enable-decoder=mp1 \
@@ -1405,7 +1408,7 @@ if buildQt5:
     stage('qt_5_15_13', """
     git clone -b v5.15.13-lts-lgpl https://github.com/qt/qt5.git qt_5_15_13
     cd qt_5_15_13
-    perl init-repository --module-subset=qtbase,qtimageformats,qtsvg
+    git submodule update --init --recursive qtbase qtimageformats qtsvg
 depends:patches/qtbase_5.15.13/*.patch
     cd qtbase
 win:
@@ -1420,7 +1423,7 @@ win:
     SET ANGLE_DIR=%LIBS_DIR%\\tg_angle
     SET ANGLE_LIBS_DIR=%ANGLE_DIR%\\out
     SET MOZJPEG_DIR=%LIBS_DIR%\\mozjpeg
-    SET OPENSSL_DIR=%LIBS_DIR%\\openssl
+    SET OPENSSL_DIR=%LIBS_DIR%\\openssl3
     SET OPENSSL_LIBS_DIR=%OPENSSL_DIR%\\out
     SET ZLIB_LIBS_DIR=%LIBS_DIR%\\zlib
     SET WEBP_DIR=%LIBS_DIR%\\libwebp
@@ -1491,7 +1494,7 @@ if buildQt6:
 mac:
     git clone -b v6.2.7-lts-lgpl https://github.com/qt/qt5.git qt_6_2_7
     cd qt_6_2_7
-    perl init-repository --module-subset=qtbase,qtimageformats,qtsvg
+    git submodule update --init --recursive qtbase qtimageformats qtsvg
 depends:patches/qtbase_6.2.7/*.patch
     cd qtbase
     find ../../patches/qtbase_6.2.7 -type f -print0 | sort -z | xargs -0 git apply -v
@@ -1534,7 +1537,7 @@ stage('tg_owt', """
 win:
     SET MOZJPEG_PATH=$LIBS_DIR/mozjpeg
     SET OPUS_PATH=$USED_PREFIX/include/opus
-    SET OPENSSL_PATH=$LIBS_DIR/openssl/include
+    SET OPENSSL_PATH=$LIBS_DIR/openssl3/include
     SET LIBVPX_PATH=$USED_PREFIX/include
     SET FFMPEG_PATH=$LIBS_DIR/ffmpeg
     mkdir out
@@ -1580,7 +1583,7 @@ mac:
         -DTG_OWT_BUILD_AUDIO_BACKENDS=OFF \
         -DTG_OWT_SPECIAL_TARGET=$SPECIAL_TARGET \
         -DTG_OWT_LIBJPEG_INCLUDE_PATH=$MOZJPEG_PATH \
-        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl/include \
+        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl3/include \
         -DTG_OWT_OPUS_INCLUDE_PATH=$OPUS_PATH \
         -DTG_OWT_LIBVPX_INCLUDE_PATH=$LIBVPX_PATH \
         -DTG_OWT_FFMPEG_INCLUDE_PATH=$FFMPEG_PATH ../..
@@ -1594,7 +1597,7 @@ mac:
         -DTG_OWT_BUILD_AUDIO_BACKENDS=OFF \
         -DTG_OWT_SPECIAL_TARGET=$SPECIAL_TARGET \
         -DTG_OWT_LIBJPEG_INCLUDE_PATH=$MOZJPEG_PATH \
-        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl/include \
+        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl3/include \
         -DTG_OWT_OPUS_INCLUDE_PATH=$OPUS_PATH \
         -DTG_OWT_LIBVPX_INCLUDE_PATH=$LIBVPX_PATH \
         -DTG_OWT_FFMPEG_INCLUDE_PATH=$FFMPEG_PATH ../..
@@ -1610,7 +1613,7 @@ release:
         -DCMAKE_OSX_ARCHITECTURES=x86_64 \
         -DTG_OWT_SPECIAL_TARGET=$SPECIAL_TARGET \
         -DTG_OWT_LIBJPEG_INCLUDE_PATH=$MOZJPEG_PATH \
-        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl/include \
+        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl3/include \
         -DTG_OWT_OPUS_INCLUDE_PATH=$OPUS_PATH \
         -DTG_OWT_LIBVPX_INCLUDE_PATH=$LIBVPX_PATH \
         -DTG_OWT_FFMPEG_INCLUDE_PATH=$FFMPEG_PATH ../..
@@ -1623,7 +1626,7 @@ release:
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
         -DTG_OWT_SPECIAL_TARGET=$SPECIAL_TARGET \
         -DTG_OWT_LIBJPEG_INCLUDE_PATH=$MOZJPEG_PATH \
-        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl/include \
+        -DTG_OWT_OPENSSL_INCLUDE_PATH=$LIBS_DIR/openssl3/include \
         -DTG_OWT_OPUS_INCLUDE_PATH=$OPUS_PATH \
         -DTG_OWT_LIBVPX_INCLUDE_PATH=$LIBVPX_PATH \
         -DTG_OWT_FFMPEG_INCLUDE_PATH=$FFMPEG_PATH ../..
