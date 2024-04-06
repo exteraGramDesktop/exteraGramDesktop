@@ -667,7 +667,7 @@ BottomInfo::Data BottomInfoDataFromMessage(not_null<Message*> message) {
 	}
 	if (const auto msgsigned = item->Get<HistoryMessageSigned>()) {
 		 if (!msgsigned->isAnonymousRank) {
-			result.author = msgsigned->postAuthor;
+			result.author = msgsigned->author;
 		 }
 	}
 	if (message->displayedEditDate()) {

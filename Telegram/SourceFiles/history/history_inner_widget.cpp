@@ -9,7 +9,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 
 #include "rabbit/settings/rabbit_settings.h"
 
-#include "chat_helpers/stickers_emoji_pack.h"
 #include "core/file_utilities.h"
 #include "core/click_handler_types.h"
 #include "history/history_item_helpers.h"
@@ -35,7 +34,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "ui/effects/message_sending_animation_controller.h"
 #include "ui/effects/reaction_fly_animation.h"
 #include "ui/text/text_options.h"
-#include "ui/text/text_isolated_emoji.h"
 #include "ui/boxes/report_box.h"
 #include "ui/layers/generic_box.h"
 #include "ui/controls/delete_message_context_action.h"
@@ -2253,17 +2251,6 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		}
 	};
 
-	if (const auto item = _dragStateItem) {
-		const auto emojiStickers = &session->emojiStickersPack();
-		if (const auto view = item->mainView()) {
-			if (const auto isolated = view->isolatedEmoji()) {
-				if (const auto sticker = emojiStickers->stickerForEmoji(isolated)) {
-					addDocumentActions(sticker.document, item);
-				}
-			}
-		}
-	}
-
 	const auto asGroup = !Element::Moused()
 		|| (Element::Moused() != Element::Hovered())
 		|| (Element::Moused()->pointState(
@@ -4091,7 +4078,7 @@ void HistoryInner::refreshAboutView() {
 					_history->delegateMixin()->delegate());
 			}
 			if (!info->inited) {
-				session().api().requestFullPeer(_peer);
+				session().api().requestFullPeer(user);
 			}
 		} else if (user->meRequiresPremiumToWrite()
 			&& !user->session().premium()
@@ -4101,8 +4088,14 @@ void HistoryInner::refreshAboutView() {
 					_history,
 					_history->delegateMixin()->delegate());
 			}
-		} else {
-			_aboutView = nullptr;
+		} else if (!historyHeight()) {
+			if (!user->isFullLoaded()) {
+				session().api().requestFullPeer(user);
+			} else if (!_aboutView) {
+				_aboutView = std::make_unique<HistoryView::AboutView>(
+					_history,
+					_history->delegateMixin()->delegate());
+			}
 		}
 	}
 }

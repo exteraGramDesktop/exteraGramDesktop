@@ -1087,7 +1087,7 @@ void InnerWidget::paintPeerSearchResult(
 
 	QRect tr(context.st->textLeft, context.st->textTop, namewidth, st::dialogsTextFont->height);
 	p.setFont(st::dialogsTextFont);
-	QString username = peer->userName();
+	QString username = peer->username();
 	if (!context.active && username.startsWith(_peerSearchQuery, Qt::CaseInsensitive)) {
 		auto first = '@' + username.mid(0, _peerSearchQuery.size());
 		auto second = username.mid(_peerSearchQuery.size());
@@ -4010,6 +4010,24 @@ void InnerWidget::setupShortcuts() {
 			}
 			return true;
 		});
+
+		(!_openedForum)
+			&& request->check(Command::ArchiveChat)
+			&& request->handle([=] {
+				const auto thread = _selected ? _selected->thread() : nullptr;
+				if (!thread) {
+					return false;
+				}
+				const auto history = thread->owningHistory();
+				const auto isArchived = history->folder()
+					&& (history->folder()->id() == Data::Folder::kId);
+
+				Window::ToggleHistoryArchived(
+					_controller->uiShow(),
+					history,
+					!isArchived);
+				return true;
+			});
 
 		request->check(Command::ShowContacts) && request->handle([=] {
 			_controller->show(PrepareContactsBox(_controller));
