@@ -336,6 +336,7 @@ void PeerData::paintUserpic(
 		int x,
 		int y,
 		int size) const {
+	const auto hq = PainterHighQualityEnabler(p);
 	const auto cloud = userpicCloudImage(view);
 	const auto ratio = style::DevicePixelRatio();
 	Ui::ValidateUserpicCache(

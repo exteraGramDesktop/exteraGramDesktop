@@ -40,6 +40,8 @@ void VideoUserpic::paintLeft(
 		int w,
 		int size,
 		bool paused) {
+	const auto hq = PainterHighQualityEnabler(p);
+
 	_lastSize = size;
 
 	const auto photoId = _peer->userpicPhotoId();
