@@ -5,6 +5,8 @@ import time
 
 import requests
 
+manual_mode = True
+
 with open('.gitmodules') as f:
     local_data = f.read()
 
@@ -27,7 +29,7 @@ def parse_remote_commit(path):
         regex = re.compile(r'cmake @ (.*?)<')
 
         try:
-            return regex.search(r.text).group(1)
+            return regex.search(r.text).group(1)[:7]
         except:
             return None
 
@@ -53,9 +55,17 @@ for submodule in local_submodules:
     path = submodule['path']
     current_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=path).decode('utf-8').strip()[:7]
     remote_commit = None
+    custom_commit = None
 
     while remote_commit is None:
-        remote_commit = parse_remote_commit(path)
+        if manual_mode:
+            custom_commit = input('Enter commit for ' + path + ': ')
+            if custom_commit == '':
+                custom_commit = None
+            else:
+                remote_commit = custom_commit
+        else:                       
+            remote_commit = parse_remote_commit(path)
 
         if remote_commit is None:
             time.sleep(3)
