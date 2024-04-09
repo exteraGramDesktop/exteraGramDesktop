@@ -18,7 +18,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "storage/localstorage.h"
 #include "calls/calls_instance.h"
 #include "main/main_account.h" // Account::configUpdated.
-#include "apiwrap.h"
 #include "core/application.h"
 #include "core/core_settings.h"
 #include "lang/lang_instance.h"
