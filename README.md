@@ -24,6 +24,7 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Seconds in time
 * Sender's avatar in groups
 * Comma after mention
+* Go to first message
 
 ## Supported systems
 

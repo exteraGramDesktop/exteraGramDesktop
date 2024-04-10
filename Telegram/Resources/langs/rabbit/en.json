@@ -284,5 +284,6 @@
 	"rtg_settings_appicon": "App icon",
 	"rtg_settings_show_seconds": "Show seconds",
 	"rtg_settings_show_sender_avatar": "Sender's avatar in groups",
+	"rtg_goto_first_message": "Go to first message",
 	"dummy_last_string": ""
 }

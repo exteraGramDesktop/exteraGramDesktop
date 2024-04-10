@@ -152,6 +152,7 @@ menuIconAsTopics: icon {{ "menu/mode_topics", menuIconColor }};
 menuIconAsMessages: icon {{ "menu/mode_messages", menuIconColor }};
 menuIconTagFilter: icon{{ "menu/tag_filter", menuIconColor }};
 menuIconTagRename: icon{{ "menu/tag_rename", menuIconColor }};
+menuIconGoToFirstMessage: icon{{ "menu/go_to_first", menuIconColor }};
 
 menuIconTTLAny: icon {{ "menu/auto_delete_plain", menuIconColor }};
 menuIconTTLAnyTextPosition: point(11px, 22px);
