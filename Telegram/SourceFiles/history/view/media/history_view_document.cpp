@@ -382,7 +382,7 @@ void Document::createComponents(bool caption) {
 		mask |= HistoryDocumentNamed::Bit();
 		if (_data->hasThumbnail()) {
 			if (!_data->isSong()
-				&& !Data::IsExecutableName(_data->filename())) {
+				/* && !Data::IsExecutableName(_data->filename()) */) {
 				_data->loadThumbnail(_realParent->fullId());
 				mask |= HistoryDocumentThumbed::Bit();
 			}
