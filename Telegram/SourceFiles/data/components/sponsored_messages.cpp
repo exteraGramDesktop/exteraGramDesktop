@@ -5,7 +5,7 @@ the unofficial app based on Telegram Desktop.
 For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
-#include "data/data_sponsored_messages.h"
+#include "data/components/sponsored_messages.h"
 
 #include "api/api_text_entities.h"
 #include "apiwrap.h"
@@ -30,8 +30,8 @@ constexpr auto kRequestTimeLimit = 5 * 60 * crl::time(1000);
 
 } // namespace
 
-SponsoredMessages::SponsoredMessages(not_null<Session*> owner)
-: _session(&owner->session())
+SponsoredMessages::SponsoredMessages(not_null<Main::Session*> session)
+: _session(session)
 , _clearTimer([=] { clearOldRequests(); }) {
 }
 
