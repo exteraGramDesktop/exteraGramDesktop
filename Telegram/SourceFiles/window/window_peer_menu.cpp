@@ -1085,6 +1085,34 @@ void Filler::addViewStatistics() {
 }
 
 void Filler::addCreatePoll() {
+	const auto isJoinChannel = [&] {
+		if (_request.section != Section::Replies) {
+			if (const auto c = _peer->asChannel(); c && !c->amIn()) {
+				return true;
+			}
+		}
+		return false;
+	}();
+	const auto isBotStart = [&] {
+		const auto user = _peer ? _peer->asUser() : nullptr;
+		if (!user || !user->isBot()) {
+			return false;
+		} else if (!user->botInfo->startToken.isEmpty()) {
+			return true;
+		}
+		const auto history = _peer->owner().history(_peer);
+		if (history && history->isEmpty() && !history->lastMessage()) {
+			return true;
+		}
+		return false;
+	}();
+	const auto isBlocked = [&] {
+		return _peer && _peer->isUser() && _peer->asUser()->isBlocked();
+	}();
+	if (isBlocked || isJoinChannel || isBotStart) {
+		return;
+	}
+
 	const auto can = _topic
 		? Data::CanSend(_topic, ChatRestriction::SendPolls)
 		: _peer->canCreatePolls();
@@ -2608,7 +2636,9 @@ void MarkAsReadThread(not_null<Data::Thread*> thread) {
 }
 
 void AddSeparatorAndShiftUp(const PeerMenuCallback &addAction) {
-	addAction({ .isSeparator = true });
+	addAction({
+		.separatorSt = &st::popupMenuExpandedSeparator.menu.separator,
+	});
 
 	const auto &st = st::popupMenuExpandedSeparator.menu;
 	const auto shift = st::popupMenuExpandedSeparator.scrollPadding.top()
