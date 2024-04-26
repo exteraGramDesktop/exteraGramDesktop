@@ -154,6 +154,7 @@ menuIconTagFilter: icon{{ "menu/tag_filter", menuIconColor }};
 menuIconTagRename: icon{{ "menu/tag_rename", menuIconColor }};
 menuIconGoToFirstMessage: icon{{ "menu/go_to_first", menuIconColor }};
 menuIconGroupsHide: icon {{ "menu/hide_members", menuIconColor }};
+menuIconFont: icon {{ "menu/fonts", menuIconColor }};
 
 menuIconTTLAny: icon {{ "menu/auto_delete_plain", menuIconColor }};
 menuIconTTLAnyTextPosition: point(11px, 22px);
@@ -194,6 +195,7 @@ menuIconDisableAttention: icon {{ "menu/disable", menuIconAttentionColor }};
 menuIconReportAttention: icon {{ "menu/report", menuIconAttentionColor }};
 menuIconRestoreAttention: icon {{ "menu/restore", menuIconAttentionColor }};
 menuIconTagRemoveAttention: icon {{ "menu/tag_remove", menuIconAttentionColor }};
+menuIconCancelAttention: icon {{ "menu/cancel", menuIconAttentionColor }};
 
 menuIconBlockSettings: icon {{ "menu/block", windowBgActive }};
 menuIconInviteSettings: icon {{ "menu/invite", windowBgActive }};

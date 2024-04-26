@@ -138,6 +138,10 @@ bool Sticker::emojiSticker() const {
 	return _emojiSticker;
 }
 
+bool Sticker::webpagePart() const {
+	return _webpagePart;
+}
+
 void Sticker::initSize(int customSize) {
 	if (!customSize) {
 		customSize = ::RabbitSettings::JsonSettings::GetInt("sticker_height");
@@ -365,6 +369,8 @@ void Sticker::paintPath(
 		helper.emplace(Ui::CustomEmoji::PreviewColorFromTextColor(
 			ComputeEmojiTextColor(context)));
 		pathGradient->overrideColors(helper->color(), helper->color());
+	} else if (webpagePart()) {
+		pathGradient->overrideColors(st::shadowFg, st::shadowFg);
 	} else if (context.selected()) {
 		pathGradient->overrideColors(
 			context.st->msgServiceBgSelected(),
@@ -521,6 +527,10 @@ void Sticker::setCustomEmojiPart() {
 
 void Sticker::setEmojiSticker() {
 	_emojiSticker = true;
+}
+
+void Sticker::setWebpagePart() {
+	_webpagePart = true;
 }
 
 void Sticker::setupPlayer() {
