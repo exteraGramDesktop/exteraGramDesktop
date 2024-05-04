@@ -734,8 +734,13 @@ void SetupAccountsWrap(
 			pen.setWidthF(line);
 			p.setPen(pen);
 			p.setBrush(Qt::NoBrush);
-			p.drawEllipse(rect);
-			// p.drawRoundedRect(rect, ::RabbitSettings::JsonSettings::GetInt("userpic_roundness"), ::RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
+			// p.drawEllipse(rect);
+			auto height = rect.height();
+			auto width = rect.width();
+			p.drawRoundedRect(
+				rect, 
+				height * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100, 
+				width * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
 		}
 	}, state->userpic.lifetime());
 
