@@ -7,8 +7,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "dialogs/ui/dialogs_layout.h"
 
-#include "rabbit/settings/rabbit_settings.h"
-
 #include "data/data_drafts.h"
 #include "data/data_forum_topic.h"
 #include "data/data_saved_sublist.h"
