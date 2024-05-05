@@ -87,9 +87,9 @@ void ValidateUserpicCache(
 
 		empty->paintRounded(
 			p, 0, 0, size, size,
-			forum
-			? size * Ui::ForumUserpicRadiusMultiplier()
-			: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100
+			(forum && !RabbitSettings::JsonSettings::GetBool("general_roundness"))
+				? size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 * Ui::ForumUserpicRadiusMultiplier() * 2 / style::DevicePixelRatio()
+				: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 / style::DevicePixelRatio()
 		);
 	}
 }

@@ -56,7 +56,7 @@ void SendAsButton::paintEvent(QPaintEvent *e) {
 		{
 			PainterHighQualityEnabler hq(p);
 			// p.drawEllipse(left, top, _st.size, _st.size);
-			auto radius = _st.size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
+			auto radius = _st.size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100;
 			p.drawRoundedRect(left, top, _st.size, _st.size, radius, radius);
 		}
 
