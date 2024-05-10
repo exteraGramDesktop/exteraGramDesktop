@@ -273,5 +273,15 @@
     "rtg_settings_show_seconds": "Mostrar segundos",
     "rtg_settings_show_sender_avatar": "Avatar do remetente em grupos",
     "rtg_goto_first_message": "Ir para primeira mensagem",
+    "rtg_settings_categories": null,
+    "rtg_settings_links": null,
+    "rtg_settings_links_channel_title": null,
+    "rtg_settings_links_channel_label": null,
+    "rtg_settings_links_group_title": null,
+    "rtg_settings_links_group_label": null,
+    "rtg_settings_links_crowdin_title": null,
+    "rtg_settings_links_crowdin_label": null,
+    "rtg_settings_links_github_title": null,
+    "rtg_settings_links_github_label": null,
     "dummy_last_string": null
 }

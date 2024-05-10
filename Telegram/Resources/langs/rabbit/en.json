@@ -285,5 +285,15 @@
 	"rtg_settings_show_seconds": "Show seconds",
 	"rtg_settings_show_sender_avatar": "Sender's avatar in groups",
 	"rtg_goto_first_message": "Go to first message",
+	"rtg_settings_categories": "Categories",
+	"rtg_settings_links": "Links",
+	"rtg_settings_links_channel_title": "Channel",
+	"rtg_settings_links_channel_label": "@rabbitGramUpdates",
+	"rtg_settings_links_group_title": "Group",
+	"rtg_settings_links_group_label": "@rabbitGramDesktop",
+	"rtg_settings_links_crowdin_title": "Translate",
+	"rtg_settings_links_crowdin_label": "Crowdin",
+	"rtg_settings_links_github_title": "Source code",
+	"rtg_settings_links_github_label": "GitHub",
 	"dummy_last_string": ""
 }
