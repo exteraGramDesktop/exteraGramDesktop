@@ -57,7 +57,7 @@ jobs:
         run: echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> $GITHUB_ENV
 
       - name: Clone.
-        uses: actions/checkout@v3.1.0
+        uses: actions/checkout@v4.1.4
         with:
           submodules: recursive
           path: ${{ env.REPO_NAME }}
@@ -77,7 +77,7 @@ jobs:
 
       - name: ThirdParty cache.
         id: cache-third-party
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v4.0.2
         with:
           path: ThirdParty
           key: ${{ runner.OS }}-third-party-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}
@@ -85,7 +85,7 @@ jobs:
 
       - name: Libraries cache.
         id: cache-libs
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v4.0.2
         with:
           path: Libraries
           key: ${{ runner.OS }}-libs-${{ hashFiles(format('{0}/{1}', env.REPO_NAME, env.PREPARE_PATH)) }}
