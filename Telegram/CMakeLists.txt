@@ -1320,6 +1320,8 @@ PRIVATE
     rabbit/ui/settings/icon_picker.h
     rabbit/ui/rabbit_assets.cpp
     rabbit/ui/rabbit_assets.h
+    rabbit/utils/quiet_mode.cpp
+    rabbit/utils/quiet_mode.h
     rabbit/utils/windows_utils.cpp
     rabbit/utils/windows_utils.h
     rabbit/rabbit_version.h

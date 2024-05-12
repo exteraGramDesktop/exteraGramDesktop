@@ -6,7 +6,9 @@ For license and copyright information please follow this link:
 https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #include "tray.h"
+
 #include "rabbit/lang/rabbit_lang.h"
+#include "rabbit/settings/rabbit_settings.h"
 
 #include "core/application.h"
 #include "core/core_settings.h"
@@ -94,6 +96,24 @@ void Tray::rebuildMenu() {
 		_tray.addAction(
 			std::move(notificationsText),
 			[=] { toggleSoundNotifications(); });
+
+		if (RabbitSettings::JsonSettings::GetBool("quiet_mode")) {
+			std::vector<rpl::producer<QString>> durations_strings = {
+				rktr("rtg_quiet_30min"),
+				rktr("rtg_quiet_1h"),
+				rktr("rtg_quiet_3h"),
+				rktr("rtg_quiet_8h"),
+				rktr("rtg_quiet_24h"),
+			};
+			for (int i = 0; i < durations_seconds.size(); i++) {
+				_tray.addAction(
+					durations_strings[i],
+					[=] { setQuietMode(i); }
+				);
+			}
+		}
+		// fix strings, fix setting back _desktopNotify and _soundNotify
+		// fix blinking icon
 	}
 
 	_tray.addAction(rktr("rtg_quit_from_tray"), [] { Core::Quit(); });
@@ -182,6 +202,10 @@ void Tray::toggleSoundNotifications() {
 	}
 	if (flashBounceNotifyChanged) {
 		notifications.notifySettingsChanged(Change::FlashBounceEnabled);
+	}
+	if (isQuietNow())
+	{
+		resetQuietMode();
 	}
 }
 

@@ -295,5 +295,11 @@
 	"rtg_settings_links_crowdin_label": "Crowdin",
 	"rtg_settings_links_github_title": "Source code",
 	"rtg_settings_links_github_label": "GitHub",
+	"rtg_settings_quiet_mode": "Quiet mode",
+	"rtg_quiet_30min": "...for 30 minutes",
+	"rtg_quiet_1h": "...for 1 hour",
+	"rtg_quiet_3h": "...for 3 hours",
+	"rtg_quiet_8h": "...for 8 hours",
+	"rtg_quiet_24h": "...for 24 hours",
 	"dummy_last_string": ""
 }

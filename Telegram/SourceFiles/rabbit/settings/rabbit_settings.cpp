@@ -238,6 +238,9 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "auto_hide_notifications", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	{ "quiet_mode", {
+		.type = SettingType::BoolSetting,
+		.defaultValue = false, }},
 	//   Appearance
     { "app_icon", {
     	.type = SettingType::QStringSetting,
@@ -285,6 +288,10 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 	{ "comma_after_mention", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = false, }},
+	//   Miscellaneous
+	{ "quiet_deadline", {
+		.type = SettingType::QStringSetting,
+		.defaultValue = QString(), }},
 };
 
 using OldOptionKey = QString;

@@ -68,6 +68,20 @@ namespace Settings {
 
     	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
 		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
+
+        container->add(object_ptr<Button>(
+	        container, 
+	        rktr("rtg_settings_quiet_mode"),
+	        st::settingsButtonNoIcon 
+        ))->toggleOn(
+	        rpl::single(::RabbitSettings::JsonSettings::GetBool("quiet_mode"))
+        )->toggledValue(
+        ) | rpl::filter([](bool enabled) {
+	        return (enabled != ::RabbitSettings::JsonSettings::GetBool("quiet_mode"));
+        }) | rpl::start_with_next([](bool enabled) {
+	        ::RabbitSettings::JsonSettings::SetAfterRestart("quiet_mode", enabled);
+	        ::RabbitSettings::JsonSettings::Write();
+        }, container->lifetime());
     }
 
     void RabbitGeneral::SetupRabbitGeneral(not_null<Ui::VerticalLayout *> container, not_null<Window::SessionController *> controller) {

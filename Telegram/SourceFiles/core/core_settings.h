@@ -7,6 +7,8 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 */
 #pragma once
 
+#include "rabbit/utils/quiet_mode.h"
+
 #include "core/core_settings_proxy.h"
 #include "media/media_common.h"
 #include "window/themes/window_themes_embedded.h"
@@ -193,13 +195,13 @@ public:
 		_downloadPathBookmark = value;
 	}
 	[[nodiscard]] bool soundNotify() const {
-		return _soundNotify;
+		return _soundNotify && !isQuietNow();
 	}
 	void setSoundNotify(bool value) {
 		_soundNotify = value;
 	}
 	[[nodiscard]] bool desktopNotify() const {
-		return _desktopNotify;
+		return _desktopNotify && !isQuietNow();
 	}
 	void setDesktopNotify(bool value) {
 		_desktopNotify = value;
