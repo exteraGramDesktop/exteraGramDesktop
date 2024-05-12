@@ -283,5 +283,11 @@
     "rtg_settings_links_crowdin_label": "Crowdin",
     "rtg_settings_links_github_title": "Исходный код",
     "rtg_settings_links_github_label": "GitHub",
+    "rtg_settings_quiet_mode": "Бесшумный режим",
+    "rtg_quiet_30min": "...на 30 минут",
+    "rtg_quiet_1h": "...на 1 час",
+    "rtg_quiet_3h": "...на 3 часа",
+    "rtg_quiet_8h": "...на 8 часов",
+    "rtg_quiet_24h": "...на 24 часа",
     "dummy_last_string": null
 }

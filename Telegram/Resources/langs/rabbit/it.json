@@ -283,5 +283,11 @@
     "rtg_settings_links_crowdin_label": null,
     "rtg_settings_links_github_title": null,
     "rtg_settings_links_github_label": null,
+    "rtg_settings_quiet_mode": null,
+    "rtg_quiet_30min": null,
+    "rtg_quiet_1h": null,
+    "rtg_quiet_3h": null,
+    "rtg_quiet_8h": null,
+    "rtg_quiet_24h": null,
     "dummy_last_string": null
 }
