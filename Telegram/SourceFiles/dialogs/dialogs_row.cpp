@@ -574,8 +574,10 @@ void Row::paintUserpic(
 			context.now);
 	}
 	else {
-		const auto lastMessageFrom = history->lastMessage()->from();
-		lastMessageFrom->paintUserpic(p, userpicCornerView(), context.st->photoSize - skip.x() - size, context.st->photoSize - skip.y() - size, size);
+		if (history->lastMessage()->from()) {
+			const auto lastMessageFrom = history->lastMessage()->from();
+			lastMessageFrom->paintUserpic(p, userpicCornerView(), context.st->photoSize - skip.x() - size, context.st->photoSize - skip.y() - size, size);
+		}
 	}
 	p.translate(-context.st->padding.left(), -context.st->padding.top());
 	p.setOpacity(1.);
