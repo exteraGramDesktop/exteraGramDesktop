@@ -48,7 +48,7 @@ jobs:
 
     steps:
       - name: Clone.
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -62,7 +62,7 @@ jobs:
           sudo snap run lxd waitready
 
       - name: Free up some disk space.
-        uses: jlumbroso/free-disk-space@f68fdb76e2ea636224182cfb7377ff9a1708f9b8
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be
 
       - name: Telegram Desktop snap build.
         run: sg lxd -c 'snap run snapcraft --verbosity=debug'
@@ -76,7 +76,7 @@ jobs:
           mkdir artifact
           mv $artifact_name artifact
 
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v2
         if: env.UPLOAD_ARTIFACT == 'true'
         name: Upload artifact.
         with:
