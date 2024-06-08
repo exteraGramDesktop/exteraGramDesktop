@@ -57,6 +57,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_channel.h"
 #include "data/data_chat.h"
 #include "data/data_game.h"
+#include "data/data_history_messages.h"
 #include "data/data_user.h"
 #include "data/data_group_call.h" // Data::GroupCall::id().
 #include "data/data_poll.h" // PollData::publicVotes.
@@ -64,6 +65,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "data/data_web_page.h"
 #include "chat_helpers/stickers_gift_box_pack.h"
 #include "payments/payments_checkout_process.h" // CheckoutProcess::Start.
+#include "payments/payments_non_panel_process.h" // ProcessNonPanelPaymentFormFactory.
 #include "platform/platform_notifications_manager.h"
 #include "spellcheck/spellcheck_highlight_syntax.h"
 #include "styles/style_dialogs.h"
@@ -211,12 +213,59 @@ std::unique_ptr<Data::Media> HistoryItem::CreateMedia(
 		const MTPMessageMedia &media) {
 	using Result = std::unique_ptr<Data::Media>;
 	return media.match([&](const MTPDmessageMediaContact &media) -> Result {
+
+		const auto vcardItems = [&] {
+			using Type = Data::SharedContact::VcardItemType;
+			auto items = Data::SharedContact::VcardItems();
+			for (const auto &item : qs(media.vvcard()).split('\n')) {
+				const auto parts = item.split(':');
+				if (parts.size() == 2) {
+					const auto &type = parts.front();
+					const auto &value = parts[1];
+
+					if (type.startsWith("TEL")) {
+						const auto telType = type.contains("PREF")
+							? Type::PhoneMain
+							: type.contains("HOME")
+							? Type::PhoneHome
+							: type.contains("WORK")
+							? Type::PhoneWork
+							: (type.contains("CELL")
+								|| type.contains("MOBILE"))
+							? Type::PhoneMobile
+							: type.contains("OTHER")
+							? Type::PhoneOther
+							: Type::Phone;
+						items[telType] = value;
+					} else if (type.startsWith("EMAIL")) {
+						items[Type::Email] = value;
+					} else if (type.startsWith("URL")) {
+						items[Type::Url] = value;
+					} else if (type.startsWith("NOTE")) {
+						items[Type::Note] = value;
+					} else if (type.startsWith("ORG")) {
+						items[Type::Organization] = value;
+						items[Type::Organization].replace(';', ' ');
+					} else if (type.startsWith("ADR")) {
+						items[Type::Address] = value;
+					} else if (type.startsWith("BDAY")) {
+						items[Type::Birthday] = value;
+					} else if (type.startsWith("N")) {
+						items[Type::Name] = value;
+						items[Type::Name].replace(';', ' ');
+					}
+				}
+			}
+			return items;
+		}();
+
 		return std::make_unique<Data::MediaContact>(
 			item,
 			media.vuser_id().v,
 			qs(media.vfirst_name()),
 			qs(media.vlast_name()),
-			qs(media.vphone_number()));
+			qs(media.vphone_number()),
+			vcardItems);
 	}, [&](const MTPDmessageMediaGeo &media) -> Result {
 		return media.vgeo().match([&](const MTPDgeoPoint &point) -> Result {
 			return std::make_unique<Data::MediaLocation>(
@@ -366,8 +415,12 @@ HistoryItem::HistoryItem(
 	.from = data.vfrom_id() ? peerFromMTP(*data.vfrom_id()) : PeerId(0),
 	.date = data.vdate().v,
 	.shortcutId = data.vquick_reply_shortcut_id().value_or_empty(),
+	.effectId = data.veffect().value_or_empty(),
 }) {
 	_boostsApplied = data.vfrom_boosts_applied().value_or_empty();
+
+	// Called only for server-received messages, not locally created ones.
+	applyInitialEffectWatched();
 
 	const auto media = data.vmedia();
 	const auto checked = media
@@ -412,6 +465,11 @@ HistoryItem::HistoryItem(
 		}
 		setReactions(data.vreactions());
 		applyTTL(data);
+
+		if (const auto check = FromMTP(this, data.vfactcheck())) {
+			AddComponents(HistoryMessageFactcheck::Bit());
+			Get<HistoryMessageFactcheck>()->data = check;
+		}
 	}
 }
 
@@ -682,9 +740,13 @@ HistoryItem::HistoryItem(
 	: history->peer)
 , _flags(FinalizeMessageFlags(history, fields.flags))
 , _date(fields.date)
-, _shortcutId(fields.shortcutId) {
+, _shortcutId(fields.shortcutId)
+, _effectId(fields.effectId) {
 	if (isHistoryEntry() && IsClientMsgId(id)) {
 		_history->registerClientSideMessage(this);
+	}
+	if (_effectId) {
+		_history->owner().reactions().preloadEffectImageFor(_effectId);
 	}
 }
 
@@ -1282,6 +1344,18 @@ bool HistoryItem::hasUnreadReaction() const {
 	return (_flags & MessageFlag::HasUnreadReaction);
 }
 
+bool HistoryItem::hasUnwatchedEffect() const {
+	return effectId() && !(_flags & MessageFlag::EffectWatched);
+}
+
+bool HistoryItem::markEffectWatched() {
+	if (!hasUnwatchedEffect()) {
+		return false;
+	}
+	_flags |= MessageFlag::EffectWatched;
+	return true;
+}
+
 bool HistoryItem::mentionsMe() const {
 	if (Has<HistoryServicePinned>()
 		&& !Core::App().settings().notifyAboutPinned()) {
@@ -1473,6 +1547,44 @@ void HistoryItem::addLogEntryOriginal(
 		localId,
 		label,
 		content);
+}
+
+void HistoryItem::setFactcheck(MessageFactcheck info) {
+	if (!info) {
+		if (Has<HistoryMessageFactcheck>()) {
+			RemoveComponents(HistoryMessageFactcheck::Bit());
+			history()->owner().requestItemResize(this);
+		}
+	} else {
+		AddComponents(HistoryMessageFactcheck::Bit());
+		const auto factcheck = Get<HistoryMessageFactcheck>();
+		const auto textChanged = (factcheck->data.text != info.text);
+		if (factcheck->data.hash == info.hash
+			&& (info.needCheck || !factcheck->data.needCheck)) {
+			return;
+		} else if (textChanged
+			|| factcheck->data.country != info.country
+			|| factcheck->data.hash != info.hash) {
+			factcheck->data = std::move(info);
+			factcheck->requested = false;
+			if (textChanged) {
+				factcheck->page = nullptr;
+			}
+			history()->owner().requestItemResize(this);
+		}
+	}
+}
+
+bool HistoryItem::hasUnrequestedFactcheck() const {
+	const auto factcheck = Get<HistoryMessageFactcheck>();
+	return factcheck && factcheck->data.needCheck && !factcheck->requested;
+}
+
+TextWithEntities HistoryItem::factcheckText() const {
+	if (const auto factcheck = Get<HistoryMessageFactcheck>()) {
+		return factcheck->data.text;
+	}
+	return {};
 }
 
 PeerData *HistoryItem::specialNotificationPeer() const {
@@ -1674,6 +1786,7 @@ void HistoryItem::applyEdition(HistoryMessageEdition &&edition) {
 	}
 
 	applyTTL(edition.ttl);
+	setFactcheck(FromMTP(this, edition.mtpFactcheck));
 
 	finishEdition(keyboardTop);
 }
@@ -1793,6 +1906,7 @@ void HistoryItem::applySentMessage(const MTPDmessage &data) {
 	setIsPinned(data.is_pinned());
 	contributeToSlowmode(data.vdate().v);
 	addToSharedMediaIndex();
+	addToMessagesIndex();
 	invalidateChatListEntry();
 	if (const auto period = data.vttl_period(); period && period->v > 0) {
 		applyTTL(data.vdate().v + period->v);
@@ -1817,6 +1931,7 @@ void HistoryItem::applySentMessage(
 	contributeToSlowmode(data.vdate().v);
 	if (!wasAlready) {
 		addToSharedMediaIndex();
+		addToMessagesIndex();
 	}
 	invalidateChatListEntry();
 	if (const auto period = data.vttl_period(); period && period->v > 0) {
@@ -2009,6 +2124,14 @@ void HistoryItem::removeFromSharedMediaIndex() {
 					_history->peer->id,
 					types,
 					id));
+		}
+	}
+}
+
+void HistoryItem::addToMessagesIndex() {
+	if (isRegular()) {
+		if (const auto messages = _history->maybeMessages()) {
+			messages->addNew(id);
 		}
 	}
 }
@@ -3053,6 +3176,7 @@ void HistoryItem::setText(const TextWithEntities &textWithEntities) {
 		auto type = entity.type();
 		if (type == EntityType::Url
 			|| type == EntityType::CustomUrl
+			|| type == EntityType::Phone
 			|| type == EntityType::Email) {
 			_flags |= MessageFlag::HasTextLinks;
 			break;
@@ -3107,9 +3231,15 @@ MessageGroupId HistoryItem::groupId() const {
 	return _groupId;
 }
 
+EffectId HistoryItem::effectId() const {
+	return _effectId;
+}
+
 bool HistoryItem::isEmpty() const {
 	return _text.empty()
 		&& !_media
+		&& (!Has<HistoryMessageFactcheck>()
+			|| Get<HistoryMessageFactcheck>()->data.text.empty())
 		&& !Has<HistoryMessageLogEntryOriginal>();
 }
 
@@ -3447,6 +3577,23 @@ void HistoryItem::setupForwardedComponent(const CreateConfig &config) {
 	forwarded->imported = config.imported;
 }
 
+void HistoryItem::applyInitialEffectWatched() {
+	if (!effectId()) {
+		return;
+	} else if (out()) {
+		// If this message came from the server, not generated on send.
+		_flags |= MessageFlag::EffectWatched;
+	} else if (_history->inboxReadTillId() && !unread(_history)) {
+		_flags |= MessageFlag::EffectWatched;
+	}
+}
+
+void HistoryItem::applyEffectWatchedOnUnreadKnown() {
+	if (effectId() && !out() && !unread(_history)) {
+		_flags |= MessageFlag::EffectWatched;
+	}
+}
+
 bool HistoryItem::generateLocalEntitiesByReply() const {
 	using namespace HistoryView;
 	if (!_media) {
@@ -3545,7 +3692,8 @@ void HistoryItem::createComponentsHelper(HistoryItemCommonFields &&fields) {
 		const auto topicPost = config.reply.externalPeerId
 			? (replyTo.topicRootId
 				&& (replyTo.topicRootId != Data::ForumTopic::kGeneralId))
-			: (LookupReplyIsTopicPost(to)
+			: (topic
+				|| LookupReplyIsTopicPost(to)
 				|| (to && to->Has<HistoryServiceTopicInfo>())
 				|| (forum && forum->creating(config.reply.topMessageId)));
 		config.reply.topicPost = topicPost ? 1 : 0;
@@ -3843,6 +3991,7 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 		payment->slug = data.vinvoice_slug().value_or_empty();
 		payment->recurringInit = data.is_recurring_init();
 		payment->recurringUsed = data.is_recurring_used();
+		payment->isCreditsCurrency = (currency == Ui::kCreditsCurrency);
 		payment->amount = Ui::FillAmountAndCurrency(amount, currency);
 		payment->invoiceLink = std::make_shared<LambdaClickHandler>([=](
 				ClickContext context) {
@@ -3853,7 +4002,10 @@ void HistoryItem::createServiceFromMtp(const MTPDmessageService &message) {
 				CheckoutProcess::Start(
 					item,
 					Mode::Receipt,
-					crl::guard(weak, [=](auto) { weak->window().activate(); }));
+					crl::guard(weak, [=](auto) { weak->window().activate(); }),
+					Payments::ProcessNonPanelPaymentFormFactory(
+						weak.get(),
+						item));
 			}
 		});
 	} else if (type == mtpc_messageActionGroupCall
@@ -4962,7 +5114,7 @@ void HistoryItem::applyAction(const MTPMessageAction &action) {
 }
 
 void HistoryItem::setSelfDestruct(
-		HistoryServiceSelfDestruct::Type type,
+		HistorySelfDestructType type,
 		MTPint mtpTTLvalue) {
 	UpdateComponents(HistoryServiceSelfDestruct::Bit());
 	const auto selfdestruct = Get<HistoryServiceSelfDestruct>();
