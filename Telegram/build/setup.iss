@@ -1,14 +1,14 @@
 #define MyAppShortName "rabbitGram"
 #define MyAppName "rabbitGram Desktop"
 #define MyAppPublisher "xmdnx"
-#define MyAppVersion "5.0.1"
+#define MyAppVersion "5.1.5"
 #define MyAppURL "https://t.me/rabbitGramUpdates"
 #define ReleasePath "C:\Users\xmdnusr\source\repos\rabbitgramdesktop\out\Release"
 #define MyAppExeName "rabbitGram.exe"
 #define MyAppId "4356CE01-4137-4C55-9F8B-FB4EEBB6EC0C"
 #define CurrentYear GetDateTimeString('yyyy','','')
 #define MyBuildTarget "win64"
-#define MyAppVersionFull "5.0.1-14052024"
+#define MyAppVersionFull "5.1.5-08062024"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -38,7 +38,6 @@ CloseApplications=force
 DisableDirPage=no
 DisableProgramGroupPage=no
 WizardStyle=modern
-SignTool=sha256
 
 #if MyBuildTarget == "win64"
   ArchitecturesAllowed="x64 arm64"
