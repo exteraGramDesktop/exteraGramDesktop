@@ -37,6 +37,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "styles/style_widgets.h"
 
 #include <xxhash.h> // XXH64.
+#include <QtWidgets/QApplication>
 
 [[nodiscard]] PeerListRowId UniqueRowIdFromString(const QString &d) {
 	return XXH64(d.data(), d.size() * sizeof(ushort), 0);
@@ -1554,15 +1555,44 @@ void PeerListContent::handleMouseMove(QPoint globalPosition) {
 		&& *_lastMousePosition == globalPosition) {
 		return;
 	}
+	if (_trackPressStart
+		&& ((*_trackPressStart - globalPosition).manhattanLength()
+			> QApplication::startDragDistance())) {
+		_trackPressStart = {};
+		_controller->rowTrackPressCancel();
+	}
+	if (!_controller->rowTrackPressSkipMouseSelection()) {
+		selectByMouse(globalPosition);
+	}
+}
+
+void PeerListContent::pressLeftToContextMenu(bool shown) {
+	if (shown) {
+		setContexted(_pressed);
+		setPressed(Selected());
+	} else {
+		setContexted(Selected());
+	}
+}
+
+bool PeerListContent::trackRowPressFromGlobal(QPoint globalPosition) {
 	selectByMouse(globalPosition);
+	if (const auto row = getRow(_selected.index)) {
+		if (_controller->rowTrackPress(row)) {
+			_trackPressStart = globalPosition;
+			return true;
+		}
+	}
+	return false;
 }
 
 void PeerListContent::mousePressEvent(QMouseEvent *e) {
 	_pressButton = e->button();
 	selectByMouse(e->globalPos());
 	setPressed(_selected);
-	if (auto row = getRow(_selected.index)) {
-		auto updateCallback = [this, row, hint = _selected.index] {
+	_trackPressStart = {};
+	if (const auto row = getRow(_selected.index)) {
+		const auto updateCallback = [this, row, hint = _selected.index] {
 			updateRow(row, hint);
 		};
 		if (_selected.element) {
@@ -1588,8 +1618,11 @@ void PeerListContent::mousePressEvent(QMouseEvent *e) {
 				row->addRipple(_st.item, maskGenerator, point, std::move(updateCallback));
 			}
 		}
+		if (_pressButton == Qt::LeftButton && _controller->rowTrackPress(row)) {
+			_trackPressStart = e->globalPos();
+		}
 	}
-	if (anim::Disabled() && !_selected.element) {
+	if (anim::Disabled() && !_trackPressStart && !_selected.element) {
 		mousePressReleased(e->button());
 	}
 }
@@ -1599,6 +1632,9 @@ void PeerListContent::mouseReleaseEvent(QMouseEvent *e) {
 }
 
 void PeerListContent::mousePressReleased(Qt::MouseButton button) {
+	_trackPressStart = {};
+	_controller->rowTrackPressCancel();
+
 	updateRow(_pressed.index);
 	updateRow(_selected.index);
 
@@ -2125,6 +2161,16 @@ bool PeerListContent::submitted() {
 		}
 	}
 	return false;
+}
+
+PeerListRowId PeerListContent::updateFromParentDrag(QPoint globalPosition) {
+	selectByMouse(globalPosition);
+	const auto row = getRow(_selected.index);
+	return row ? row->id() : 0;
+}
+
+void PeerListContent::dragLeft() {
+	clearSelection();
 }
 
 void PeerListContent::visibleTopBottomUpdated(
