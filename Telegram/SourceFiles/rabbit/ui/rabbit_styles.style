@@ -19,3 +19,5 @@ cpImagePadding: 4px;
 cpSpacingX: 16px;
 cpSpacingY: 8px;
 cpIconSize: 64px;
+
+rndPreviewSize: 48px;
