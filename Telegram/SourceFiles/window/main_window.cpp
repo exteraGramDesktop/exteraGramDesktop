@@ -30,7 +30,6 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "main/main_session.h"
 #include "main/main_session_settings.h"
 #include "base/options.h"
-#include "base/call_delayed.h"
 #include "base/crc32hash.h"
 #include "ui/toast/toast.h"
 #include "ui/widgets/shadow.h"
@@ -940,28 +939,6 @@ bool MainWindow::minimizeToTray() {
 	controller().updateIsActiveBlur();
 	updateGlobalMenu();
 	return true;
-}
-
-void MainWindow::reActivateWindow() {
-	// X11 is the only platform with unreliable activate requests
-	if (!Platform::IsX11()) {
-		return;
-	}
-	const auto weak = Ui::MakeWeak(this);
-	const auto reActivate = [=] {
-		if (const auto w = weak.data()) {
-			if (auto f = QApplication::focusWidget()) {
-				f->clearFocus();
-			}
-			w->activate();
-			if (auto f = QApplication::focusWidget()) {
-				f->clearFocus();
-			}
-			w->setInnerFocus();
-		}
-	};
-	crl::on_main(this, reActivate);
-	base::call_delayed(200, this, reActivate);
 }
 
 void MainWindow::showRightColumn(object_ptr<TWidget> widget) {

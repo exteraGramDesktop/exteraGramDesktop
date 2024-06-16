@@ -7523,7 +7523,7 @@ void HistoryWidget::showPremiumToast(not_null<DocumentData*> document) {
 }
 
 void HistoryWidget::checkCharsCount() {
-	_fieldCharsCountManager.setCount(Ui::FieldCharacterCount(_field));
+	_fieldCharsCountManager.setCount(Ui::ComputeFieldCharacterCount(_field));
 	checkCharsLimitation();
 }
 

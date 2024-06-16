@@ -74,7 +74,8 @@ class FakeRow;
 class Key;
 struct ChosenRow;
 class InnerWidget;
-enum class SearchRequestType;
+enum class SearchRequestType : uchar;
+enum class SearchRequestDelay : uchar;
 class Suggestions;
 class ChatSearchIn;
 enum class ChatSearchTab : uchar;
@@ -131,7 +132,6 @@ public:
 	bool floatPlayerHandleWheelEvent(QEvent *e) override;
 	QRect floatPlayerAvailableRect() override;
 
-	bool cancelSearch(bool forceFullCancel = false);
 	bool cancelSearchByMouseBack();
 
 	QVariant inputMethodQuery(Qt::InputMethodQuery query) const override;
@@ -157,8 +157,8 @@ private:
 	[[nodiscard]] QString currentSearchQuery() const;
 	[[nodiscard]] int currentSearchQueryCursorPosition() const;
 	void clearSearchField();
-	void searchRequested();
-	bool search(bool inCache = false);
+	void searchRequested(SearchRequestDelay delay);
+	bool search(bool inCache = false, SearchRequestDelay after = {});
 	void searchTopics();
 	void searchMore();
 
@@ -260,6 +260,12 @@ private:
 	[[nodiscard]] bool redirectToSearchPossible() const;
 	[[nodiscard]] bool redirectKeyToSearch(QKeyEvent *e) const;
 	[[nodiscard]] bool redirectImeToSearch() const;
+
+	struct CancelSearchOptions {
+		bool forceFullCancel = false;
+		bool jumpBackToSearchedChat = false;
+	};
+	bool cancelSearch(CancelSearchOptions options);
 
 	MTP::Sender _api;
 
