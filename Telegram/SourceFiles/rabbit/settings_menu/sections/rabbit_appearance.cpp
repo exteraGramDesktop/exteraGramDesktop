@@ -96,7 +96,6 @@ namespace Settings {
     	const auto updateUserpicRoundness = [=](int value) {
     		updateUserpicRoundnessLabel(value);
 			roundnessPreview->repaint();
-			// NOTE: need to define roundnessPreview before repaint command?
     		::RabbitSettings::JsonSettings::Set("userpic_roundness", value);
     		::RabbitSettings::JsonSettings::Write();
     	};
@@ -107,10 +106,6 @@ namespace Settings {
 			::RabbitSettings::JsonSettings::GetInt("userpic_roundness"),
 			updateUserpicRoundness);
     	updateUserpicRoundnessLabel(::RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
-
-		// const auto roundnessPreview = container->add(
-		// 	object_ptr<RoundnessPreview>(container),
-		// 	st::defaultSubsectionTitlePadding);
 
     	SettingsMenuJsonSwitch(rtg_general_roundness, general_roundness);
     }

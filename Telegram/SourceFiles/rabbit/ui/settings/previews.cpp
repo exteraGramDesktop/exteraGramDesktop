@@ -56,3 +56,53 @@ void RoundnessPreview::paintEvent(QPaintEvent *e)  {
         skeletonHeight / 2
     );
 }
+
+StickerSizePreview::StickerSizePreview(QWidget  *parent) : RpWidget(parent) {
+    const auto size = QSize(st::boxWidth, 256);
+    setMinimumSize(size);
+}
+
+void StickerSizePreview::paintEvent(QPaintEvent  *e) {
+    Painter p(this);
+    PainterHighQualityEnabler hq(p);
+
+    auto size = QSize(RabbitSettings::JsonSettings::GetInt("sticker_height") * 1.2, RabbitSettings::JsonSettings::GetInt("sticker_height"));
+
+    p.setPen(Qt::NoPen);
+    p.setBrush(QBrush(st::rndPreviewFill));
+    p.drawRect(
+        QRect(QPoint(0, 0), size)
+    );
+
+    p.setBrush(QBrush(st::rndSkeletonFill));
+    auto skeletonWidth = st::stickerPreviewTimeWidth;
+    auto skeletonHeight = st::stickerPreviewTimeHeight;
+    auto paddingX = (RabbitSettings::JsonSettings::GetInt("sticker_height") * 1.2) + (skeletonHeight / 2);
+    auto paddingY = size.height() - (skeletonHeight * 1.2);
+
+    p.drawRoundedRect(
+        paddingX, paddingY,
+        skeletonWidth, skeletonHeight,
+        skeletonHeight / 2, skeletonHeight / 2
+    );
+
+    p.setBrush(QBrush(st::rndSkeletonFill));
+    auto multipliers = {1.7, 1.5, 1., 1.2, .8};
+    auto baseWidth = st::boxWidth / 2;
+    auto topPadding = size.height() + st::stickerMargins;
+    auto spacefillerMsgSkeletonHeight = st::stickerSpacefillerHeight;
+
+    for (auto multiplier : multipliers)  {
+        auto spacefillerMsgSkeletonWidth = baseWidth * multiplier;
+
+        p.drawRoundedRect(
+            st::boxWidth - spacefillerMsgSkeletonWidth, topPadding,
+            spacefillerMsgSkeletonWidth,
+            spacefillerMsgSkeletonHeight,
+            spacefillerMsgSkeletonHeight / 3,
+            spacefillerMsgSkeletonHeight / 3
+        );
+
+        topPadding += st::stickerMargins + spacefillerMsgSkeletonHeight;
+    }
+}

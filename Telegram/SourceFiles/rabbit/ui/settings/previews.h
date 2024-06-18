@@ -17,3 +17,12 @@ public:
 protected:
   void paintEvent(QPaintEvent *e) override;
 };
+
+class StickerSizePreview : public Ui::RpWidget
+{
+public:
+  StickerSizePreview(QWidget *parent);
+
+protected:
+  void paintEvent(QPaintEvent *e) override;
+};

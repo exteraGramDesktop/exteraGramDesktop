@@ -25,3 +25,8 @@ rndSkeletonFill: windowBgOver;
 
 rndPreviewSize: 48px;
 rndPenSize: 2px;
+
+stickerPreviewTimeWidth: 36px;
+stickerPreviewTimeHeight: 18px;
+stickerSpacefillerHeight: 28px;
+stickerMargins: 12px;
