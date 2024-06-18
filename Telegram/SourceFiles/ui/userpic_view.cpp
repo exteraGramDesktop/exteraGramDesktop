@@ -44,28 +44,18 @@ void ValidateUserpicCache(
 	view.forum = forumValue;
 	view.paletteVersion = version;
 
+	auto radius = size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100) / style::DevicePixelRatio();
+	if (forum && !RabbitSettings::JsonSettings::GetBool("general_roundness")) radius *= Ui::ForumUserpicRadiusMultiplier();
+
 	if (cloud) {
 		view.cached = cloud->scaled(
 			full,
 			Qt::IgnoreAspectRatio,
 			Qt::SmoothTransformation);
-		/* if (forum) {
-			view.cached = Images::Round(
-				std::move(view.cached),
-				Images::CornersMask(size
-					* Ui::ForumUserpicRadiusMultiplier()
-					/ style::DevicePixelRatio()));
-		} else {
-			view.cached = Images::Circle(std::move(view.cached));
-		} */
+		
 		view.cached = Images::Round(
 			std::move(view.cached),
-			Images::CornersMask(
-				(forum && !RabbitSettings::JsonSettings::GetBool("general_roundness"))
-				? size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 * Ui::ForumUserpicRadiusMultiplier() * 2 / style::DevicePixelRatio()
-				: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 / style::DevicePixelRatio()
-			)
-		);
+			Images::CornersMask(radius));
 	} else {
 		if (view.cached.size() != full) {
 			view.cached = QImage(full, QImage::Format_ARGB32_Premultiplied);
@@ -73,23 +63,10 @@ void ValidateUserpicCache(
 		view.cached.fill(Qt::transparent);
 
 		auto p = QPainter(&view.cached);
-		/* if (forum) {
-			empty->paintRounded(
-				p,
-				0,
-				0,
-				size,
-				size,
-				size * Ui::ForumUserpicRadiusMultiplier());
-		} else {
-			empty->paintCircle(p, 0, 0, size, size);
-		}*/ 
 
 		empty->paintRounded(
 			p, 0, 0, size, size,
-			(forum && !RabbitSettings::JsonSettings::GetBool("general_roundness"))
-				? size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 * Ui::ForumUserpicRadiusMultiplier() * 2 / style::DevicePixelRatio()
-				: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100 / style::DevicePixelRatio()
+			radius
 		);
 	}
 }

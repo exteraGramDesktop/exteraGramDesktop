@@ -11,6 +11,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/lang/rabbit_lang.h"
 #include "rabbit/settings_menu/sections/rabbit_appearance.h"
 #include "rabbit/ui/settings/icon_picker.h"
+#include "rabbit/ui/settings/previews.h"
 
 #include "lang_auto.h"
 #include "mainwindow.h"
@@ -73,6 +74,10 @@ namespace Settings {
 
 	void RabbitAppearance::SetupAppearance(not_null<Ui::VerticalLayout *> container) {
 	    Ui::AddSubsectionTitle(container, rktr("rtg_settings_appearance"));
+
+		const auto roundnessPreview = container->add(
+			object_ptr<RoundnessPreview>(container),
+			st::defaultSubsectionTitlePadding);
         
     	const auto userpicRoundnessLabel = container->add(
 			object_ptr<Ui::LabelSimple>(
@@ -90,6 +95,7 @@ namespace Settings {
     	};
     	const auto updateUserpicRoundness = [=](int value) {
     		updateUserpicRoundnessLabel(value);
+			roundnessPreview->repaint();
     		::RabbitSettings::JsonSettings::Set("userpic_roundness", value);
     		::RabbitSettings::JsonSettings::Write();
     	};

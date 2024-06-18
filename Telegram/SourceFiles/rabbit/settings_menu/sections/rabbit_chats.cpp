@@ -11,6 +11,7 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "rabbit/lang/rabbit_lang.h"
 #include "rabbit/settings_menu/sections/rabbit_chats.h"
 #include "rabbit/ui/settings/icon_picker.h"
+#include "rabbit/ui/settings/previews.h"
 
 #include "lang_auto.h"
 #include "mainwindow.h"
@@ -66,6 +67,10 @@ namespace Settings {
     void RabbitChats::SetupChats(not_null<Ui::VerticalLayout *> container) {
         Ui::AddSubsectionTitle(container, rktr("rtg_settings_chats"));
 
+		const auto stickerHeightPreview = container->add(
+			object_ptr<StickerSizePreview>(container),
+			st::defaultSubsectionTitlePadding);
+
         const auto stickerHeightLabel = container->add(
 		    object_ptr<Ui::LabelSimple>(
 			    container,
@@ -82,6 +87,7 @@ namespace Settings {
 	    };
 	    const auto updateStickerHeight = [=](int value) {
 		    updateStickerHeightLabel(value);
+			stickerHeightPreview->repaint();
 		    ::RabbitSettings::JsonSettings::Set("sticker_height", value);
 		    ::RabbitSettings::JsonSettings::Write();
 	    };

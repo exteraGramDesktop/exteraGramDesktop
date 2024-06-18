@@ -415,16 +415,6 @@ QImage PeerData::generateUserpicImage(
 		} else {
 			return Images::Circle(std::move(image));
 		}
-
-		/* if (radius) {
-			return round(*radius);
-		} else {
-			return round(
-				isForum()
-					? size * Ui::ForumUserpicRadiusMultiplier()
-					: size * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100
-			);
-		} */
 	}
 	auto result = QImage(
 		QSize(size, size),
@@ -447,21 +437,6 @@ QImage PeerData::generateUserpicImage(
 	} else {
 		ensureEmptyUserpic()->paintCircle(p, 0, 0, size, size);
 	}
-
-	/* if (radius) {
-		ensureEmptyUserpic()->paintRounded(p, 0, 0, size, size, *radius);
-	} else {
-		ensureEmptyUserpic()->paintRounded(
-			p,
-			0,
-			0,
-			size,
-			size,
-			isForum()
-				? size * Ui::ForumUserpicRadiusMultiplier()
-				: size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100)
-		);
-	} */
 
 	p.end();
 
