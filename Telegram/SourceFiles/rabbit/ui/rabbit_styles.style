@@ -20,4 +20,8 @@ cpSpacingX: 16px;
 cpSpacingY: 8px;
 cpIconSize: 64px;
 
+rndPreviewFill: historyPeerArchiveUserpicBg;
+rndSkeletonFill: windowBgOver;
+
 rndPreviewSize: 48px;
+rndPenSize: 2px;

@@ -16,19 +16,43 @@ https://github.com/rabbitgramdesktop/rabbitgramdesktop/blob/dev/LEGAL
 #include "window/main_window.h"
 
 RoundnessPreview::RoundnessPreview(QWidget *parent) : RpWidget(parent) {
-    auto size = st::rndPreviewSize + (2 * st::cpPenSize);
-    setMinimumSize(st::boxWidth, size);
+    auto sectionHeight = st::rndPreviewSize;
+    setMinimumSize(st::boxWidth, sectionHeight);
 }
 
 void RoundnessPreview::paintEvent(QPaintEvent *e)  {
     Painter p(this);
     PainterHighQualityEnabler hq(p);
 
-    auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.0 * st::rndPreviewSize;
+    auto size = st::rndPreviewSize;
+    auto radius = size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100.);
 
-    p.setPen(QPen(st::iconPreviewStroke, st::cpPenSize));
+    p.setPen(Qt::NoPen);
+    p.setBrush(QBrush(st::rndPreviewFill));
     p.drawRoundedRect(
-        st::cpPenSize, st::cpPenSize, 
-        st::rndPreviewSize, st::rndPreviewSize, 
-        radius, radius);
+        0, 0,
+        size, size, 
+        radius, radius
+    );
+
+    p.setBrush(QBrush(st::rndSkeletonFill));
+    auto skeletonWidth = st::boxWidth - (3 * st::rndPreviewSize);
+    auto skeletonHeight = st::rndPreviewSize / 5;
+    p.drawRoundedRect(
+        st::rndPreviewSize * 1.33,
+        skeletonHeight,
+        skeletonWidth / 2,
+        skeletonHeight,
+        skeletonHeight / 2,
+        skeletonHeight / 2
+    );
+
+    p.drawRoundedRect(
+        st::rndPreviewSize * 1.33,
+        skeletonHeight * 3,
+        skeletonWidth,
+        skeletonHeight,
+        skeletonHeight / 2,
+        skeletonHeight / 2
+    );
 }
