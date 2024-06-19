@@ -99,6 +99,35 @@ namespace Settings {
 		    updateStickerHeight);
 	    updateStickerHeightLabel(::RabbitSettings::JsonSettings::GetInt("sticker_height"));
 
+		const auto recentStickersLimitLabel = container->add(
+			object_ptr<Ui::LabelSimple>(
+				container,
+				st::settingsAudioVolumeLabel),
+			st::settingsAudioVolumeLabelPadding);
+		const auto recentStickersLimitSlider = container->add(
+			object_ptr<Ui::MediaSlider>(
+				container,
+				st::settingsAudioVolumeSlider),
+			st::settingsAudioVolumeSliderPadding);
+		const auto updateRecentStickersLimitLabel = [=](int value) {
+			recentStickersLimitLabel->setText(
+				(value == 0)
+					? ktr("rtg_settings_recent_stickers_limit_none")
+					: ktr("rtg_settings_recent_stickers_limit", { "count", QString::number(value) }) );
+		};
+		const auto updateRecentStickersLimitHeight = [=](int value) {
+			updateRecentStickersLimitLabel(value);
+			::RabbitSettings::JsonSettings::Set("recent_stickers_limit", value);
+			::RabbitSettings::JsonSettings::Write();
+		};
+		recentStickersLimitSlider->resize(st::settingsAudioVolumeSlider.seekSize);
+		recentStickersLimitSlider->setPseudoDiscrete(
+			201,
+			[](int val) { return val; },
+			::RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"),
+			updateRecentStickersLimitHeight);
+		updateRecentStickersLimitLabel(::RabbitSettings::JsonSettings::GetInt("recent_stickers_limit"));
+
 		AddButtonWithIcon(
 			container,
 			rktr("rtg_settings_show_seconds"),

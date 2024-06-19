@@ -87,13 +87,6 @@
     "rtg_settings_adaptive_bubbles": "Адаптивная ширина сообщений",
     "rtg_settings_disable_sound_from_tray": "Отключить звук",
     "rtg_settings_enable_sound_from_tray": "Включить звук",
-    "rtg_settings_recent_stickers_limit.zero": "Недавние стикеры: показывать {count} стикеров",
-    "rtg_settings_recent_stickers_limit.one": "Недавние стикеры: показывать {count} стикер",
-    "rtg_settings_recent_stickers_limit.two": "Недавние стикеры: показывать {count} стикеров",
-    "rtg_settings_recent_stickers_limit.few": "Недавние стикеры: показывать {count} стикера",
-    "rtg_settings_recent_stickers_limit.many": "Недавние стикеры: показывать {count} стикеров",
-    "rtg_settings_recent_stickers_limit.other": "Недавние стикеры: показывать {count} стикеров",
-    "rtg_settings_recent_stickers_limit_none": "Недавние стикеры: скрыть все",
     "rtg_filters_default": "Папка по умолчанию",
     "rtg_filters_context_edit_all": "Изменить папки",
     "rtg_filters_context_make_default": "Сделать папкой по умолчанию",
@@ -289,5 +282,7 @@
     "rtg_quiet_3h": "...на 3 часа",
     "rtg_quiet_8h": "...на 8 часов",
     "rtg_quiet_24h": "...на 24 часа",
+    "rtg_settings_recent_stickers_limit": "Недавние стикеры: показывать {count}",
+    "rtg_settings_recent_stickers_limit_none": "Недавние стикеры: скрыть все",
     "dummy_last_string": null
 }
