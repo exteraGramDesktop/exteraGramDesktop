@@ -129,7 +129,9 @@ rpl::producer<TextWithEntities> PhoneValue(not_null<UserData*> user) {
 			user,
 			UpdateFlag::PhoneNumber) | rpl::to_empty
 	) | rpl::map([=] {
-		return Ui::FormatPhone(user->phone());
+		return (RabbitSettings::JsonSettings::GetBool("streamer_mode") && user->isSelf())
+			? ktr("rtg_phone_hidden")
+			: Ui::FormatPhone(user->phone());
 	}) | Ui::Text::ToWithEntities();
 }
 
@@ -144,7 +146,9 @@ rpl::producer<TextWithEntities> PhoneOrHiddenValue(not_null<UserData*> user) {
 			const QString &username,
 			const QString &about,
 			const QString &hidden) {
-		if (phone.text.isEmpty() && username.isEmpty() && about.isEmpty()) {
+		if (
+			(phone.text.isEmpty() && username.isEmpty() && about.isEmpty())
+			|| (RabbitSettings::JsonSettings::GetBool("streamer_mode") && user->isSelf())) {
 			return Ui::Text::WithEntities(hidden);
 		} else if (IsCollectiblePhone(user)) {
 			return Ui::Text::Link(phone, u"internal:collectible_phone/"_q

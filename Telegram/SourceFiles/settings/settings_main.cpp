@@ -203,7 +203,7 @@ void Cover::initViewers() {
 		_user
 	) | rpl::start_with_next([=](const TextWithEntities &value) {
 		_phone->setText(
-			::RabbitSettings::JsonSettings::GetBool("show_phone_in_settings")
+			::RabbitSettings::JsonSettings::GetBool("streamer_mode")
 			? value.text              // shown
 			: ktr("rtg_phone_hidden") // hidden
 		);

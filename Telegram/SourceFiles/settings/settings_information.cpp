@@ -469,7 +469,7 @@ void SetupRows(
 	AddRow(
 		container,
 		tr::lng_settings_phone_label(),
-		::RabbitSettings::JsonSettings::GetBool("show_phone_in_settings")
+		::RabbitSettings::JsonSettings::GetBool("streamer_mode")
 		? Info::Profile::PhoneValue(self)
 		: rktre("rtg_phone_hidden"),
 		tr::lng_profile_copy_phone(tr::now),

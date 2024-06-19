@@ -66,7 +66,7 @@ namespace Settings {
     void RabbitGeneral::SetupGeneral(not_null<Ui::VerticalLayout *> container) {
         Ui::AddSubsectionTitle(container, rktr("rtg_settings_general"));
 
-    	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, show_phone_in_settings);
+    	SettingsMenuJsonSwitch(rtg_settings_show_phone_number, streamer_mode);
 		SettingsMenuJsonSwitch(rtg_settings_auto_hide_notifications, auto_hide_notifications);
 
         container->add(object_ptr<Button>(

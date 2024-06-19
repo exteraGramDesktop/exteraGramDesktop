@@ -232,7 +232,7 @@ const std::map<QString, Definition, std::greater<QString>> DefinitionMap {
 
 	// Stored settings
 	//   General
-	{ "show_phone_in_settings", {
+	{ "streamer_mode", {
 		.type = SettingType::BoolSetting,
 		.defaultValue = true, }},
 	{ "auto_hide_notifications", {
