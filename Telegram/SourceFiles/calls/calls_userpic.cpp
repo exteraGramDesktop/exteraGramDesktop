@@ -107,7 +107,6 @@ void Userpic::paint() {
 			_muteSize,
 			_muteSize);
 		p.drawEllipse(rect);
-		// p.drawRoundedRect(rect, RabbitSettings::JsonSettings::GetInt("userpic_roundness"), RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
 		st::callMutedPeerIcon.paintInCenter(p, rect);
 	}
 }

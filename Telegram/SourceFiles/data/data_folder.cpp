@@ -270,8 +270,8 @@ void Folder::paintUserpic(
 	p.setBrush(overrideBg ? *overrideBg : st::historyPeerArchiveUserpicBg);
 	{
 		PainterHighQualityEnabler hq(p);
-		// p.drawEllipse(x, y, size, size);
-		p.drawRoundedRect(x, y, size, size, size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness")) / 100, size * (RabbitSettings::JsonSettings::GetInt("userpic_roundness")) / 100);
+		auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100. * size;
+		p.drawRoundedRect(x, y, size, size, radius, radius);
 	}
 	if (size == st::defaultDialogRow.photoSize) {
 		const auto rect = QRect{ x, y, size, size };

@@ -20,14 +20,12 @@ void PaintOutlineSegments(
 
 	p.setBrush(Qt::NoBrush);
 	const auto count = std::min(int(segments.size()), kOutlineSegmentsMax);
-	// if (count == 1 /* || (RabbitSettings::JsonSettings::GetInt("userpic_roundness") != 100) */) {
-		p.setPen(QPen(segments.front().brush, segments.front().width));
-		// p.drawEllipse(ellipse);
-		p.drawRoundedRect(
-			ellipse, 
-			ellipse.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102, 
-			ellipse.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102);
-		return;
+	p.setPen(QPen(segments.front().brush, segments.front().width));
+	p.drawRoundedRect(
+		ellipse, 
+		ellipse.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102, 
+		ellipse.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") * 0.0102);
+	return;
 	// }
 	/* const auto small = 160;
 	const auto full = arc::kFullLength;

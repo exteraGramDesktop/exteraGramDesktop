@@ -888,7 +888,6 @@ void PeerListRow::paintDisabledCheckUserpic(
 		p.setPen(userpicBorderPen);
 		p.setBrush(Qt::NoBrush);
 		p.drawEllipse(userpicEllipse);
-		// p.drawRoundedRect(userpicEllipse, RabbitSettings::JsonSettings::GetInt("userpic_roundness"), RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
 
 		p.setPen(iconBorderPen);
 		p.setBrush(st.disabledCheckFg);

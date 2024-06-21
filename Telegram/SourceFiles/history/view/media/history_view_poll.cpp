@@ -919,8 +919,8 @@ void Poll::paintRecentVoters(
 			p.setPen(pen);
 			p.setBrush(Qt::NoBrush);
 			PainterHighQualityEnabler hq(p);
-			p.drawEllipse(x, y, size, size);
-			// p.drawRoundedRect(x, y, size, size, RabbitSettings::JsonSettings::GetInt("userpic_roundness"), RabbitSettings::JsonSettings::GetInt("userpic_roundness"));
+			auto radius = RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100. * size;
+			p.drawRoundedRect(x, y, size, size, radius, radius);
 		};
 		if (usesBubblePattern(context)) {
 			const auto add = st::lineWidth * 2;

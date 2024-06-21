@@ -325,10 +325,6 @@ void EmptyUserpic::paintCircle(
 		int y,
 		int outerWidth,
 		int size) const {
-	/* paint(p, x, y, outerWidth, size, [&] {
-		p.drawEllipse(x, y, size, size);
-	}); */
-	
 	paint(p, x, y, outerWidth, size, [&] {
 		double customRadius = (double) size * ((double) RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
 		p.drawRoundedRect(x, y, size, size, 
@@ -391,7 +387,6 @@ void EmptyUserpic::PaintSavedMessages(
 	PainterHighQualityEnabler hq(p);
 	p.setBrush(std::move(bg));
 	p.setPen(Qt::NoPen);
-	// p.drawEllipse(x, y, size, size);
 	double customRadius = (double) size * ((double) RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
 	p.drawRoundedRect(x, y, size, size, 
 		customRadius, customRadius);
@@ -433,7 +428,6 @@ void EmptyUserpic::PaintRepliesMessages(
 	PainterHighQualityEnabler hq(p);
 	p.setBrush(bg);
 	p.setPen(Qt::NoPen);
-	// p.drawEllipse(x, y, size, size);
 	double customRadius = (double) size * ((double) RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
 	p.drawRoundedRect(x, y, size, size, 
 		customRadius, customRadius);

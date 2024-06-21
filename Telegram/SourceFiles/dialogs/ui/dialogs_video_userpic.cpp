@@ -100,13 +100,12 @@ void VideoUserpic::paintLeft(
 		QImage image = _video->current(request(size), now);
 		roundedRect.addRoundedRect(
 			QRect(x, y, image.height(), image.width()),
-			image.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100,
-			image.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
+			image.width() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100,
+			image.height() * RabbitSettings::JsonSettings::GetInt("userpic_roundness") / 100);
     	p.setClipPath(roundedRect);
 		p.drawImage(x, y, image);
 
 		p.restore();
-		/* p.drawImage(x, y, _video->current(request(size), now)); */
 	} else {
 		_peer->paintUserpicLeft(p, view, x, y, w, size);
 	}
